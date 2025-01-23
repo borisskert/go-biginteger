@@ -1,38 +1,42 @@
 package biginteger
 
 func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {
-	if len(a) == 0 && len(b) == 0 {
-		if borrow {
-			return []uint64{1}, false
-		}
-
-		return []uint64{}, false
+	// Ensure a is the longer array (swap if necessary)
+	if len(b) > len(a) {
+		a, b = b, a
 	}
 
+	result := make([]uint64, len(a))
 	carry := uint64(0)
 	if borrow {
-		carry = uint64(1)
+		carry = 1
 	}
 
-	if len(a) == 0 {
-		diff, borrow := subtract(b[0], carry)
-		return []uint64{diff}, borrow
+	for i := 0; i < len(a); i++ {
+		ai := a[i]
+		bi := uint64(0)
+		if i < len(b) {
+			bi = b[i]
+		}
+
+		// Subtract with carry
+		diff, newBorrow := subtract(ai, bi+carry)
+		result[i] = diff
+		carry = 0
+		if newBorrow {
+			carry = 1
+		}
 	}
 
-	if len(b) == 0 {
-		diff, borrow := subtract(a[0], carry)
-		return []uint64{diff}, borrow
+	// Handle any remaining carry
+	finalBorrow := (carry > 0)
+
+	// Remove leading zeros from the result (if needed)
+	for len(result) > 1 && result[len(result)-1] == 0 {
+		result = result[:len(result)-1]
 	}
 
-	diff, borrow := subtract(a[0], b[0])
-	result := []uint64{diff - carry}
-	rest, borrow := subtractUint64Arrays(a[1:], b[1:], borrow)
-
-	if len(rest) == 1 && rest[0] == 0 {
-		return result, borrow
-	}
-
-	return append(result, rest...), borrow
+	return result, finalBorrow
 }
 
 func subtract(a, b uint64) (uint64, bool) {
