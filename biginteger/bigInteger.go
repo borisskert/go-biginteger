@@ -251,32 +251,10 @@ func (i BigInteger) IsLessThan(j BigInteger) bool {
 	}
 
 	if i.sign && j.sign {
-		return isLessThenArrays(j.value, i.value)
+		return isLessThenUint64Array(j.value, i.value)
 	}
 
-	return isLessThenArrays(i.value, j.value)
-}
-
-func isLessThenArrays(a, b []uint64) bool {
-	if len(a) < len(b) {
-		return true
-	}
-
-	if len(a) > len(b) {
-		return false
-	}
-
-	for k := len(a) - 1; k > 0; k-- {
-		if a[k] > b[k] {
-			return false
-		}
-
-		if a[k] < b[k] {
-			return true
-		}
-	}
-
-	return a[0] < b[0]
+	return isLessThenUint64Array(i.value, j.value)
 }
 
 func (i BigInteger) IsGreaterThan(j BigInteger) bool {
@@ -289,32 +267,10 @@ func (i BigInteger) IsGreaterThan(j BigInteger) bool {
 	}
 
 	if i.sign && j.sign {
-		return isGreaterThenArrays(j.value, i.value)
+		return isGreaterThenUint64Array(j.value, i.value)
 	}
 
-	return isGreaterThenArrays(i.value, j.value)
-}
-
-func isGreaterThenArrays(a, b []uint64) bool {
-	if len(a) > len(b) {
-		return true
-	}
-
-	if len(a) < len(b) {
-		return false
-	}
-
-	for k := len(a) - 1; k > 0; k-- {
-		if a[k] > b[k] {
-			return true
-		}
-
-		if a[k] < b[k] {
-			return false
-		}
-	}
-
-	return a[0] > b[0]
+	return isGreaterThenUint64Array(i.value, j.value)
 }
 
 func (i BigInteger) IsEqualTo(j BigInteger) bool {
@@ -323,10 +279,10 @@ func (i BigInteger) IsEqualTo(j BigInteger) bool {
 	}
 
 	if i.sign && j.sign {
-		return isEqualToArrays(j.value, i.value)
+		return isEqualToUint64Array(j.value, i.value)
 	}
 
-	return isEqualToArrays(i.value, j.value)
+	return isEqualToUint64Array(i.value, j.value)
 }
 
 func (i BigInteger) Uint() uint {
@@ -335,20 +291,6 @@ func (i BigInteger) Uint() uint {
 	}
 
 	return uint(i.value[0])
-}
-
-func isEqualToArrays(a, b []uint64) bool {
-	if len(a) != len(b) {
-		return false
-	}
-
-	for k := 0; k < len(a); k++ {
-		if a[k] != b[k] {
-			return false
-		}
-	}
-
-	return true
 }
 
 func OfUint64(i uint64) BigInteger {
