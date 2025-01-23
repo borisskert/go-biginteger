@@ -150,28 +150,12 @@ func (i BigInteger) Modulo(j BigInteger) BigInteger {
 	}
 
 	sign := i.sign
-	result := i.Abs().moduloAbs(j)
+	result := moduloAbs(i, j)
 
 	return BigInteger{
 		sign:  sign,
 		value: result.value,
 	}
-}
-
-func (i BigInteger) moduloAbs(j BigInteger) BigInteger {
-	j = j.Abs()
-
-	if j.IsEqualTo(Zero) {
-		panic("Division by zero")
-	}
-
-	if i.Abs().IsLessThan(j) {
-		return i
-	}
-
-	division := i.Abs().Divide(j)
-	multiply := division.Multiply(j)
-	return i.Abs().Subtract(multiply)
 }
 
 func (i BigInteger) IsEven() bool {
