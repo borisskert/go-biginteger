@@ -1,9 +1,5 @@
 package biginteger
 
-import (
-	"strconv"
-)
-
 type BigInteger struct {
 	sign  bool
 	value []uint64
@@ -20,24 +16,7 @@ func (i BigInteger) String() string {
 		sign = "-"
 	}
 
-	return sign + i.stringAbs()
-}
-
-func (i BigInteger) stringAbs() string {
-	j := i.Abs()
-
-	if j.IsLessThan(Ten) {
-		return strconv.FormatUint(j.value[0], 10)
-	}
-
-	result := ""
-	for j.IsGreaterThan(Zero) {
-		remainder := j.Modulo(Ten)
-		result = strconv.FormatUint(remainder.value[0], 10) + result
-		j = j.Divide(Ten)
-	}
-
-	return result
+	return sign + stringAbs(i)
 }
 
 func (i BigInteger) Add(j BigInteger) BigInteger {
