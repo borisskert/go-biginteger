@@ -196,50 +196,12 @@ func (i BigInteger) Power(j BigInteger) BigInteger {
 	}
 
 	sign := i.sign
-	result := i.Abs().powerAbs(j)
+	result := powerAbs(i, j)
 
 	return BigInteger{
 		sign:  sign,
 		value: result.value,
 	}
-}
-
-func (i BigInteger) powerAbs(j BigInteger) BigInteger {
-	abs := i.Abs()
-
-	if j.IsEqualTo(Zero) {
-		return One
-	}
-
-	if j.IsEqualTo(One) {
-		return abs
-	}
-
-	if abs.IsEqualTo(Zero) {
-		return Zero
-	}
-
-	if abs.IsEqualTo(One) {
-		return One
-	}
-
-	if j.IsEqualTo(One) {
-		return abs
-	}
-
-	result := One
-
-	for j.IsGreaterThan(Zero) {
-		if j.IsOdd() {
-			result = result.Multiply(abs)
-			j = j.Subtract(One)
-		} else {
-			abs = abs.Multiply(abs)
-			j = j.Divide(Two)
-		}
-	}
-
-	return result
 }
 
 func (i BigInteger) ShiftLeft(j BigInteger) BigInteger {
@@ -251,7 +213,6 @@ func (i BigInteger) ShiftLeft(j BigInteger) BigInteger {
 		return i
 	}
 
-	//return i.Multiply(Two.Power(j))
 	return i.shiftLeftAbs(j)
 }
 
