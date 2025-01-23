@@ -110,53 +110,12 @@ func (i BigInteger) Multiply(j BigInteger) BigInteger {
 	}
 
 	sign := i.sign != j.sign
-	result := i.Abs().multiplyAbs(j)
+	result := multiplyAbs(i, j)
 
 	return BigInteger{
 		sign:  sign,
 		value: result.value,
 	}
-}
-
-func (i BigInteger) multiplyAbs(j BigInteger) BigInteger {
-	i = i.Abs()
-	j = j.Abs()
-
-	if i.IsEqualTo(Zero) || j.IsEqualTo(Zero) {
-		return Zero
-	}
-
-	if i.IsEqualTo(One) {
-		return j
-	}
-
-	if j.IsEqualTo(One) {
-		return i
-	}
-
-	result := Zero
-	factor := One
-	multiplier := i
-	remaining := j
-
-	for {
-		if remaining.IsGreaterThan(factor) {
-			result = result.Add(multiplier)
-			remaining = remaining.Subtract(factor)
-			multiplier = multiplier.Add(multiplier)
-			factor = factor.Add(factor)
-		} else if remaining.IsEqualTo(factor) {
-			result = result.Add(multiplier)
-			break
-		} else if remaining.IsLessThan(factor) {
-			factor = One
-			multiplier = i
-		} else {
-			break
-		}
-	}
-
-	return result
 }
 
 func (i BigInteger) Divide(j BigInteger) BigInteger {

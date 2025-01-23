@@ -325,6 +325,41 @@ var _ = Describe("BigInteger", func() {
 			Expect(bigint1.Multiply(*bigint2).String()).To(Equal("2"))
 		})
 
+		It("Should multiply 1 by 2", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.Multiply(*bigint2).String()).To(Equal("2"))
+		})
+
+		It("Should multiply 2 by 0", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("0")
+
+			Expect(bigint1.Multiply(*bigint2).String()).To(Equal("0"))
+		})
+
+		It("Should multiply -2 by 0", func() {
+			bigint1, _ := biginteger.Of("-2")
+			bigint2, _ := biginteger.Of("0")
+
+			Expect(bigint1.Multiply(*bigint2).String()).To(Equal("0"))
+		})
+
+		It("Should multiply 0 by 2", func() {
+			bigint1, _ := biginteger.Of("0")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.Multiply(*bigint2).String()).To(Equal("0"))
+		})
+
+		It("Should multiply 0 by -2", func() {
+			bigint1, _ := biginteger.Of("0")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.Multiply(*bigint2).String()).To(Equal("0"))
+		})
+
 		It("Should multiply 2 by -1", func() {
 			bigint1, _ := biginteger.Of("2")
 			bigint2, _ := biginteger.Of("-1")
