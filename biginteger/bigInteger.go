@@ -238,30 +238,7 @@ func (i BigInteger) BitLength() BigInteger {
 		return One
 	}
 
-	return OfUint64(bitLength(i.value))
-}
-
-func bitLength(a []uint64) uint64 {
-	if len(a) == 0 {
-		return uint64(1)
-	}
-
-	lastPart := a[len(a)-1]
-	if lastPart == 0 {
-		return uint64(1)
-	}
-
-	//result := OfUint64(64).
-	//	Multiply(OfUint64(uint64(len(a) - 1)))
-
-	result := uint64(64 * (len(a) - 1))
-
-	for lastPart > 0 {
-		result = result + 1
-		lastPart = lastPart >> 1
-	}
-
-	return result
+	return OfUint64(bitLengthUint64Array(i.value))
 }
 
 func (i BigInteger) IsLessThan(j BigInteger) bool {
