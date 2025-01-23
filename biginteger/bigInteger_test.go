@@ -102,6 +102,27 @@ var _ = Describe("BigInteger", func() {
 			Expect(bigint1.Add(*bigint2).String()).To(Equal("3"))
 		})
 
+		It("Should add -1 and 2", func() {
+			bigint1, _ := biginteger.Of("-1")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.Add(*bigint2).String()).To(Equal("1"))
+		})
+
+		It("Should add 1 and -2", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.Add(*bigint2).String()).To(Equal("-1"))
+		})
+
+		It("Should add -1 and -2", func() {
+			bigint1, _ := biginteger.Of("-1")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.Add(*bigint2).String()).To(Equal("-3"))
+		})
+
 		It("Should add 2 and 4", func() {
 			bigint1, _ := biginteger.Of("2")
 			bigint2, _ := biginteger.Of("4")

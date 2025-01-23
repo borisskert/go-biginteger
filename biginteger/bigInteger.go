@@ -41,8 +41,20 @@ func (i BigInteger) stringAbs() string {
 }
 
 func (i BigInteger) Add(j BigInteger) BigInteger {
-	result := addUint64Arrays(i.value, j.value)
-	return BigInteger{value: result}
+	if i.sign == j.sign {
+		result := addUint64Arrays(i.value, j.value)
+
+		return BigInteger{
+			i.sign,
+			result,
+		}
+	}
+
+	if i.sign {
+		return j.Subtract(i.Abs())
+	}
+
+	return i.Subtract(j.Abs())
 }
 
 func (i BigInteger) Subtract(j BigInteger) BigInteger {
