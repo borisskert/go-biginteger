@@ -208,8 +208,7 @@ func (i BigInteger) ShiftRight(j BigInteger) BigInteger {
 		return i.ShiftLeft(j.Abs())
 	}
 
-	divisor := Two.Power(j)
-	return i.Divide(divisor)
+	return shiftRight(i, j)
 }
 
 func (i BigInteger) BitLength() BigInteger {
