@@ -204,6 +204,54 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("-1"))
 		})
 
+		It("Should subtract 1 from 2", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("1")
+			result := bigint1.Subtract(*bigint2)
+
+			Expect(result.String()).To(Equal("1"))
+		})
+
+		It("Should subtract -2 from 1", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("-2")
+			result := bigint1.Subtract(*bigint2)
+
+			Expect(result.String()).To(Equal("3"))
+		})
+
+		It("Should subtract -1 from 2", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("-1")
+			result := bigint1.Subtract(*bigint2)
+
+			Expect(result.String()).To(Equal("3"))
+		})
+
+		It("Should subtract 2 from 2", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("2")
+			result := bigint1.Subtract(*bigint2)
+
+			Expect(result.String()).To(Equal("0"))
+		})
+
+		It("Should subtract -2 from -2", func() {
+			bigint1, _ := biginteger.Of("-2")
+			bigint2, _ := biginteger.Of("-2")
+			result := bigint1.Subtract(*bigint2)
+
+			Expect(result.String()).To(Equal("0"))
+		})
+
+		It("Should subtract -1 from -2", func() {
+			bigint1, _ := biginteger.Of("-2")
+			bigint2, _ := biginteger.Of("-1")
+			result := bigint1.Subtract(*bigint2)
+
+			Expect(result.String()).To(Equal("-3"))
+		})
+
 		It("Should subtract 2 from 4", func() {
 			bigint1, _ := biginteger.Of("4")
 			bigint2, _ := biginteger.Of("2")
