@@ -13,8 +13,6 @@ var Zero = BigInteger{value: []uint64{0}}
 var One = BigInteger{value: []uint64{1}}
 var Two = BigInteger{value: []uint64{2}}
 var Ten = BigInteger{value: []uint64{10}}
-var Twenty = BigInteger{value: []uint64{20}}
-var UInt64Max = BigInteger{value: []uint64{18446744073709551615}}
 
 func (i BigInteger) String() string {
 	sign := ""
@@ -43,7 +41,7 @@ func (i BigInteger) stringAbs() string {
 }
 
 func (i BigInteger) Add(j BigInteger) BigInteger {
-	result := addArrays2(i.value, j.value)
+	result := addUint64Arrays(i.value, j.value)
 	return BigInteger{value: result}
 }
 
@@ -555,8 +553,6 @@ func Of(s string) (*BigInteger, error) {
 		s = s[1:]
 	}
 
-	//arr, err := parseToUint64Array([]uint64{}, s)
-
 	i, err := parseToUint64BLA(s)
 
 	if err != nil {
@@ -568,34 +564,6 @@ func Of(s string) (*BigInteger, error) {
 		value: i.value,
 	}, nil
 }
-
-//func parseToUint64Array(arr []uint64, s string) ([]uint64, error) {
-//	if len(s) == 0 {
-//		return arr, nil
-//	}
-//
-//	maxUint64String := "18446744073709551615"
-//	if s > maxUint64String {
-//		part := lastRunes(s, len(maxUint64String)-1)
-//		partValue, err := parseSimpleUint64(part)
-//		if err != nil {
-//			return nil, err
-//		}
-//
-//		arr = append(arr, partValue.value[0])
-//
-//		return parseToUint64Array(arr, firstRunes(s, len(s)-len(maxUint64String)-1))
-//	}
-//
-//	value, err := parseSingleUint64(s)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	arr = append(arr, *value)
-//
-//	return arr, nil
-//}
 
 func parseToUint64BLA(s string) (*BigInteger, error) {
 	if len(s) == 0 {
@@ -617,42 +585,6 @@ func parseToUint64BLA(s string) (*BigInteger, error) {
 	}
 
 	return &result, nil
-}
-
-//func parseToBigInteger(i BigInteger, s string) (*BigInteger, error) {
-//	if len(s) == 0 {
-//		return &i, nil
-//	}
-//
-//	base := One
-//	if i.IsLessThan(UInt64Max) {
-//		part := lastRunes(s, 19)
-//		partValue, err := parseSimpleUint64(part)
-//		if err != nil {
-//			return nil, err
-//		}
-//
-//		i = i.Multiply(base).Add(*partValue)
-//		base = base.Multiply(UInt64Max)
-//	}
-//}
-
-//func parseSimpleUint64(s string) (*BigInteger, error) {
-//	value, err := strconv.ParseUint(s, 10, 64)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return &BigInteger{value: []uint64{value}}, nil
-//}
-
-func parseSingleUint64(s string) (*uint64, error) {
-	value, err := strconv.ParseUint(s, 10, 64)
-	if err != nil {
-		return nil, err
-	}
-
-	return &value, nil
 }
 
 func firstRunes(s string, n int) string {
@@ -679,71 +611,6 @@ func lastRunes(s string, n int) string {
 	}
 
 	return string(runes[len(runes)-n:])
-}
-
-func addArrays(a, b []uint64, carry bool) ([]uint64, bool) {
-	if len(a) == 0 {
-		return b, carry
-	}
-
-	if len(b) == 0 {
-		return a, carry
-	}
-
-	sum, carry := add(a[0], b[0])
-	result := []uint64{sum}
-	rest, carry := addArrays(a[1:], b[1:], carry)
-
-	return append(result, rest...), carry
-}
-
-func addArrays2(a, b []uint64) []uint64 {
-	if len(a) == 0 {
-		return b
-	}
-
-	if len(b) == 0 {
-		return a
-	}
-
-	if len(a) < len(b) {
-		a = append(a, make([]uint64, len(b)-len(a))...)
-	} else {
-		b = append(b, make([]uint64, len(a)-len(b))...)
-	}
-
-	result := make([]uint64, len(a))
-
-	sum := uint64(0)
-	carry := false
-	for i := 0; i < len(a); i++ {
-		sum, carry = add2(a[i], b[i], carry)
-		result[i] = sum
-	}
-
-	if carry {
-		result = append(result, 1)
-	}
-
-	return result
-}
-
-func add(a, b uint64) (uint64, bool) {
-	sum := a + b
-	carry := sum < a || sum < b
-	return sum, carry
-}
-
-func add2(a, b uint64, carry bool) (uint64, bool) {
-	c := uint64(0)
-	if carry {
-		c = 1
-	}
-
-	sum := a + b + c
-	carry = sum < a || sum < b
-
-	return sum, carry
 }
 
 func subtractArrays(a, b []uint64, borrow bool) ([]uint64, bool) {
