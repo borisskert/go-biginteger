@@ -7,6 +7,15 @@ import (
 
 var e19 = BigInteger{value: []uint64{1000000000000000000}}
 
+func toString(i BigInteger) string {
+	sign := ""
+	if i.sign {
+		sign = "-"
+	}
+
+	return sign + stringAbs(i)
+}
+
 func stringAbs(i BigInteger) string {
 	i = i.Abs()
 

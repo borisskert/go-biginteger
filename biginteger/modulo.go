@@ -1,19 +1,45 @@
 package biginteger
 
-func moduloAbs(i BigInteger, j BigInteger) BigInteger {
-	i = i.Abs()
-	j = j.Abs()
-
-	if j.IsEqualTo(zero) {
+func modulo(a BigInteger, b BigInteger) BigInteger {
+	if b.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
-	if i.IsLessThan(j) {
-		return i
+	if a.IsEqualTo(zero) {
+		return zero
 	}
 
-	division := i.Divide(j)
-	multiply := division.Multiply(j)
+	if b.IsEqualTo(one) {
+		return zero
+	}
 
-	return i.Subtract(multiply)
+	if a.IsEqualTo(b) {
+		return zero
+	}
+
+	sign := a.sign
+	result := moduloAbs(a, b)
+
+	return BigInteger{
+		sign:  sign,
+		value: result.value,
+	}
+}
+
+func moduloAbs(a BigInteger, b BigInteger) BigInteger {
+	a = a.Abs()
+	b = b.Abs()
+
+	if b.IsEqualTo(zero) {
+		panic("Division by zero")
+	}
+
+	if a.IsLessThan(b) {
+		return a
+	}
+
+	division := a.Divide(b)
+	product := division.Multiply(b)
+
+	return a.Subtract(product)
 }

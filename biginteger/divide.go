@@ -1,32 +1,46 @@
 package biginteger
 
-func divideAbs(i BigInteger, j BigInteger) BigInteger {
-	i = i.Abs()
-	j = j.Abs()
-
-	if j.IsEqualTo(zero) {
+func divide(a BigInteger, b BigInteger) BigInteger {
+	if b.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
-	if i.IsEqualTo(zero) {
+	sign := a.sign != b.sign
+	result := divideAbs(a, b)
+
+	return BigInteger{
+		sign:  sign,
+		value: result.value,
+	}
+}
+
+func divideAbs(a BigInteger, b BigInteger) BigInteger {
+	a = a.Abs()
+	b = b.Abs()
+
+	if b.IsEqualTo(zero) {
+		panic("Division by zero")
+	}
+
+	if a.IsEqualTo(zero) {
 		return zero
 	}
 
-	if j.IsEqualTo(one) {
-		return i
+	if b.IsEqualTo(one) {
+		return a
 	}
 
-	if i.Abs().IsLessThan(j) {
+	if a.Abs().IsLessThan(b) {
 		return zero
 	}
 
-	if i.Abs().IsEqualTo(j) {
+	if a.Abs().IsEqualTo(b) {
 		return one
 	}
 
 	result := zero
-	remaining := i
-	divisor := j
+	remaining := a
+	divisor := b
 	quotient := one
 
 	for {
@@ -38,10 +52,10 @@ func divideAbs(i BigInteger, j BigInteger) BigInteger {
 		} else if remaining.IsEqualTo(divisor) {
 			result = result.Add(quotient)
 			break
-		} else if remaining.IsLessThan(j) {
+		} else if remaining.IsLessThan(b) {
 			break
 		} else if remaining.IsLessThan(divisor) {
-			divisor = j
+			divisor = b
 			quotient = one
 		} else {
 			break

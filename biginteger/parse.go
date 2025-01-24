@@ -2,7 +2,26 @@ package biginteger
 
 import "strconv"
 
-func parseToBigInteger(s string) (*BigInteger, error) {
+func parse(s string) (*BigInteger, error) {
+	sign := false
+	if s[0] == '-' {
+		sign = true
+		s = s[1:]
+	}
+
+	i, err := parseAbs(s)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &BigInteger{
+		sign:  sign,
+		value: i.value,
+	}, nil
+}
+
+func parseAbs(s string) (*BigInteger, error) {
 	if len(s) == 0 {
 		return &zero, nil
 	}

@@ -1,6 +1,14 @@
 package biginteger
 
 func shiftLeft(i BigInteger, j BigInteger) BigInteger {
+	if i.IsEqualTo(zero) {
+		return zero
+	}
+
+	if j.IsEqualTo(zero) {
+		return i
+	}
+
 	return BigInteger{
 		sign:  i.sign,
 		value: shiftLeftUint64Array(i.value, j.Uint()),

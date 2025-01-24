@@ -1,7 +1,45 @@
 package biginteger
 
+func subtract(a BigInteger, b BigInteger) BigInteger {
+	if a.IsEqualTo(b) {
+		return zero
+	}
+
+	if !a.sign && !b.sign {
+		if a.IsLessThan(b) {
+			result, _ := subtractUint64Arrays(b.value, a.value, false)
+
+			return BigInteger{
+				true,
+				result,
+			}
+		}
+
+		result, _ := subtractUint64Arrays(a.value, b.value, false)
+
+		return BigInteger{
+			false,
+			result,
+		}
+	}
+
+	if a.sign && b.sign {
+		result := addUint64Arrays(a.value, b.value)
+
+		return BigInteger{
+			true,
+			result,
+		}
+	}
+
+	if a.sign {
+		return b.Add(a.Abs())
+	}
+
+	return a.Add(b.Abs())
+}
+
 func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {
-	// Ensure a is the longer array (swap if necessary)
 	if len(b) > len(a) {
 		a, b = b, a
 	}
@@ -19,8 +57,7 @@ func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {
 			bi = b[i]
 		}
 
-		// Subtract with carry
-		diff, newBorrow := subtract(ai, bi+carry)
+		diff, newBorrow := subtractUint64(ai, bi+carry)
 		result[i] = diff
 		carry = 0
 		if newBorrow {
@@ -28,10 +65,8 @@ func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {
 		}
 	}
 
-	// Handle any remaining carry
-	finalBorrow := (carry > 0)
+	finalBorrow := carry > 0
 
-	// Remove leading zeros from the result (if needed)
 	for len(result) > 1 && result[len(result)-1] == 0 {
 		result = result[:len(result)-1]
 	}
@@ -39,6 +74,6 @@ func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {
 	return result, finalBorrow
 }
 
-func subtract(a, b uint64) (uint64, bool) {
+func subtractUint64(a, b uint64) (uint64, bool) {
 	return a - b, a < b
 }

@@ -1,38 +1,64 @@
 package biginteger
 
-func powerAbs(i BigInteger, j BigInteger) BigInteger {
-	i = i.Abs()
-	j = j.Abs()
-
-	if j.IsEqualTo(zero) {
+func power(a BigInteger, b BigInteger) BigInteger {
+	if b.IsEqualTo(zero) {
 		return one
 	}
 
-	if j.IsEqualTo(one) {
-		return i
+	if b.IsEqualTo(one) {
+		return a
 	}
 
-	if i.IsEqualTo(zero) {
+	if a.IsEqualTo(zero) {
 		return zero
 	}
 
-	if i.IsEqualTo(one) {
+	if a.IsEqualTo(one) {
 		return one
 	}
 
-	if j.IsEqualTo(one) {
-		return i
+	sign := a.sign
+	result := powerAbs(a, b)
+
+	return BigInteger{
+		sign:  sign,
+		value: result.value,
+	}
+}
+
+func powerAbs(a BigInteger, b BigInteger) BigInteger {
+	a = a.Abs()
+	b = b.Abs()
+
+	if b.IsEqualTo(zero) {
+		return one
+	}
+
+	if b.IsEqualTo(one) {
+		return a
+	}
+
+	if a.IsEqualTo(zero) {
+		return zero
+	}
+
+	if a.IsEqualTo(one) {
+		return one
+	}
+
+	if b.IsEqualTo(one) {
+		return a
 	}
 
 	result := one
 
-	for j.IsGreaterThan(zero) {
-		if j.IsOdd() {
-			result = result.Multiply(i)
-			j = j.Subtract(one)
+	for b.IsGreaterThan(zero) {
+		if b.IsOdd() {
+			result = result.Multiply(a)
+			b = b.Subtract(one)
 		} else {
-			i = i.Multiply(i)
-			j = j.Divide(two)
+			a = a.Multiply(a)
+			b = b.Divide(two)
 		}
 	}
 
