@@ -25,8 +25,8 @@ func stringAbs(i BigInteger) string {
 
 	result := ""
 	for i.IsGreaterThan(zero) {
-		remainder := i.Modulo(e19)
-		i = i.Divide(e19)
+		quotient, remainder := i.DivMod(e19)
+		i = quotient
 
 		if i.IsGreaterThan(zero) {
 			result = fmt.Sprintf("%018d", remainder.value[0]) + result
