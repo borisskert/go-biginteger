@@ -5,8 +5,6 @@ import (
 	"strconv"
 )
 
-var e19 = BigInteger{value: []uint64{1000000000000000000}}
-
 func toString(i BigInteger) string {
 	sign := ""
 	if i.sign {

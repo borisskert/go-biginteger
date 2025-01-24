@@ -1118,7 +1118,7 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("100000000000000000000"))
 		})
 
-		It("Should return 4294 967296 for 2 pow 32", func() {
+		It("Should return 4294967296 for 2 pow 32", func() {
 			bigint1, _ := biginteger.Of("2")
 			bigint2, _ := biginteger.Of("32")
 
@@ -1130,6 +1130,15 @@ var _ = Describe("BigInteger", func() {
 			bigint2, _ := biginteger.Of("64")
 
 			Expect(bigint1.Power(*bigint2).String()).To(Equal("18446744073709551616"))
+		})
+
+		It("Should return (huge result) for 16258 pow 16258", func() {
+			bigint1, _ := biginteger.Of("16258")
+			bigint2, _ := biginteger.Of("16258")
+			result := bigint1.Power(*bigint2)
+
+			Expect(result.Digits()).To(BeNumerically("==", 68464))
+			Expect(result.Modulo(biginteger.OfUint64(1_000_000)).String()).To(Equal("662784"))
 		})
 	})
 
@@ -1429,6 +1438,122 @@ var _ = Describe("BigInteger", func() {
 
 			Expect(bigint.BitLength().String()).
 				To(Equal("65"))
+		})
+	})
+
+	Context("Digits", func() {
+		It("Should return 0 for 0", func() {
+			bigint, _ := biginteger.Of("0")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should return digits of 1", func() {
+			bigint, _ := biginteger.Of("1")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should return digits of -1", func() {
+			bigint, _ := biginteger.Of("1")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should return digits of 2", func() {
+			bigint, _ := biginteger.Of("2")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should digits of 3", func() {
+			bigint, _ := biginteger.Of("3")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should digits of 4", func() {
+			bigint, _ := biginteger.Of("4")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should digits of 7", func() {
+			bigint, _ := biginteger.Of("7")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should digits of 8", func() {
+			bigint, _ := biginteger.Of("8")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 1))
+		})
+
+		It("Should digits of 15", func() {
+			bigint, _ := biginteger.Of("15")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 2))
+		})
+
+		It("Should digits of 16", func() {
+			bigint, _ := biginteger.Of("16")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 2))
+		})
+
+		It("Should digits of 31", func() {
+			bigint, _ := biginteger.Of("31")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 2))
+		})
+
+		It("Should digits of 4294967295", func() {
+			bigint, _ := biginteger.Of("4294967295")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 10))
+		})
+
+		It("Should digits of 4294967296", func() {
+			bigint, _ := biginteger.Of("4294967296")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 10))
+		})
+
+		It("Should digits of 18446744073709551615", func() {
+			bigint, _ := biginteger.Of("18446744073709551615")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 20))
+		})
+
+		It("Should digits of 18446744073709551616", func() {
+			bigint, _ := biginteger.Of("18446744073709551616")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 20))
+		})
+
+		It("Should digits of 10000000000", func() {
+			bigint, _ := biginteger.Of("10000000000")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 11))
+		})
+
+		It("Should digits of 100000000000000000000", func() {
+			bigint, _ := biginteger.Of("100000000000000000000")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 21))
+		})
+
+		It("Should digits of 340282366920938463463374607431768211456", func() {
+			bigint, _ := biginteger.Of("340282366920938463463374607431768211456")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 39))
+		})
+
+		It("Should digits of 115792089237316195423570985008687907853269984665640564039457584007913129639936", func() {
+			bigint, _ := biginteger.Of("115792089237316195423570985008687907853269984665640564039457584007913129639936")
+
+			Expect(bigint.Digits()).To(BeNumerically("==", 78))
 		})
 	})
 

@@ -85,6 +85,10 @@ func (i BigInteger) BitLength() BigInteger {
 	return OfUint64(length)
 }
 
+func (i BigInteger) Digits() uint64 {
+	return digitsAbs(i)
+}
+
 func (i BigInteger) CompareTo(other BigInteger) int {
 	return compareTo(i, other)
 }
