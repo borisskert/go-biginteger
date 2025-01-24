@@ -1,25 +1,21 @@
 package biginteger
 
-func shiftRight(value BigInteger, count BigInteger) BigInteger {
+func shiftRight(value BigInteger, count uint64) BigInteger {
 	if value.IsEqualTo(zero) {
 		return zero
 	}
 
-	if count.IsEqualTo(zero) {
+	if count == 0 {
 		return value
-	}
-
-	if count.IsLessThan(zero) {
-		return value.ShiftLeft(count.Abs())
 	}
 
 	return BigInteger{
 		sign:  value.sign,
-		value: shiftRightUint64Array(value.value, count.Uint()),
+		value: shiftRightUint64Array(value.value, count),
 	}
 }
 
-func shiftRightUint64Array(a []uint64, n uint) []uint64 {
+func shiftRightUint64Array(a []uint64, n uint64) []uint64 {
 	if n == 0 || len(a) == 0 {
 		if len(a) == 0 || (len(a) == 1 && a[0] == 0) {
 			return []uint64{0}
@@ -29,7 +25,7 @@ func shiftRightUint64Array(a []uint64, n uint) []uint64 {
 	}
 
 	result := make([]uint64, len(a))
-	bitsPerElement := uint(64)
+	bitsPerElement := uint64(64)
 	shiftMask := uint64((1 << n) - 1)
 
 	carry := uint64(0)

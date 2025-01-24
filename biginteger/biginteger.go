@@ -53,11 +53,11 @@ func (i BigInteger) Power(exponent BigInteger) BigInteger {
 	return power(i, exponent)
 }
 
-func (i BigInteger) ShiftLeft(count BigInteger) BigInteger {
+func (i BigInteger) ShiftLeft(count uint64) BigInteger {
 	return shiftLeft(i, count)
 }
 
-func (i BigInteger) ShiftRight(count BigInteger) BigInteger {
+func (i BigInteger) ShiftRight(count uint64) BigInteger {
 	return shiftRight(i, count)
 }
 
