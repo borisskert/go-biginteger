@@ -846,65 +846,65 @@ var _ = Describe("BigInteger", func() {
 		It("Should return 0 >> 0", func() {
 			bigint, _ := biginteger.Of("0")
 
-			Expect(bigint.ShiftRight(biginteger.Zero).String()).
+			Expect(bigint.ShiftRight(biginteger.Zero()).String()).
 				To(Equal("0"))
 		})
 
 		It("Should return 0 >> 1", func() {
 			bigint, _ := biginteger.Of("0")
 
-			Expect(bigint.ShiftRight(biginteger.One).String()).
+			Expect(bigint.ShiftRight(biginteger.One()).String()).
 				To(Equal("0"))
 		})
 
 		It("Should return 1 >> 0", func() {
 			bigint, _ := biginteger.Of("1")
 
-			Expect(bigint.ShiftRight(biginteger.Zero).String()).To(Equal("1"))
+			Expect(bigint.ShiftRight(biginteger.Zero()).String()).To(Equal("1"))
 		})
 
 		It("Should return 1 >> 1", func() {
 			bigint, _ := biginteger.Of("1")
 
-			Expect(bigint.ShiftRight(biginteger.One).String()).To(Equal("0"))
+			Expect(bigint.ShiftRight(biginteger.One()).String()).To(Equal("0"))
 		})
 
 		It("Should return 2 >> 0", func() {
 			bigint, _ := biginteger.Of("2")
 
-			Expect(bigint.ShiftRight(biginteger.Zero).String()).To(Equal("2"))
+			Expect(bigint.ShiftRight(biginteger.Zero()).String()).To(Equal("2"))
 		})
 
 		It("Should return 2 >> 1", func() {
 			bigint, _ := biginteger.Of("2")
 
-			Expect(bigint.ShiftRight(biginteger.One).String()).To(Equal("1"))
+			Expect(bigint.ShiftRight(biginteger.One()).String()).To(Equal("1"))
 		})
 
 		It("Should return 2 >> 2", func() {
 			bigint, _ := biginteger.Of("2")
 
-			Expect(bigint.ShiftRight(biginteger.Two).String()).To(Equal("0"))
+			Expect(bigint.ShiftRight(biginteger.Two()).String()).To(Equal("0"))
 		})
 
 		It("Should return 18446744073709551615 >> 0", func() {
 			bigint, _ := biginteger.Of("18446744073709551615")
 
-			Expect(bigint.ShiftRight(biginteger.Zero).String()).
+			Expect(bigint.ShiftRight(biginteger.Zero()).String()).
 				To(Equal("18446744073709551615"))
 		})
 
 		It("Should return 18446744073709551615 >> 1", func() {
 			bigint, _ := biginteger.Of("18446744073709551615")
 
-			Expect(bigint.ShiftRight(biginteger.One).String()).
+			Expect(bigint.ShiftRight(biginteger.One()).String()).
 				To(Equal("9223372036854775807"))
 		})
 
 		It("Should return 18446744073709551615 >> 2", func() {
 			bigint, _ := biginteger.Of("18446744073709551615")
 
-			Expect(bigint.ShiftRight(biginteger.Two).String()).
+			Expect(bigint.ShiftRight(biginteger.Two()).String()).
 				To(Equal("4611686018427387903"))
 		})
 
@@ -945,7 +945,7 @@ var _ = Describe("BigInteger", func() {
 		It("Should return 0 << 0", func() {
 			bigint, _ := biginteger.Of("0")
 
-			Expect(bigint.ShiftLeft(biginteger.Zero).String()).
+			Expect(bigint.ShiftLeft(biginteger.Zero()).String()).
 				To(Equal("0"))
 		})
 
@@ -960,21 +960,21 @@ var _ = Describe("BigInteger", func() {
 		It("Should return 1 << 0", func() {
 			bigint, _ := biginteger.Of("1")
 
-			Expect(bigint.ShiftLeft(biginteger.Zero).String()).
+			Expect(bigint.ShiftLeft(biginteger.Zero()).String()).
 				To(Equal("1"))
 		})
 
 		It("Should return 2 << 0", func() {
 			bigint, _ := biginteger.Of("2")
 
-			Expect(bigint.ShiftLeft(biginteger.Zero).String()).
+			Expect(bigint.ShiftLeft(biginteger.Zero()).String()).
 				To(Equal("2"))
 		})
 
 		It("Should return 3 << 0", func() {
 			bigint, _ := biginteger.Of("3")
 
-			Expect(bigint.ShiftLeft(biginteger.Zero).String()).
+			Expect(bigint.ShiftLeft(biginteger.Zero()).String()).
 				To(Equal("3"))
 		})
 

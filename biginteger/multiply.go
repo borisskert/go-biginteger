@@ -4,17 +4,17 @@ func multiplyAbs(a BigInteger, b BigInteger) BigInteger {
 	a = a.Abs()
 	b = b.Abs()
 
-	result := Zero
+	result := zero
 	multiplier := a
 	remaining := b
 
-	for remaining.IsGreaterThan(Zero) {
+	for remaining.IsGreaterThan(zero) {
 		if remaining.IsOdd() {
 			result = result.Add(multiplier)
 		}
 
 		multiplier = multiplier.Add(multiplier)
-		remaining = remaining.ShiftRight(One)
+		remaining = remaining.ShiftRight(one)
 	}
 
 	return result

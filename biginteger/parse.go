@@ -4,10 +4,10 @@ import "strconv"
 
 func parseToBigInteger(s string) (*BigInteger, error) {
 	if len(s) == 0 {
-		return &Zero, nil
+		return &zero, nil
 	}
 
-	result := Zero
+	result := zero
 
 	for len(s) > 0 {
 		first := firstRunes(s, 1)
@@ -17,7 +17,7 @@ func parseToBigInteger(s string) (*BigInteger, error) {
 		}
 
 		digit := OfUint64(parsedDigit)
-		result = result.Multiply(Ten).Add(digit)
+		result = result.Multiply(ten).Add(digit)
 		s = lastRunes(s, len(s)-1)
 	}
 

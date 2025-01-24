@@ -1,0 +1,18 @@
+package biginteger
+
+var zero = BigInteger{value: []uint64{0}}
+var one = BigInteger{value: []uint64{1}}
+var two = BigInteger{value: []uint64{2}}
+var ten = BigInteger{value: []uint64{10}}
+
+func Zero() BigInteger {
+	return zero
+}
+
+func One() BigInteger {
+	return one
+}
+
+func Two() BigInteger {
+	return two
+}

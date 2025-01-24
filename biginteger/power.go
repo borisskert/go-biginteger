@@ -4,35 +4,35 @@ func powerAbs(i BigInteger, j BigInteger) BigInteger {
 	i = i.Abs()
 	j = j.Abs()
 
-	if j.IsEqualTo(Zero) {
-		return One
+	if j.IsEqualTo(zero) {
+		return one
 	}
 
-	if j.IsEqualTo(One) {
+	if j.IsEqualTo(one) {
 		return i
 	}
 
-	if i.IsEqualTo(Zero) {
-		return Zero
+	if i.IsEqualTo(zero) {
+		return zero
 	}
 
-	if i.IsEqualTo(One) {
-		return One
+	if i.IsEqualTo(one) {
+		return one
 	}
 
-	if j.IsEqualTo(One) {
+	if j.IsEqualTo(one) {
 		return i
 	}
 
-	result := One
+	result := one
 
-	for j.IsGreaterThan(Zero) {
+	for j.IsGreaterThan(zero) {
 		if j.IsOdd() {
 			result = result.Multiply(i)
-			j = j.Subtract(One)
+			j = j.Subtract(one)
 		} else {
 			i = i.Multiply(i)
-			j = j.Divide(Two)
+			j = j.Divide(two)
 		}
 	}
 

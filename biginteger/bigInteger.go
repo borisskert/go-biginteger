@@ -5,11 +5,6 @@ type BigInteger struct {
 	value []uint64
 }
 
-var Zero = BigInteger{value: []uint64{0}}
-var One = BigInteger{value: []uint64{1}}
-var Two = BigInteger{value: []uint64{2}}
-var Ten = BigInteger{value: []uint64{10}}
-
 func (i BigInteger) String() string {
 	sign := ""
 	if i.sign {
@@ -38,7 +33,7 @@ func (i BigInteger) Add(j BigInteger) BigInteger {
 
 func (i BigInteger) Subtract(j BigInteger) BigInteger {
 	if i.IsEqualTo(j) {
-		return Zero
+		return zero
 	}
 
 	if !i.sign && !j.sign {
@@ -76,15 +71,15 @@ func (i BigInteger) Subtract(j BigInteger) BigInteger {
 }
 
 func (i BigInteger) Multiply(j BigInteger) BigInteger {
-	if i.IsEqualTo(Zero) || j.IsEqualTo(Zero) {
-		return Zero
+	if i.IsEqualTo(zero) || j.IsEqualTo(zero) {
+		return zero
 	}
 
-	if i.IsEqualTo(One) {
+	if i.IsEqualTo(one) {
 		return j
 	}
 
-	if j.IsEqualTo(One) {
+	if j.IsEqualTo(one) {
 		return i
 	}
 
@@ -98,7 +93,7 @@ func (i BigInteger) Multiply(j BigInteger) BigInteger {
 }
 
 func (i BigInteger) Divide(j BigInteger) BigInteger {
-	if j.IsEqualTo(Zero) {
+	if j.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
@@ -112,20 +107,20 @@ func (i BigInteger) Divide(j BigInteger) BigInteger {
 }
 
 func (i BigInteger) Modulo(j BigInteger) BigInteger {
-	if j.IsEqualTo(Zero) {
+	if j.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
-	if i.IsEqualTo(Zero) {
-		return Zero
+	if i.IsEqualTo(zero) {
+		return zero
 	}
 
-	if j.IsEqualTo(One) {
-		return Zero
+	if j.IsEqualTo(one) {
+		return zero
 	}
 
 	if i.IsEqualTo(j) {
-		return Zero
+		return zero
 	}
 
 	sign := i.sign
@@ -158,20 +153,20 @@ func (i BigInteger) Abs() BigInteger {
 }
 
 func (i BigInteger) Power(j BigInteger) BigInteger {
-	if j.IsEqualTo(Zero) {
-		return One
+	if j.IsEqualTo(zero) {
+		return one
 	}
 
-	if j.IsEqualTo(One) {
+	if j.IsEqualTo(one) {
 		return i
 	}
 
-	if i.IsEqualTo(Zero) {
-		return Zero
+	if i.IsEqualTo(zero) {
+		return zero
 	}
 
-	if i.IsEqualTo(One) {
-		return One
+	if i.IsEqualTo(one) {
+		return one
 	}
 
 	sign := i.sign
@@ -184,11 +179,11 @@ func (i BigInteger) Power(j BigInteger) BigInteger {
 }
 
 func (i BigInteger) ShiftLeft(j BigInteger) BigInteger {
-	if i.IsEqualTo(Zero) {
-		return Zero
+	if i.IsEqualTo(zero) {
+		return zero
 	}
 
-	if j.IsEqualTo(Zero) {
+	if j.IsEqualTo(zero) {
 		return i
 	}
 
@@ -196,15 +191,15 @@ func (i BigInteger) ShiftLeft(j BigInteger) BigInteger {
 }
 
 func (i BigInteger) ShiftRight(j BigInteger) BigInteger {
-	if i.IsEqualTo(Zero) {
-		return Zero
+	if i.IsEqualTo(zero) {
+		return zero
 	}
 
-	if j.IsEqualTo(Zero) {
+	if j.IsEqualTo(zero) {
 		return i
 	}
 
-	if j.IsLessThan(Zero) {
+	if j.IsLessThan(zero) {
 		return i.ShiftLeft(j.Abs())
 	}
 
@@ -212,8 +207,8 @@ func (i BigInteger) ShiftRight(j BigInteger) BigInteger {
 }
 
 func (i BigInteger) BitLength() BigInteger {
-	if i.Abs().IsLessThan(Two) {
-		return One
+	if i.Abs().IsLessThan(two) {
+		return one
 	}
 
 	return OfUint64(bitLengthUint64Array(i.value))

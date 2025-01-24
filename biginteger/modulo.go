@@ -4,7 +4,7 @@ func moduloAbs(i BigInteger, j BigInteger) BigInteger {
 	i = i.Abs()
 	j = j.Abs()
 
-	if j.IsEqualTo(Zero) {
+	if j.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 

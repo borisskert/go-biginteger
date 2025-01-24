@@ -4,30 +4,30 @@ func divideAbs(i BigInteger, j BigInteger) BigInteger {
 	i = i.Abs()
 	j = j.Abs()
 
-	if j.IsEqualTo(Zero) {
+	if j.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
-	if i.IsEqualTo(Zero) {
-		return Zero
+	if i.IsEqualTo(zero) {
+		return zero
 	}
 
-	if j.IsEqualTo(One) {
+	if j.IsEqualTo(one) {
 		return i
 	}
 
 	if i.Abs().IsLessThan(j) {
-		return Zero
+		return zero
 	}
 
 	if i.Abs().IsEqualTo(j) {
-		return One
+		return one
 	}
 
-	result := Zero
+	result := zero
 	remaining := i
 	divisor := j
-	quotient := One
+	quotient := one
 
 	for {
 		if remaining.IsGreaterThan(divisor) {
@@ -42,7 +42,7 @@ func divideAbs(i BigInteger, j BigInteger) BigInteger {
 			break
 		} else if remaining.IsLessThan(divisor) {
 			divisor = j
-			quotient = One
+			quotient = one
 		} else {
 			break
 		}

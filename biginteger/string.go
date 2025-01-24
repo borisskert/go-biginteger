@@ -15,11 +15,11 @@ func stringAbs(i BigInteger) string {
 	}
 
 	result := ""
-	for i.IsGreaterThan(Zero) {
+	for i.IsGreaterThan(zero) {
 		remainder := i.Modulo(e19)
 		i = i.Divide(e19)
 
-		if i.IsGreaterThan(Zero) {
+		if i.IsGreaterThan(zero) {
 			result = fmt.Sprintf("%018d", remainder.value[0]) + result
 		} else {
 			result = strconv.FormatUint(remainder.value[0], 10) + result
