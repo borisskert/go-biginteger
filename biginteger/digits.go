@@ -9,7 +9,7 @@ func digitsAbs(i BigInteger) uint64 {
 		return 1
 	}
 
-	bitLength := i.BitLength().Uint()
+	bitLength := i.BitLength()
 	estimatedDigits := uint64(float64(bitLength)/math.Log2(10)) + 1
 
 	divisor := ten.Power(OfUint64(estimatedDigits - 1))

@@ -1345,99 +1345,113 @@ var _ = Describe("BigInteger", func() {
 		It("Should return len 0", func() {
 			bigint, _ := biginteger.Of("0")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("1"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 1))
 		})
 
 		It("Should return len 1", func() {
 			bigint, _ := biginteger.Of("1")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("1"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 1))
 		})
 
 		It("Should return len 2", func() {
 			bigint, _ := biginteger.Of("2")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("2"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 2))
 		})
 
 		It("Should return len 3", func() {
 			bigint, _ := biginteger.Of("3")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("2"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 2))
 		})
 
 		It("Should return len 4", func() {
 			bigint, _ := biginteger.Of("4")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("3"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 3))
 		})
 
 		It("Should return len 7", func() {
 			bigint, _ := biginteger.Of("7")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("3"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 3))
 		})
 
 		It("Should return len 8", func() {
 			bigint, _ := biginteger.Of("8")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("4"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 4))
 		})
 
 		It("Should return len 15", func() {
 			bigint, _ := biginteger.Of("15")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("4"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 4))
 		})
 
 		It("Should return len 16", func() {
 			bigint, _ := biginteger.Of("16")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("5"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 5))
 		})
 
 		It("Should return len 31", func() {
 			bigint, _ := biginteger.Of("31")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("5"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 5))
 		})
 
 		It("Should return len 4294967295", func() {
 			bigint, _ := biginteger.Of("4294967295")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("32"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 32))
 		})
 
 		It("Should return len 4294967296", func() {
 			bigint, _ := biginteger.Of("4294967296")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("33"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 33))
 		})
 
 		It("Should return len 18446744073709551615", func() {
 			bigint, _ := biginteger.Of("18446744073709551615")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("64"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 64))
 		})
 
 		It("Should return len 18446744073709551616", func() {
 			bigint, _ := biginteger.Of("18446744073709551616")
 
-			Expect(bigint.BitLength().String()).
-				To(Equal("65"))
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 65))
+		})
+
+		It("Should return len 340282366920938463463374607431768211455", func() {
+			bigint, _ := biginteger.Of("340282366920938463463374607431768211455")
+
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 128))
+		})
+
+		It("Should return len 340282366920938463463374607431768211456", func() {
+			bigint, _ := biginteger.Of("340282366920938463463374607431768211456")
+
+			Expect(bigint.BitLength()).
+				To(BeNumerically("==", 129))
 		})
 	})
 

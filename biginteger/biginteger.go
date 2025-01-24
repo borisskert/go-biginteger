@@ -75,14 +75,8 @@ func (i BigInteger) ShiftRight(count uint64) BigInteger {
 	return shiftRight(i, count)
 }
 
-func (i BigInteger) BitLength() BigInteger {
-	if i.Abs().IsLessThan(two) {
-		return one
-	}
-
-	length := bitLengthUint64Array(i.value)
-
-	return OfUint64(length)
+func (i BigInteger) BitLength() uint64 {
+	return bitLength(i)
 }
 
 func (i BigInteger) Digits() uint64 {

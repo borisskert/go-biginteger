@@ -1,5 +1,13 @@
 package biginteger
 
+func bitLength(i BigInteger) uint64 {
+	if i.Abs().IsLessThan(two) {
+		return 1
+	}
+
+	return bitLengthUint64Array(i.value)
+}
+
 func bitLengthUint64Array(a []uint64) uint64 {
 	if len(a) == 0 {
 		return uint64(1)
