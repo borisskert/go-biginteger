@@ -1141,6 +1141,232 @@ var _ = Describe("BigInteger", func() {
 		})
 	})
 
+	Context("CompareTo", func() {
+		It("Should return a negative value for 1 < 2", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for 2 < 1", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return zero for 2 < 2", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeZero())
+		})
+
+		It("Should return a negative value for -1 < 1", func() {
+			bigint1, _ := biginteger.Of("-1")
+			bigint2, _ := biginteger.Of("1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for 1 < -1", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("-1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return zero for -1 < -1", func() {
+			bigint1, _ := biginteger.Of("-1")
+			bigint2, _ := biginteger.Of("-1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeZero())
+		})
+
+		It("Should return a negative value for -2 < -1", func() {
+			bigint1, _ := biginteger.Of("-2")
+			bigint2, _ := biginteger.Of("-1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for -1 < -2", func() {
+			bigint1, _ := biginteger.Of("-1")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return zero for -2 < -2", func() {
+			bigint1, _ := biginteger.Of("-2")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeZero())
+		})
+
+		It("Should return a negative value for -2 < 1", func() {
+			bigint1, _ := biginteger.Of("-2")
+			bigint2, _ := biginteger.Of("1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for 1 < -2", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return a negative value for -2 < 2", func() {
+			bigint1, _ := biginteger.Of("-2")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for 2 < -2", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return zero for 0 < 0", func() {
+			bigint1, _ := biginteger.Of("0")
+			bigint2, _ := biginteger.Of("0")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeZero())
+		})
+
+		It("Should return a negative value for 0 < 1", func() {
+			bigint1, _ := biginteger.Of("0")
+			bigint2, _ := biginteger.Of("1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for 1 < 0", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("0")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return a positive value for 0 < -1", func() {
+			bigint1, _ := biginteger.Of("0")
+			bigint2, _ := biginteger.Of("-1")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return a negative value for -1 < 0", func() {
+			bigint1, _ := biginteger.Of("-1")
+			bigint2, _ := biginteger.Of("0")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a negative value for 18446744073709551616 < 18446744073709551615", func() {
+			bigint1, _ := biginteger.Of("18446744073709551616")
+			bigint2, _ := biginteger.Of("18446744073709551615")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return a positive value for 18446744073709551615 < 18446744073709551616", func() {
+			bigint1, _ := biginteger.Of("18446744073709551615")
+			bigint2, _ := biginteger.Of("18446744073709551616")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return zero for 18446744073709551615 < 18446744073709551615", func() {
+			bigint1, _ := biginteger.Of("18446744073709551615")
+			bigint2, _ := biginteger.Of("18446744073709551615")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeZero())
+		})
+
+		It("Should return zero for 18446744073709551616 < 18446744073709551616", func() {
+			bigint1, _ := biginteger.Of("18446744073709551616")
+			bigint2, _ := biginteger.Of("18446744073709551616")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeZero())
+		})
+
+		It("Should return a positive value for 36893488147419103232 < 18446744073709551615", func() {
+			bigint1, _ := biginteger.Of("36893488147419103232")
+			bigint2, _ := biginteger.Of("18446744073709551615")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return a negative value for 18446744073709551615 < 36893488147419103232", func() {
+			bigint1, _ := biginteger.Of("18446744073709551615")
+			bigint2, _ := biginteger.Of("36893488147419103232")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for 36893488147419103232 < 18446744073709551616", func() {
+			bigint1, _ := biginteger.Of("36893488147419103232")
+			bigint2, _ := biginteger.Of("18446744073709551616")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return a negative value for 18446744073709551616 < 36893488147419103232", func() {
+			bigint1, _ := biginteger.Of("18446744073709551616")
+			bigint2, _ := biginteger.Of("36893488147419103232")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return a positive value for 73786976294838206464 < 18446744073709551615", func() {
+			bigint1, _ := biginteger.Of("73786976294838206464")
+			bigint2, _ := biginteger.Of("18446744073709551615")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return a negative value for 18446744073709551615 < 73786976294838206464", func() {
+			bigint1, _ := biginteger.Of("18446744073709551615")
+			bigint2, _ := biginteger.Of("73786976294838206464")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return positive value for 73786976294838206464 < 36893488147419103231", func() {
+			bigint1, _ := biginteger.Of("73786976294838206464")
+			bigint2, _ := biginteger.Of("36893488147419103231")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return negative value for 36893488147419103231 < 73786976294838206464", func() {
+			bigint1, _ := biginteger.Of("36893488147419103231")
+			bigint2, _ := biginteger.Of("73786976294838206464")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+
+		It("Should return positive value for 73786976294838206464 < 36893488147419103232", func() {
+			bigint1, _ := biginteger.Of("73786976294838206464")
+			bigint2, _ := biginteger.Of("36893488147419103232")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically(">", 0))
+		})
+
+		It("Should return negative value for 36893488147419103232 < 73786976294838206464", func() {
+			bigint1, _ := biginteger.Of("36893488147419103232")
+			bigint2, _ := biginteger.Of("73786976294838206464")
+
+			Expect(bigint1.CompareTo(*bigint2)).To(BeNumerically("<", 0))
+		})
+	})
+
 	Context("IsLessThan", func() {
 		It("Should return true for 1 < 2", func() {
 			bigint1, _ := biginteger.Of("1")

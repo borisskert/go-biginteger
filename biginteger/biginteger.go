@@ -71,16 +71,20 @@ func (i BigInteger) BitLength() BigInteger {
 	return OfUint64(length)
 }
 
+func (i BigInteger) CompareTo(other BigInteger) int {
+	return compareTo(i, other)
+}
+
 func (i BigInteger) IsLessThan(other BigInteger) bool {
-	return isLessThan(i, other)
+	return compareTo(i, other) < 0
 }
 
 func (i BigInteger) IsGreaterThan(other BigInteger) bool {
-	return isGreaterThan(i, other)
+	return compareTo(i, other) > 0
 }
 
 func (i BigInteger) IsEqualTo(other BigInteger) bool {
-	return isEqualTo(i, other)
+	return compareTo(i, other) == 0
 }
 
 func (i BigInteger) Uint() uint {
