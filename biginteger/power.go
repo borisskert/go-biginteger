@@ -58,7 +58,7 @@ func powerAbs(a BigInteger, b BigInteger) BigInteger {
 			b = b.Subtract(one)
 		} else {
 			a = a.Multiply(a)
-			b = b.Divide(two)
+			b = b.ShiftRight(1)
 		}
 	}
 

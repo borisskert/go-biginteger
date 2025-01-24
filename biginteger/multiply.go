@@ -35,7 +35,7 @@ func multiplyAbs(a BigInteger, b BigInteger) BigInteger {
 			result = result.Add(multiplier)
 		}
 
-		multiplier = multiplier.Add(multiplier)
+		multiplier = multiplier.ShiftLeft(1)
 		remaining = remaining.ShiftRight(1)
 	}
 

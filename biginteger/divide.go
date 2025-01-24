@@ -30,36 +30,29 @@ func divideAbs(a BigInteger, b BigInteger) BigInteger {
 		return a
 	}
 
-	if a.Abs().IsLessThan(b) {
+	if a.IsLessThan(b) {
 		return zero
-	}
-
-	if a.Abs().IsEqualTo(b) {
-		return one
 	}
 
 	result := zero
 	remaining := a
+
 	divisor := b
 	quotient := one
 
-	for {
-		if remaining.IsGreaterThan(divisor) {
+	for divisor.CompareTo(remaining) <= 0 {
+		divisor = divisor.ShiftLeft(1)
+		quotient = quotient.ShiftLeft(1)
+	}
+
+	for divisor.CompareTo(b) >= 0 {
+		if remaining.CompareTo(divisor) >= 0 {
 			remaining = remaining.Subtract(divisor)
 			result = result.Add(quotient)
-			divisor = divisor.Add(divisor)
-			quotient = quotient.Add(quotient)
-		} else if remaining.IsEqualTo(divisor) {
-			result = result.Add(quotient)
-			break
-		} else if remaining.IsLessThan(b) {
-			break
-		} else if remaining.IsLessThan(divisor) {
-			divisor = b
-			quotient = one
-		} else {
-			break
 		}
+
+		divisor = divisor.ShiftRight(1)
+		quotient = quotient.ShiftRight(1)
 	}
 
 	return result
