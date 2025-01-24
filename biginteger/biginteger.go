@@ -55,6 +55,14 @@ func (i BigInteger) Abs() BigInteger {
 	return BigInteger{value: i.value}
 }
 
+func (i BigInteger) Negate() BigInteger {
+	if i.IsEqualTo(zero) {
+		return zero
+	}
+
+	return BigInteger{sign: !i.sign, value: i.value}
+}
+
 func (i BigInteger) Power(exponent BigInteger) BigInteger {
 	return power(i, exponent)
 }

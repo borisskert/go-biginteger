@@ -17,11 +17,17 @@ func divMod(a BigInteger, b BigInteger) (BigInteger, BigInteger) {
 		return one, zero
 	}
 
-	if a.IsGreaterThan(b) {
-		return divModAbs(a, b)
+	quotient, remainder := divModAbs(a, b)
+
+	if a.sign != b.sign {
+		quotient = quotient.Negate()
 	}
 
-	return zero, a
+	if a.sign {
+		remainder = remainder.Negate()
+	}
+
+	return quotient, remainder
 }
 
 func divModAbs(a BigInteger, b BigInteger) (BigInteger, BigInteger) {

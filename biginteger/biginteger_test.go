@@ -514,6 +514,27 @@ var _ = Describe("BigInteger", func() {
 			Expect(bigint1.Divide(*bigint2).String()).To(Equal("2"))
 		})
 
+		It("Should divide -4 by 2", func() {
+			bigint1, _ := biginteger.Of("-4")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.Divide(*bigint2).String()).To(Equal("-2"))
+		})
+
+		It("Should divide -4 by -2", func() {
+			bigint1, _ := biginteger.Of("-4")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.Divide(*bigint2).String()).To(Equal("2"))
+		})
+
+		It("Should divide 4 by -2", func() {
+			bigint1, _ := biginteger.Of("4")
+			bigint2, _ := biginteger.Of("-2")
+
+			Expect(bigint1.Divide(*bigint2).String()).To(Equal("-2"))
+		})
+
 		It("Should divide 8 by 4", func() {
 			bigint1, _ := biginteger.Of("8")
 			bigint2, _ := biginteger.Of("4")
@@ -676,6 +697,48 @@ var _ = Describe("BigInteger", func() {
 			bigint2, _ := biginteger.Of("4")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
+		})
+
+		It("Should return -15 for -15 % -16", func() {
+			bigint1, _ := biginteger.Of("-15")
+			bigint2, _ := biginteger.Of("-16")
+
+			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-15"))
+		})
+
+		It("Should return -15 for -15 % 16", func() {
+			bigint1, _ := biginteger.Of("-15")
+			bigint2, _ := biginteger.Of("16")
+
+			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-15"))
+		})
+
+		It("Should return 15 for 15 % -16", func() {
+			bigint1, _ := biginteger.Of("15")
+			bigint2, _ := biginteger.Of("-16")
+
+			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("15"))
+		})
+
+		It("Should return -1 for -17 % -16", func() {
+			bigint1, _ := biginteger.Of("-17")
+			bigint2, _ := biginteger.Of("-16")
+
+			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-1"))
+		})
+
+		It("Should return -1 for -17 % 16", func() {
+			bigint1, _ := biginteger.Of("-17")
+			bigint2, _ := biginteger.Of("16")
+
+			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-1"))
+		})
+
+		It("Should return 1 for 17 % -16", func() {
+			bigint1, _ := biginteger.Of("17")
+			bigint2, _ := biginteger.Of("-16")
+
+			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("1"))
 		})
 
 		It("Should return 0 for 4294967296 % 4294967296", func() {
@@ -923,6 +986,62 @@ var _ = Describe("BigInteger", func() {
 
 			Expect(quotient.String()).To(Equal("11579208923731619542357098500868790785326998466564056403945758400791312963993"))
 			Expect(remainder.String()).To(Equal("6"))
+		})
+	})
+
+	Context("Negate", func() {
+		It("Should negate 0", func() {
+			bigint, _ := biginteger.Of("0")
+
+			Expect(bigint.Negate().String()).To(Equal("0"))
+		})
+
+		It("Should negate 1", func() {
+			bigint, _ := biginteger.Of("1")
+
+			Expect(bigint.Negate().String()).To(Equal("-1"))
+		})
+
+		It("Should negate -1", func() {
+			bigint, _ := biginteger.Of("-1")
+
+			Expect(bigint.Negate().String()).To(Equal("1"))
+		})
+
+		It("Should negate 10", func() {
+			bigint, _ := biginteger.Of("10")
+
+			Expect(bigint.Negate().String()).To(Equal("-10"))
+		})
+
+		It("Should negate -10", func() {
+			bigint, _ := biginteger.Of("-10")
+
+			Expect(bigint.Negate().String()).To(Equal("10"))
+		})
+
+		It("Should negate 10000000000", func() {
+			bigint, _ := biginteger.Of("10000000000")
+
+			Expect(bigint.Negate().String()).To(Equal("-10000000000"))
+		})
+
+		It("Should negate -10000000000", func() {
+			bigint, _ := biginteger.Of("-10000000000")
+
+			Expect(bigint.Negate().String()).To(Equal("10000000000"))
+		})
+
+		It("Should negate 18446744073709551616", func() {
+			bigint, _ := biginteger.Of("18446744073709551616")
+
+			Expect(bigint.Negate().String()).To(Equal("-18446744073709551616"))
+		})
+
+		It("Should negate -18446744073709551616", func() {
+			bigint, _ := biginteger.Of("-18446744073709551616")
+
+			Expect(bigint.Negate().String()).To(Equal("18446744073709551616"))
 		})
 	})
 
