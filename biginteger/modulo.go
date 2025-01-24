@@ -1,28 +1,28 @@
 package biginteger
 
-func modulo(a BigInteger, b BigInteger) BigInteger {
-	if b.IsEqualTo(zero) {
+func modulo(dividend BigInteger, divisor BigInteger) BigInteger {
+	if divisor.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
-	if a.IsEqualTo(zero) {
+	if dividend.IsEqualTo(zero) {
 		return zero
 	}
 
-	if b.IsEqualTo(one) {
+	if divisor.IsEqualTo(one) {
 		return zero
 	}
 
-	if a.IsEqualTo(b) {
+	if dividend.IsEqualTo(divisor) {
 		return zero
 	}
 
-	sign := a.sign
-	result := moduloAbs(a, b)
+	sign := dividend.sign
+	remainder := moduloAbs(dividend, divisor)
 
 	return BigInteger{
 		sign:  sign,
-		value: result.value,
+		value: remainder.value,
 	}
 }
 

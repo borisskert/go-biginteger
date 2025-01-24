@@ -1,24 +1,24 @@
 package biginteger
 
-func power(a BigInteger, b BigInteger) BigInteger {
-	if b.IsEqualTo(zero) {
+func power(base BigInteger, exponent BigInteger) BigInteger {
+	if exponent.IsEqualTo(zero) {
 		return one
 	}
 
-	if b.IsEqualTo(one) {
-		return a
+	if exponent.IsEqualTo(one) {
+		return base
 	}
 
-	if a.IsEqualTo(zero) {
+	if base.IsEqualTo(zero) {
 		return zero
 	}
 
-	if a.IsEqualTo(one) {
+	if base.IsEqualTo(one) {
 		return one
 	}
 
-	sign := a.sign
-	result := powerAbs(a, b)
+	sign := base.sign
+	result := powerAbs(base, exponent)
 
 	return BigInteger{
 		sign:  sign,

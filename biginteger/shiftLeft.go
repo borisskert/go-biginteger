@@ -1,17 +1,17 @@
 package biginteger
 
-func shiftLeft(i BigInteger, j BigInteger) BigInteger {
-	if i.IsEqualTo(zero) {
+func shiftLeft(value BigInteger, count BigInteger) BigInteger {
+	if value.IsEqualTo(zero) {
 		return zero
 	}
 
-	if j.IsEqualTo(zero) {
-		return i
+	if count.IsEqualTo(zero) {
+		return value
 	}
 
 	return BigInteger{
-		sign:  i.sign,
-		value: shiftLeftUint64Array(i.value, j.Uint()),
+		sign:  value.sign,
+		value: shiftLeftUint64Array(value.value, count.Uint()),
 	}
 }
 

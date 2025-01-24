@@ -1,15 +1,15 @@
 package biginteger
 
-func isEqualTo(a BigInteger, b BigInteger) bool {
-	if a.sign != b.sign {
+func isEqualTo(left BigInteger, right BigInteger) bool {
+	if left.sign != right.sign {
 		return false
 	}
 
-	if a.sign && b.sign {
-		return isEqualToUint64Array(b.value, a.value)
+	if left.sign && right.sign {
+		return isEqualToUint64Array(right.value, left.value)
 	}
 
-	return isEqualToUint64Array(a.value, b.value)
+	return isEqualToUint64Array(left.value, right.value)
 }
 
 func isEqualToUint64Array(a, b []uint64) bool {

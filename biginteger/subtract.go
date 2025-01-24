@@ -1,13 +1,13 @@
 package biginteger
 
-func subtract(a BigInteger, b BigInteger) BigInteger {
-	if a.IsEqualTo(b) {
+func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
+	if minuend.IsEqualTo(subtrahend) {
 		return zero
 	}
 
-	if !a.sign && !b.sign {
-		if a.IsLessThan(b) {
-			result, _ := subtractUint64Arrays(b.value, a.value, false)
+	if !minuend.sign && !subtrahend.sign {
+		if minuend.IsLessThan(subtrahend) {
+			result, _ := subtractUint64Arrays(subtrahend.value, minuend.value, false)
 
 			return BigInteger{
 				true,
@@ -15,7 +15,7 @@ func subtract(a BigInteger, b BigInteger) BigInteger {
 			}
 		}
 
-		result, _ := subtractUint64Arrays(a.value, b.value, false)
+		result, _ := subtractUint64Arrays(minuend.value, subtrahend.value, false)
 
 		return BigInteger{
 			false,
@@ -23,8 +23,8 @@ func subtract(a BigInteger, b BigInteger) BigInteger {
 		}
 	}
 
-	if a.sign && b.sign {
-		result := addUint64Arrays(a.value, b.value)
+	if minuend.sign && subtrahend.sign {
+		result := addUint64Arrays(minuend.value, subtrahend.value)
 
 		return BigInteger{
 			true,
@@ -32,11 +32,11 @@ func subtract(a BigInteger, b BigInteger) BigInteger {
 		}
 	}
 
-	if a.sign {
-		return b.Add(a.Abs())
+	if minuend.sign {
+		return subtrahend.Add(minuend.Abs())
 	}
 
-	return a.Add(b.Abs())
+	return minuend.Add(subtrahend.Abs())
 }
 
 func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {

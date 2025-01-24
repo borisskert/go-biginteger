@@ -9,24 +9,24 @@ func (i BigInteger) String() string {
 	return toString(i)
 }
 
-func (i BigInteger) Add(j BigInteger) BigInteger {
-	return add(i, j)
+func (i BigInteger) Add(summand BigInteger) BigInteger {
+	return add(i, summand)
 }
 
-func (i BigInteger) Subtract(j BigInteger) BigInteger {
-	return subtract(i, j)
+func (i BigInteger) Subtract(subtrahend BigInteger) BigInteger {
+	return subtract(i, subtrahend)
 }
 
-func (i BigInteger) Multiply(j BigInteger) BigInteger {
-	return multiply(i, j)
+func (i BigInteger) Multiply(multiplier BigInteger) BigInteger {
+	return multiply(i, multiplier)
 }
 
-func (i BigInteger) Divide(j BigInteger) BigInteger {
-	return divide(i, j)
+func (i BigInteger) Divide(divisor BigInteger) BigInteger {
+	return divide(i, divisor)
 }
 
-func (i BigInteger) Modulo(j BigInteger) BigInteger {
-	return modulo(i, j)
+func (i BigInteger) Modulo(divisor BigInteger) BigInteger {
+	return modulo(i, divisor)
 }
 
 func (i BigInteger) IsEven() bool {
@@ -49,16 +49,16 @@ func (i BigInteger) Abs() BigInteger {
 	return BigInteger{value: i.value}
 }
 
-func (i BigInteger) Power(j BigInteger) BigInteger {
-	return power(i, j)
+func (i BigInteger) Power(exponent BigInteger) BigInteger {
+	return power(i, exponent)
 }
 
-func (i BigInteger) ShiftLeft(j BigInteger) BigInteger {
-	return shiftLeft(i, j)
+func (i BigInteger) ShiftLeft(count BigInteger) BigInteger {
+	return shiftLeft(i, count)
 }
 
-func (i BigInteger) ShiftRight(j BigInteger) BigInteger {
-	return shiftRight(i, j)
+func (i BigInteger) ShiftRight(count BigInteger) BigInteger {
+	return shiftRight(i, count)
 }
 
 func (i BigInteger) BitLength() BigInteger {
@@ -71,16 +71,16 @@ func (i BigInteger) BitLength() BigInteger {
 	return OfUint64(length)
 }
 
-func (i BigInteger) IsLessThan(j BigInteger) bool {
-	return isLessThan(i, j)
+func (i BigInteger) IsLessThan(other BigInteger) bool {
+	return isLessThan(i, other)
 }
 
-func (i BigInteger) IsGreaterThan(j BigInteger) bool {
-	return isGreaterThan(i, j)
+func (i BigInteger) IsGreaterThan(other BigInteger) bool {
+	return isGreaterThan(i, other)
 }
 
-func (i BigInteger) IsEqualTo(j BigInteger) bool {
-	return isEqualTo(i, j)
+func (i BigInteger) IsEqualTo(other BigInteger) bool {
+	return isEqualTo(i, other)
 }
 
 func (i BigInteger) Uint() uint {

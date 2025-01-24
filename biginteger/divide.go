@@ -1,16 +1,16 @@
 package biginteger
 
-func divide(a BigInteger, b BigInteger) BigInteger {
-	if b.IsEqualTo(zero) {
+func divide(dividend BigInteger, divisor BigInteger) BigInteger {
+	if divisor.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
-	sign := a.sign != b.sign
-	result := divideAbs(a, b)
+	sign := dividend.sign != divisor.sign
+	quotient := divideAbs(dividend, divisor)
 
 	return BigInteger{
 		sign:  sign,
-		value: result.value,
+		value: quotient.value,
 	}
 }
 

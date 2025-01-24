@@ -1,19 +1,19 @@
 package biginteger
 
-func isLessThan(a BigInteger, b BigInteger) bool {
-	if a.sign && !b.sign {
+func isLessThan(left BigInteger, right BigInteger) bool {
+	if left.sign && !right.sign {
 		return true
 	}
 
-	if !a.sign && b.sign {
+	if !left.sign && right.sign {
 		return false
 	}
 
-	if a.sign && b.sign {
-		return isLessThenUint64Array(b.value, a.value)
+	if left.sign && right.sign {
+		return isLessThenUint64Array(right.value, left.value)
 	}
 
-	return isLessThenUint64Array(a.value, b.value)
+	return isLessThenUint64Array(left.value, right.value)
 }
 
 func isLessThenUint64Array(a, b []uint64) bool {

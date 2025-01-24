@@ -1,24 +1,24 @@
 package biginteger
 
-func multiply(i BigInteger, j BigInteger) BigInteger {
-	if i.IsEqualTo(zero) || j.IsEqualTo(zero) {
+func multiply(multiplicand BigInteger, multiplier BigInteger) BigInteger {
+	if multiplicand.IsEqualTo(zero) || multiplier.IsEqualTo(zero) {
 		return zero
 	}
 
-	if i.IsEqualTo(one) {
-		return j
+	if multiplicand.IsEqualTo(one) {
+		return multiplier
 	}
 
-	if j.IsEqualTo(one) {
-		return i
+	if multiplier.IsEqualTo(one) {
+		return multiplicand
 	}
 
-	sign := i.sign != j.sign
-	result := multiplyAbs(i, j)
+	sign := multiplicand.sign != multiplier.sign
+	product := multiplyAbs(multiplicand, multiplier)
 
 	return BigInteger{
 		sign:  sign,
-		value: result.value,
+		value: product.value,
 	}
 }
 

@@ -1,21 +1,21 @@
 package biginteger
 
-func shiftRight(i BigInteger, j BigInteger) BigInteger {
-	if i.IsEqualTo(zero) {
+func shiftRight(value BigInteger, count BigInteger) BigInteger {
+	if value.IsEqualTo(zero) {
 		return zero
 	}
 
-	if j.IsEqualTo(zero) {
-		return i
+	if count.IsEqualTo(zero) {
+		return value
 	}
 
-	if j.IsLessThan(zero) {
-		return i.ShiftLeft(j.Abs())
+	if count.IsLessThan(zero) {
+		return value.ShiftLeft(count.Abs())
 	}
 
 	return BigInteger{
-		sign:  i.sign,
-		value: shiftRightUint64Array(i.value, j.Uint()),
+		sign:  value.sign,
+		value: shiftRightUint64Array(value.value, count.Uint()),
 	}
 }
 
