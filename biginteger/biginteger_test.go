@@ -754,6 +754,178 @@ var _ = Describe("BigInteger", func() {
 		})
 	})
 
+	Context("DivMod", func() {
+		It("Should divide 2 by 2", func() {
+			bigint1, _ := biginteger.Of("2")
+			bigint2, _ := biginteger.Of("2")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("1"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 4 by 2", func() {
+			bigint1, _ := biginteger.Of("4")
+			bigint2, _ := biginteger.Of("2")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("2"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 8 by 4", func() {
+			bigint1, _ := biginteger.Of("8")
+			bigint2, _ := biginteger.Of("4")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("2"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 80 by 10", func() {
+			bigint1, _ := biginteger.Of("80")
+			bigint2, _ := biginteger.Of("10")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("8"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 4294967296 by 10", func() {
+			bigint1, _ := biginteger.Of("4294967296")
+			bigint2, _ := biginteger.Of("10")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("429496729"))
+			Expect(remainder.String()).To(Equal("6"))
+		})
+
+		It("Should divide 4294967296 by 4294967296", func() {
+			bigint1, _ := biginteger.Of("4294967296")
+			bigint2, _ := biginteger.Of("4294967296")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("1"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 18446744073709551615 by 1", func() {
+			bigint1, _ := biginteger.Of("18446744073709551615")
+			bigint2, _ := biginteger.Of("1")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("18446744073709551615"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 18446744073709551615 by 2", func() {
+			bigint1, _ := biginteger.Of("18446744073709551615")
+			bigint2, _ := biginteger.Of("2")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("9223372036854775807"))
+			Expect(remainder.String()).To(Equal("1"))
+		})
+
+		It("Should divide 18446744073709551615 by 18446744073709551616", func() {
+			bigint1, _ := biginteger.Of("18446744073709551615")
+			bigint2, _ := biginteger.Of("18446744073709551616")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("0"))
+			Expect(remainder.String()).To(Equal("18446744073709551615"))
+		})
+
+		It("Should divide 18446744073709551616 by 18446744073709551615", func() {
+			bigint1, _ := biginteger.Of("18446744073709551616")
+			bigint2, _ := biginteger.Of("18446744073709551615")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("1"))
+			Expect(remainder.String()).To(Equal("1"))
+		})
+
+		It("Should divide 18446744073709551616 by 2", func() {
+			bigint1, _ := biginteger.Of("18446744073709551616")
+			bigint2, _ := biginteger.Of("2")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("9223372036854775808"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 18446744073709551616 by 18446744073709551616", func() {
+			bigint1, _ := biginteger.Of("18446744073709551616")
+			bigint2, _ := biginteger.Of("18446744073709551616")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("1"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 18446744073709551616 by 10", func() {
+			bigint1, _ := biginteger.Of("18446744073709551616")
+			bigint2, _ := biginteger.Of("10")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("1844674407370955161"))
+			Expect(remainder.String()).To(Equal("6"))
+		})
+
+		It("Should divide 36893488147419103230 by 10", func() {
+			bigint1, _ := biginteger.Of("36893488147419103230")
+			bigint2, _ := biginteger.Of("10")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("3689348814741910323"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 73786976294838206464 by 10", func() {
+			bigint1, _ := biginteger.Of("73786976294838206464")
+			bigint2, _ := biginteger.Of("10")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("7378697629483820646"))
+			Expect(remainder.String()).To(Equal("4"))
+		})
+
+		It("Should divide 340282366920938463444927863358058659840 by 10", func() {
+			bigint1, _ := biginteger.Of("340282366920938463444927863358058659840")
+			bigint2, _ := biginteger.Of("10")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("34028236692093846344492786335805865984"))
+			Expect(remainder.String()).To(Equal("0"))
+		})
+
+		It("Should divide 115792089237316195423570985008687907853269984665640564039457584007913129639936 by 10", func() {
+			bigint1, _ := biginteger.Of("115792089237316195423570985008687907853269984665640564039457584007913129639936")
+			bigint2, _ := biginteger.Of("10")
+
+			quotient, remainder := bigint1.DivMod(*bigint2)
+
+			Expect(quotient.String()).To(Equal("11579208923731619542357098500868790785326998466564056403945758400791312963993"))
+			Expect(remainder.String()).To(Equal("6"))
+		})
+	})
+
 	Context("Power", func() {
 		It("Should return 1 for 1 pow 1", func() {
 			bigint1, _ := biginteger.Of("1")

@@ -1,20 +1,30 @@
 package biginteger
 
-func divide(dividend BigInteger, divisor BigInteger) BigInteger {
-	if divisor.IsEqualTo(zero) {
+func divMod(a BigInteger, b BigInteger) (BigInteger, BigInteger) {
+	if b.IsEqualTo(zero) {
 		panic("Division by zero")
 	}
 
-	sign := dividend.sign != divisor.sign
-	quotient := divideAbs(dividend, divisor)
-
-	return BigInteger{
-		sign:  sign,
-		value: quotient.value,
+	if a.IsEqualTo(zero) {
+		return zero, zero
 	}
+
+	if b.IsEqualTo(one) {
+		return a, zero
+	}
+
+	if a.IsEqualTo(b) {
+		return one, zero
+	}
+
+	if a.IsGreaterThan(b) {
+		return divModAbs(a, b)
+	}
+
+	return zero, a
 }
 
-func divideAbs(a BigInteger, b BigInteger) BigInteger {
+func divModAbs(a BigInteger, b BigInteger) (BigInteger, BigInteger) {
 	a = a.Abs()
 	b = b.Abs()
 
@@ -23,15 +33,15 @@ func divideAbs(a BigInteger, b BigInteger) BigInteger {
 	}
 
 	if a.IsEqualTo(zero) {
-		return zero
+		return zero, zero
 	}
 
 	if b.IsEqualTo(one) {
-		return a
+		return a, zero
 	}
 
 	if a.IsLessThan(b) {
-		return zero
+		return zero, a
 	}
 
 	result := zero
@@ -55,5 +65,5 @@ func divideAbs(a BigInteger, b BigInteger) BigInteger {
 		quotient = quotient.ShiftRight(1)
 	}
 
-	return result
+	return result, remaining
 }

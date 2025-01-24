@@ -22,11 +22,17 @@ func (i BigInteger) Multiply(multiplier BigInteger) BigInteger {
 }
 
 func (i BigInteger) Divide(divisor BigInteger) BigInteger {
-	return divide(i, divisor)
+	quotient, _ := divMod(i, divisor)
+	return quotient
 }
 
 func (i BigInteger) Modulo(divisor BigInteger) BigInteger {
-	return modulo(i, divisor)
+	_, remainder := divMod(i, divisor)
+	return remainder
+}
+
+func (i BigInteger) DivMod(divisor BigInteger) (BigInteger, BigInteger) {
+	return divMod(i, divisor)
 }
 
 func (i BigInteger) IsEven() bool {
