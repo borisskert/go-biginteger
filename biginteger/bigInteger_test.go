@@ -92,6 +92,13 @@ var _ = Describe("BigInteger", func() {
 			Expect(err).To(BeNil())
 			Expect(bigint.String()).To(Equal("340282366920938463444927863358058659840"))
 		})
+
+		It("Should create 20000000000000000000", func() {
+			bigint, err := biginteger.Of("20000000000000000000")
+
+			Expect(err).To(BeNil())
+			Expect(bigint.String()).To(Equal("20000000000000000000"))
+		})
 	})
 
 	Context("Add", func() {
@@ -168,8 +175,9 @@ var _ = Describe("BigInteger", func() {
 		It("Should add 10000000000000000000 and 10000000000000000000", func() {
 			bigint1, _ := biginteger.Of("10000000000000000000")
 			bigint2, _ := biginteger.Of("10000000000000000000")
+			result := bigint1.Add(*bigint2)
 
-			Expect(bigint1.Add(*bigint2).String()).To(Equal("20000000000000000000"))
+			Expect(result.String()).To(Equal("20000000000000000000"))
 		})
 
 		It("Should add 18446744073709551615 and 1", func() {
