@@ -1,9 +1,9 @@
 package biginteger_test
 
 import (
+	"biginteger"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"go-biginteger/biginteger"
 	"testing"
 )
 
@@ -2212,5 +2212,5 @@ var _ = Describe("BigInteger", func() {
 
 func TestSuite(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Numbers Test Suite")
+	RunSpecs(t, "biginteger Test Suite")
 }

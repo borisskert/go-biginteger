@@ -1,4 +1,4 @@
-module go-biginteger
+module biginteger
 
 go 1.23
 
