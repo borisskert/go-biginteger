@@ -1,7 +1,7 @@
 package biginteger_test
 
 import (
-	"biginteger"
+	"github.com/borisskert/go-biginteger"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"testing"
