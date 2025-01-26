@@ -49,7 +49,7 @@ func multiplyUint64Array(a, b []uint64) []uint64 {
 		result[i+len(b)] += carry
 	}
 
-	return removeLeadingZeros(result)
+	return trimLeadingZeros(result)
 }
 
 func multiplyUint64(a, b uint64) (uint64, uint64) {

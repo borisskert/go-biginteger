@@ -1,5 +1,7 @@
 package biginteger
 
+import "math/bits"
+
 func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 	if minuend.IsEqualTo(subtrahend) {
 		return zero
@@ -7,7 +9,7 @@ func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 
 	if !minuend.sign && !subtrahend.sign {
 		if minuend.IsLessThan(subtrahend) {
-			result, _ := subtractUint64Arrays(subtrahend.value, minuend.value, false)
+			result := subtractUint64Arrays(subtrahend.value, minuend.value)
 
 			return BigInteger{
 				true,
@@ -15,7 +17,7 @@ func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 			}
 		}
 
-		result, _ := subtractUint64Arrays(minuend.value, subtrahend.value, false)
+		result := subtractUint64Arrays(minuend.value, subtrahend.value)
 
 		return BigInteger{
 			false,
@@ -39,16 +41,13 @@ func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 	return minuend.Add(subtrahend.Abs())
 }
 
-func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {
+func subtractUint64Arrays(a, b []uint64) []uint64 {
 	if len(b) > len(a) {
 		a, b = b, a
 	}
 
 	result := make([]uint64, len(a))
 	carry := uint64(0)
-	if borrow {
-		carry = 1
-	}
 
 	for i := 0; i < len(a); i++ {
 		ai := a[i]
@@ -57,23 +56,10 @@ func subtractUint64Arrays(a, b []uint64, borrow bool) ([]uint64, bool) {
 			bi = b[i]
 		}
 
-		diff, newBorrow := subtractUint64(ai, bi+carry)
+		diff, borrow := bits.Sub64(ai, bi+carry, 0)
 		result[i] = diff
-		carry = 0
-		if newBorrow {
-			carry = 1
-		}
+		carry = borrow
 	}
 
-	finalBorrow := carry > 0
-
-	for len(result) > 1 && result[len(result)-1] == 0 {
-		result = result[:len(result)-1]
-	}
-
-	return result, finalBorrow
-}
-
-func subtractUint64(a, b uint64) (uint64, bool) {
-	return a - b, a < b
+	return trimLeadingZeros(result)
 }
