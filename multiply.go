@@ -1,5 +1,7 @@
 package biginteger
 
+import "math/bits"
+
 func multiply(multiplicand BigInteger, multiplier BigInteger) BigInteger {
 	if multiplicand.IsEqualTo(zero) || multiplier.IsEqualTo(zero) {
 		return zero
@@ -14,30 +16,42 @@ func multiply(multiplicand BigInteger, multiplier BigInteger) BigInteger {
 	}
 
 	sign := multiplicand.sign != multiplier.sign
-	product := multiplyAbs(multiplicand, multiplier)
+	product := multiplyUint64Array(multiplicand.value, multiplier.value)
 
 	return BigInteger{
 		sign:  sign,
-		value: product.value,
+		value: product,
 	}
 }
 
-func multiplyAbs(a BigInteger, b BigInteger) BigInteger {
-	a = a.Abs()
-	b = b.Abs()
+func multiplyUint64Array(a, b []uint64) []uint64 {
+	result := make([]uint64, len(a)+len(b))
 
-	result := zero
-	multiplier := a
-	remaining := b
+	for i := 0; i < len(a); i++ {
+		var carry uint64 = 0
 
-	for remaining.IsGreaterThan(zero) {
-		if remaining.IsOdd() {
-			result = result.Add(multiplier)
+		for j := 0; j < len(b); j++ {
+			high, low := bits.Mul64(a[i], b[j])
+			low += result[i+j]
+
+			if low < result[i+j] {
+				high++
+			}
+
+			result[i+j] = low
+
+			high += carry
+			result[i+j+1] += high
+
+			if result[i+j+1] < high {
+				carry = 1
+			} else {
+				carry = 0
+			}
 		}
 
-		multiplier = multiplier.ShiftLeft(1)
-		remaining = remaining.ShiftRight(1)
+		result[i+len(b)] += carry
 	}
 
-	return result
+	return trimLeadingZeros(result)
 }

@@ -53,10 +53,10 @@ func shiftLeftUint64Array(a []uint64, n uint64) []uint64 {
 		result = append(result, carry)
 	}
 
-	return removeLeadingZeros(result)
+	return trimLeadingZeros(result)
 }
 
-func removeLeadingZeros(array []uint64) []uint64 {
+func trimLeadingZeros(array []uint64) []uint64 {
 	for len(array) > 1 && array[len(array)-1] == 0 {
 		array = array[:len(array)-1]
 	}
