@@ -6,14 +6,14 @@ import (
 )
 
 type chunkedDivision struct {
-	algorithmFn func() common.DivisionAlgorithm
+	algorithm common.DivisionAlgorithm
 }
 
 func (d *chunkedDivision) DivMod(numerator, denominator digits.Digits) (digits.Digits, digits.Digits) {
 	return divideChunked(
 		numerator,
 		denominator,
-		d.algorithmFn().DivMod,
+		d.algorithm.DivMod,
 	)
 }
 
@@ -56,8 +56,8 @@ func divideChunked(
 	return quotient.Trim(), remainder.Trim()
 }
 
-func DecorateWithChunkedDivision(algorithmFn func() common.DivisionAlgorithm) common.DivisionAlgorithm {
+func DecorateWithChunkedDivision(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
 	return &chunkedDivision{
-		algorithmFn: algorithmFn,
+		algorithm: algorithm,
 	}
 }

@@ -55,9 +55,7 @@ func (f *recursiveDivisionAlgorithm) selectSuitableDivideAlgorithm(
 		return f.divideManyByTwo
 	}
 
-	defaultAlgorithmFn := func() common.DivisionAlgorithm {
-		return divisionShortcut.DecorateWithShortcut(f)
-	}
+	defaultAlgorithmFn := divisionShortcut.DecorateWithShortcut(f)
 
 	if m < 40 {
 		return &f.donaldKnuthsAlgorithmD

@@ -7,7 +7,7 @@ import (
 
 // A Decorator for any DivideAlgorithm to use the Burnikel-Ziegler algorithm.
 type burnikelZiegler struct {
-	algorithmFn func() common.DivisionAlgorithm
+	algorithm common.DivisionAlgorithm
 }
 
 func (bz burnikelZiegler) DivMod(
@@ -15,7 +15,7 @@ func (bz burnikelZiegler) DivMod(
 ) (
 	quotient digits.Digits, remainder digits.Digits,
 ) {
-	return divModBurnikelZiegler(numerator, denominator, bz.algorithmFn().DivMod)
+	return divModBurnikelZiegler(numerator, denominator, bz.algorithm.DivMod)
 }
 
 func divThreeLongHalvesByTwo(
@@ -74,6 +74,6 @@ func divModBurnikelZiegler(
 	return q.Trim(), s.Trim()
 }
 
-func DecorateWithBurnikelZiegler(algoritmFn func() common.DivisionAlgorithm) common.DivisionAlgorithm {
-	return burnikelZiegler{algoritmFn}
+func DecorateWithBurnikelZiegler(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+	return burnikelZiegler{algorithm}
 }
