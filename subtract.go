@@ -1,6 +1,8 @@
 package biginteger
 
-import "math/bits"
+import (
+	"math/bits"
+)
 
 func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 	if minuend.IsEqualTo(subtrahend) {
