@@ -5,7 +5,12 @@ import (
 	"github.com/borisskert/go-biginteger/divmod/common"
 )
 
-// A Decorator for any DivideAlgorithm to use the Burnikel-Ziegler algorithm.
+// DecorateWithBurnikelZiegler A Decorator to embed any DivideAlgorithm into Burnikel-Ziegler's Fast Recursive Division.
+// See Christoph Burnikel and Joachim Ziegler: Fast Recursive Division, October 1998
+func DecorateWithBurnikelZiegler(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+	return burnikelZiegler{algorithm}
+}
+
 type burnikelZiegler struct {
 	algorithm common.DivisionAlgorithm
 }
@@ -72,8 +77,4 @@ func divModBurnikelZiegler(
 	q := q1.LeftShiftDigits(n / 2).Add(q2)
 
 	return q.Trim(), s.Trim()
-}
-
-func DecorateWithBurnikelZiegler(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
-	return burnikelZiegler{algorithm}
 }

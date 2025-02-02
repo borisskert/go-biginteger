@@ -5,6 +5,8 @@ import (
 	"github.com/borisskert/go-biginteger/divmod/functions"
 )
 
+// DonaldKnuthsAlgorithmD Implements Algorithm D (Division of nonnegative integers) introduced by Donald Knuth
+// in his book "The Art of Computer Programming, Volume 2: Seminumerical Algorithms", 3rd edition, 1997 (chapter 4.3.1, p. 272)
 type DonaldKnuthsAlgorithmD struct {
 }
 
