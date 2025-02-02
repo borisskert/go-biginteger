@@ -89,43 +89,33 @@ func d1Normalize(n uint64, b digits.DoubleDigit, u digits.Digits, v digits.Digit
 }
 
 func d3ACalculateQHat(u digits.Digits, v digits.Digits, j int64, n int64) (digits.DoubleDigit, digits.Digit) {
-	ujPlusN := u.DigitAt(uint(j + n))
-	uJPlusNMinus1 := u.DigitAt(uint(j + n - 1))
+	uMostSignificantDigit := u.DigitAt(uint(j + n))
+	uNextDigit := u.DigitAt(uint(j + n - 1))
 
-	uJPlusNAndUJPlusNMinus1, _ := ujPlusN.AsDoubleDigit().
+	uBothDigits, _ := uMostSignificantDigit.AsDoubleDigit().
 		LeftShift(64).
-		AddDigit(uJPlusNMinus1)
+		AddDigit(uNextDigit)
 
 	vLast := v.DigitAt(uint(n - 1))
 
 	// Estimate quotient digit q̂ = ⌊(u_j * b + u_{j+1}) / v_{n-1}⌋
-	qHat, rHat := uJPlusNAndUJPlusNMinus1.DivideByDigit(vLast)
+	qHat, rHat := uBothDigits.DivideByDigit(vLast)
 
 	return qHat, rHat
 }
 
-func d3BTestAndCorrectQHat(b, qHat digits.DoubleDigit, rHat digits.Digit, v digits.Digits, r digits.Digits, j int64, n int64) (digits.DoubleDigit, digits.Digit) {
+func d3BTestAndCorrectQHat(
+	b, qHat digits.DoubleDigit, rHat digits.Digit, v digits.Digits, u digits.Digits, j, n int64,
+) (digits.DoubleDigit, digits.Digit) {
 	vLast := v.DigitAt(uint(n - 1))
 
-	vNMinus2 := v.DigitAt(uint(n - 2))
-	qHatMulVMinus2, _ := qHat.Multiply(vNMinus2.AsDoubleDigit())
-	bMulRHat, _ := b.Multiply(rHat.AsDoubleDigit())
-	uJPlusNMinus2 := r.DigitAt(uint(j + n - 2))
-	bMulRHatPlusUJPlusNMinus2, _ := bMulRHat.AddDigit(uJPlusNMinus2)
-
 	// “Now test if qHat ≥ b or qHat * v[n−2] > b*rHat + u[j+n−2]; i”
-	if qHat.IsGreaterThanOrEqual(b) || qHatMulVMinus2.IsGreaterThan(bMulRHatPlusUJPlusNMinus2) {
+	if checkIfQHatTooLarge(b, qHat, rHat, u, v, n, j) {
 		qHat, _ = qHat.Decrement()
 		rHat, _ = rHat.Add(vLast)
 
 		if rHat.IsLessThanDoubleDigit(b) {
-			vNMinus2 = v.DigitAt(uint(n - 2))
-			qHatMulVMinus2, _ = qHat.Multiply(vNMinus2.AsDoubleDigit())
-			bMulRHat, _ = b.Multiply(rHat.AsDoubleDigit())
-			uJPlusNMinus2 = r.DigitAt(uint(j + n - 2))
-			bMulRHatPlusUJPlusNMinus2, _ = bMulRHat.AddDigit(uJPlusNMinus2)
-
-			if qHat.IsGreaterThanOrEqual(b) || qHatMulVMinus2.IsGreaterThan(bMulRHatPlusUJPlusNMinus2) {
+			if checkIfQHatTooLarge(b, qHat, rHat, u, v, n, j) {
 				var borrowed bool
 				qHat, borrowed = qHat.Decrement()
 
@@ -141,12 +131,25 @@ func d3BTestAndCorrectQHat(b, qHat digits.DoubleDigit, rHat digits.Digit, v digi
 	return qHat, rHat
 }
 
-func d4MultiplyAndSubtract(j int64, n int64, u *digits.Digits, v digits.Digits, qHat digits.DoubleDigit) bool {
-	ujToJPlusN := u.ChunkInclusive(uint(j), uint(j)+uint(n))
-	vMulQHat := v.MultiplyByDoubleDigit(qHat)
-	ujToJPlusNMinusVMulQHat, borrowed := ujToJPlusN.Trim().SubtractUnderflow(vMulQHat.Trim())
+func checkIfQHatTooLarge(b, qHat digits.DoubleDigit, rHat digits.Digit, u, v digits.Digits, n, j int64) bool {
+	vDigit := v.DigitAt(uint(n - 2))
+	uDigit := u.DigitAt(uint(j + n - 2))
 
-	u.Replace(uint(j), uint(j)+uint(n), ujToJPlusNMinusVMulQHat)
+	qHatIsGreaterOrEqualB := qHat.IsGreaterThanOrEqual(b)
+
+	return qHatIsGreaterOrEqualB ||
+		qHat.MultiplyIgnoreOverflow(vDigit.AsDoubleDigit()).
+			IsGreaterThan(
+				b.MultiplyIgnoreOverflow(rHat.AsDoubleDigit()).
+					AddDigitIgnoreOverflow(uDigit),
+			)
+}
+
+func d4MultiplyAndSubtract(j int64, n int64, u *digits.Digits, v digits.Digits, qHat digits.DoubleDigit) bool {
+	uDigits := u.ChunkInclusive(uint(j), uint(j)+uint(n))
+	uDigitsDifference, borrowed := uDigits.Trim().SubtractUnderflow(v.MultiplyByDoubleDigit(qHat).Trim())
+
+	u.Replace(uint(j), uint(j)+uint(n), uDigitsDifference)
 
 	return borrowed
 }

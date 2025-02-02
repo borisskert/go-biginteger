@@ -118,6 +118,11 @@ func (d DoubleDigit) Subtract(b DoubleDigit) (DoubleDigit, Digit) {
 	return DoubleDigit{Digit(hi), Digit(lo)}, Digit(carry)
 }
 
+func (d DoubleDigit) AddDigitIgnoreOverflow(b Digit) DoubleDigit {
+	sum, _ := d.AddDigit(b)
+	return sum
+}
+
 func (d DoubleDigit) AddDigit(b Digit) (DoubleDigit, Digit) {
 	lo, carry := d.lo.Add(b)
 	hi, carry := d.hi.Add(carry)
@@ -214,6 +219,11 @@ func (d DoubleDigit) SubtractDigit(b Digit) (DoubleDigit, Digit) {
 	hi, borrow := d.hi.Subtract(borrow)
 
 	return DoubleDigit{hi, lo}, borrow
+}
+
+func (d DoubleDigit) MultiplyIgnoreOverflow(b DoubleDigit) DoubleDigit {
+	product, _ := d.Multiply(b)
+	return product
 }
 
 func (d DoubleDigit) Multiply(b DoubleDigit) (DoubleDigit, DoubleDigit) {
