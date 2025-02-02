@@ -686,6 +686,45 @@ var _ = Describe("BigInteger", func() {
 			Expect(modulo1Mio.String()).To(Equal("137217"))
 		})
 
+		It("Should divide by BZ algorithm 1b", func() {
+			a := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(16))).Subtract(biginteger.One())
+			b := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(8))).Subtract(biginteger.One())
+
+			result := a.Divide(b)
+
+			Expect(result.Digits()).To(Equal(uint64(155)))
+			Expect(result.String()).To(Equal("13407807929942597099574024998205846127479365820592393377723561443721764030073546976801874298166903427690031858186486050853753882811946569946433649006084097"))
+
+			modulo1Mio := result.Modulo(biginteger.OfUint64(1_000_000))
+			Expect(modulo1Mio.String()).To(Equal("84097"))
+		})
+
+		It("Should divide by BZ algorithm 1c", func() {
+			a := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(8))).Subtract(biginteger.One())
+			b := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(4))).Subtract(biginteger.One())
+
+			result := a.Divide(b)
+
+			Expect(result.Digits()).To(Equal(uint64(78)))
+			Expect(result.String()).To(Equal("115792089237316195423570985008687907853269984665640564039457584007913129639937"))
+
+			modulo1Mio := result.Modulo(biginteger.OfUint64(1_000_000))
+			Expect(modulo1Mio.String()).To(Equal("639937"))
+		})
+
+		It("Should divide by BZ algorithm 1d", func() {
+			a := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(4))).Subtract(biginteger.One())
+			b := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(2))).Subtract(biginteger.One())
+
+			result := a.Divide(b)
+
+			Expect(result.Digits()).To(Equal(uint64(39)))
+			Expect(result.String()).To(Equal("340282366920938463463374607431768211457"))
+
+			modulo1Mio := result.Modulo(biginteger.OfUint64(1_000_000))
+			Expect(modulo1Mio.String()).To(Equal("211457"))
+		})
+
 		It("Should divide by BZ algorithm 2", func() {
 			a := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(64)))
 			b := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(32)))

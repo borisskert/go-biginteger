@@ -56,7 +56,7 @@ func (a Digits) RightShiftBits(n uint) Digits {
 	return result
 }
 
-func (a *Digits) RightShiftBitsInPlace(n uint) {
+func (a *Digits) RightShiftBitsInPlace(n uint) { // TODO is this working?
 	shift := n % 64
 	shifts := n / 64
 	sizeA := uint(len(a.value))
@@ -141,45 +141,7 @@ func (a Digits) Multiply(b Digits) Digits {
 		return Digits{false, []uint64{0}}
 	}
 
-	result := make([]uint64, len(a.value)+len(b.value))
-
-	for i := 0; i < len(a.value); i++ {
-		var carry uint64 = 0
-
-		for j := 0; j < len(b.value); j++ {
-			high, low := bits.Mul64(a.value[i], b.value[j])
-
-			low += result[i+j]
-			if low < result[i+j] {
-				high++
-			}
-
-			result[i+j] = low
-
-			high += carry
-			temp := result[i+j+1] + high
-
-			if temp < result[i+j+1] {
-				carry = 1
-			} else {
-				carry = 0
-			}
-
-			result[i+j+1] = temp
-		}
-
-		k := i + len(b.value)
-
-		for carry > 0 {
-			result[k] += carry
-			if result[k] < carry {
-				carry = 1
-			} else {
-				carry = 0
-			}
-			k++
-		}
-	}
+	result := uintArray.MultiplyUint64Array(a.value, b.value)
 
 	digits := Digits{a.sign != b.sign, result}
 	digits.NormalizeInPlace()
@@ -430,16 +392,18 @@ func (a Digits) TrailingZeros() uint { // TODO this logic is weird
 		return 0
 	}
 
-	zeros := uint64(0)
-	for i := len(a.value) - 1; i >= 0; i-- {
-		if a.value[i] != 0 {
-			return uint(bits.TrailingZeros64(a.value[i]))
-		}
+	zeros := uint(0)
 
-		zeros += 64
+	for i := 0; i < len(a.value); i++ {
+		if a.value[i] == 0 {
+			zeros += 64
+		} else {
+			zeros += uint(bits.TrailingZeros64(a.value[i]))
+			break
+		}
 	}
 
-	return 0
+	return zeros
 }
 
 func (a Digits) AsArray() []uint64 {

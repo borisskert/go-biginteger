@@ -85,12 +85,12 @@ func (d DoubleDigit) Divide(b DoubleDigit) (DoubleDigit, DoubleDigit) {
 	quot, _ := d.High().Divide(b.High())
 
 	prod := quot.Multiply(b.Low())
-	prod, _ = prod.Add128(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
+	prod, _ = prod.Add(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
 
 	if prod.IsGreaterThanOrEqual(d) {
 		quot = quot - 1
 		prod = quot.Multiply(b.Low())
-		prod, _ = prod.Add128(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
+		prod, _ = prod.Add(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
 	}
 
 	rem, _ := d.Subtract(prod)
@@ -175,16 +175,6 @@ func (d DoubleDigit) LeftShift(shift uint) DoubleDigit {
 	return DoubleDigitOf((d.hi<<mod)|(d.lo>>(64-mod)), d.lo<<mod)
 }
 
-func (d DoubleDigit) Add128(b DoubleDigit) (DoubleDigit, Digit) {
-	lo, carry0 := d.lo.Add(b.lo)
-	hi, carry1 := d.hi.Add(carry0)
-	hi, carry2 := hi.Add(b.hi)
-
-	carry := carry1 + carry2
-
-	return DoubleDigit{hi, lo}, carry
-}
-
 func (d DoubleDigit) RightShift(shift uint) DoubleDigit {
 	if shift == 0 {
 		return d
@@ -246,6 +236,13 @@ func (d DoubleDigit) Multiply(b DoubleDigit) (DoubleDigit, DoubleDigit) {
 	highResult, _ = highResult.AddDigit(carry1 + carry2 + carry3) // Propagate all carries
 
 	return highResult, mid2
+}
+
+func (d DoubleDigit) MultiplyDigit(b Digit) (DoubleDigit, Digit) {
+	lo := d.lo.Multiply(b)
+	hi := d.hi.Multiply(b)
+
+	return DoubleDigit{lo.High() + hi.Low(), lo.Low()}, hi.High()
 }
 
 func (d DoubleDigit) IsGreaterThan(doubleDigit DoubleDigit) bool {

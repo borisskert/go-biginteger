@@ -27,6 +27,10 @@ func (a Digit) Split() (HalfDigit, HalfDigit) {
 	return HalfDigit(a >> 32), HalfDigit(a)
 }
 
+func MakeDigitOfHalfDigits(hi HalfDigit, lo HalfDigit) Digit {
+	return Digit(hi)<<32 | Digit(lo)
+}
+
 func (a Digit) Add(b Digit) (Digit, Digit) {
 	sum, carry := bits.Add64(uint64(a), uint64(b), 0)
 	return Digit(sum), Digit(carry)
