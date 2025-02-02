@@ -76,7 +76,7 @@ func (i BigInteger) ShiftRight(count uint64) BigInteger {
 }
 
 func (i BigInteger) BitLength() uint64 {
-	return bitLength(i)
+	return uint64(bitLength(i))
 }
 
 func (i BigInteger) Digits() uint64 {

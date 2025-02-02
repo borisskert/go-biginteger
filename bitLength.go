@@ -2,7 +2,7 @@ package biginteger
 
 import "github.com/borisskert/go-biginteger/uintArray"
 
-func bitLength(i BigInteger) uint64 {
+func bitLength(i BigInteger) uint {
 	if i.Abs().IsLessThan(two) {
 		return 1
 	}

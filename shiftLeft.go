@@ -13,7 +13,7 @@ func shiftLeft(value BigInteger, count uint64) BigInteger {
 		return value
 	}
 
-	shiftedBits := uintArray.ShiftLeftBits(value.value, count)
+	shiftedBits := uintArray.ShiftLeftBits(value.value, uint(count))
 
 	return BigInteger{
 		sign:  value.sign,

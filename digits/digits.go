@@ -36,34 +36,34 @@ func (a Digits) LeftShiftDigits(n uint) Digits {
 	return Digits{a.sign, result}
 }
 
-func (a Digits) RightShiftDigits(n int) Digits {
-	if n >= len(a.value) {
+func (a Digits) RightShiftDigits(n uint) Digits {
+	if n >= uint(len(a.value)) {
 		return ZeroAsDigits()
 	}
 
 	return Digits{a.sign, a.value[n:]}
 }
 
-func (a Digits) LeftShiftBits(n uint64) Digits {
+func (a Digits) LeftShiftBits(n uint) Digits {
 	array := uintArray.ShiftLeftBits(a.value, n)
 	return Digits{a.sign, array}
 }
 
-func (a *Digits) LeftShiftBitsInPlace(n uint64) {
+func (a *Digits) LeftShiftBitsInPlace(n uint) {
 	a.value = uintArray.ShiftLeftBits(a.value, n)
 }
 
-func (a Digits) RightShiftBits(n uint64) Digits {
+func (a Digits) RightShiftBits(n uint) Digits {
 	result := a.Copy()
 	result.RightShiftBitsInPlace(n)
 
 	return result
 }
 
-func (a *Digits) RightShiftBitsInPlace(n uint64) {
+func (a *Digits) RightShiftBitsInPlace(n uint) {
 	shift := n % 64
 	shifts := n / 64
-	sizeA := uint64(len(a.value))
+	sizeA := uint(len(a.value))
 
 	if shifts >= sizeA {
 		a.value = []uint64{0}
@@ -72,7 +72,7 @@ func (a *Digits) RightShiftBitsInPlace(n uint64) {
 
 	newSize := sizeA - shifts - 1
 
-	for i := uint64(0); i < newSize; i++ {
+	for i := uint(0); i < newSize; i++ {
 		oldIndexLo := i + shifts
 		oldIndexHi := oldIndexLo + 1
 
@@ -348,10 +348,10 @@ func (a Digits) Compare(other Digits) int {
 	}
 
 	if a.sign && other.sign {
-		return uintArray.Compare(other.value, a.value)
+		return other.compareAbs(a)
 	}
 
-	return uintArray.Compare(a.value, other.value)
+	return a.compareAbs(other)
 }
 
 func (a Digits) compareAbs(other Digits) int {
@@ -429,7 +429,7 @@ func (a Digits) Append(b Digits) Digits {
 	return Digits{a.sign, result}
 }
 
-func (a Digits) TrailingZeros() uint64 {
+func (a Digits) TrailingZeros() uint { // TODO this logic is weird
 	if len(a.value) == 0 {
 		return 0
 	}
@@ -437,7 +437,7 @@ func (a Digits) TrailingZeros() uint64 {
 	zeros := uint64(0)
 	for i := len(a.value) - 1; i >= 0; i-- {
 		if a.value[i] != 0 {
-			return uint64(bits.TrailingZeros64(a.value[i]))
+			return uint(bits.TrailingZeros64(a.value[i]))
 		}
 
 		zeros += 64

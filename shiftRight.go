@@ -13,7 +13,7 @@ func shiftRight(value BigInteger, count uint64) BigInteger {
 
 	return BigInteger{
 		sign:  value.sign,
-		value: divmod.ShiftRightUint64Array(value.value, count),
+		value: divmod.ShiftRightUint64Array(value.value, uint(count)),
 	}
 }
 
