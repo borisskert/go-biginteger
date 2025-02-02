@@ -1,5 +1,9 @@
 package biginteger
 
+import (
+	"github.com/borisskert/go-biginteger/uintArray"
+)
+
 func shiftLeft(value BigInteger, count uint64) BigInteger {
 	if value.IsEqualTo(zero) {
 		return zero
@@ -9,9 +13,11 @@ func shiftLeft(value BigInteger, count uint64) BigInteger {
 		return value
 	}
 
+	shiftedBits := uintArray.ShiftLeftBits(value.value, count)
+
 	return BigInteger{
 		sign:  value.sign,
-		value: shiftLeftUint64Array(value.value, count),
+		value: trimLeadingZeros(shiftedBits),
 	}
 }
 
@@ -57,9 +63,15 @@ func shiftLeftUint64Array(a []uint64, n uint64) []uint64 {
 }
 
 func trimLeadingZeros(array []uint64) []uint64 {
-	for len(array) > 1 && array[len(array)-1] == 0 {
-		array = array[:len(array)-1]
+	if len(array) == 0 {
+		return []uint64{0}
 	}
 
-	return array
+	size := len(array)
+
+	for size > 1 && array[size-1] == 0 {
+		size--
+	}
+
+	return array[:size]
 }

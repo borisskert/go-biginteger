@@ -1,25 +1,6 @@
-package biginteger
+package uintArray
 
-import "github.com/borisskert/go-biginteger/divmod"
-
-func add(a BigInteger, b BigInteger) BigInteger {
-	if a.sign == b.sign {
-		result := divmod.Add(a.value, b.value)
-
-		return BigInteger{
-			a.sign,
-			result,
-		}
-	}
-
-	if a.sign {
-		return b.Subtract(a.Abs())
-	}
-
-	return a.Subtract(b.Abs())
-}
-
-func addUint64Arrays(a, b []uint64) []uint64 {
+func Add(a, b []uint64) []uint64 {
 	if len(a) == 0 {
 		return b
 	}

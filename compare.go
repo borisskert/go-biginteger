@@ -1,5 +1,9 @@
 package biginteger
 
+import (
+	"github.com/borisskert/go-biginteger/uintArray"
+)
+
 func compareTo(left BigInteger, right BigInteger) int {
 	if left.sign && !right.sign {
 		return -1
@@ -10,10 +14,10 @@ func compareTo(left BigInteger, right BigInteger) int {
 	}
 
 	if left.sign && right.sign {
-		return compareUint64Arrays(right.value, left.value)
+		return uintArray.Compare(right.value, left.value)
 	}
 
-	return compareUint64Arrays(left.value, right.value)
+	return uintArray.Compare(left.value, right.value)
 }
 
 func compareUint64Arrays(a, b []uint64) int {
