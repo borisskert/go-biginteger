@@ -3,28 +3,26 @@ package divmod
 import "github.com/borisskert/go-biginteger/digits"
 
 func divModOptimized(numerator digits.Digits, denominator digits.Digits) (digits.Digits, digits.Digits) {
-	if denominator.Compare(digits.ZeroAsDigits()) == 0 {
+	if denominator.IsZero() {
 		panic("Division by zero")
 	}
 
-	if numerator.Compare(digits.ZeroAsDigits()) == 0 {
-		return digits.ZeroAsDigits(), digits.ZeroAsDigits()
+	if numerator.IsZero() {
+		return digits.Zero().AsDigits(), digits.Zero().AsDigits()
 	}
 
-	one := digits.One().AsDigits()
-
-	if denominator.Compare(one) == 0 {
-		return numerator, digits.ZeroAsDigits()
+	if denominator.IsOne() {
+		return numerator, digits.Zero().AsDigits()
 	}
 
 	cmp := numerator.Compare(denominator)
 
 	if cmp < 0 {
-		return digits.ZeroAsDigits(), numerator
+		return digits.Zero().AsDigits(), numerator
 	}
 
 	if cmp == 0 {
-		return one, digits.ZeroAsDigits()
+		return digits.One().AsDigits(), digits.Zero().AsDigits()
 	}
 
 	length := numerator.Length()

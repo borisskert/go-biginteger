@@ -12,10 +12,6 @@ type Digits struct {
 	value []uint64
 }
 
-func ZeroAsDigits() Digits {
-	return Digits{false, []uint64{0}}
-}
-
 func (a Digits) Length() uint {
 	return uint(len(a.value))
 }
@@ -38,7 +34,7 @@ func (a Digits) LeftShiftDigits(n uint) Digits {
 
 func (a Digits) RightShiftDigits(n uint) Digits {
 	if n >= uint(len(a.value)) {
-		return ZeroAsDigits()
+		return Zero().AsDigits()
 	}
 
 	return Digits{a.sign, a.value[n:]}
@@ -583,7 +579,7 @@ func (a Digits) DoubleDigitAt(position uint) DoubleDigit {
 
 func (a Digits) ChunkInclusive(start uint, end uint) Digits {
 	if start >= uint(len(a.value)) {
-		return ZeroAsDigits()
+		return Zero().AsDigits()
 	}
 
 	if end+1 >= uint(len(a.value)) {
