@@ -29,7 +29,6 @@ func (d DoubleDigit) Divide64(b Digit) (Digit, Digit) {
 
 func (d DoubleDigit) DivideByDigit(b Digit) (DoubleDigit, Digit) {
 	if b.High() == 0 {
-		//quotient, r := DivTwoDigitsByHalf(d, b.Low())
 		quotient, r := d.DivideByHalfDigit(b.Low())
 		return quotient, r.AsDigit()
 	}
@@ -131,11 +130,10 @@ func (d DoubleDigit) AddDigit(b Digit) (DoubleDigit, Digit) {
 }
 
 func (d DoubleDigit) Add(b DoubleDigit) (DoubleDigit, Digit) {
-	lo, carry := d.lo.Add(b.lo)
-	hi, carry := d.hi.Add(carry)
-	hi, carry = hi.Add(b.hi)
+	lo, carry := bits.Add64(uint64(d.lo), uint64(b.lo), 0)
+	hi, carry := bits.Add64(uint64(d.hi), uint64(b.hi), carry)
 
-	return DoubleDigit{hi, lo}, carry
+	return DoubleDigit{Digit(hi), Digit(lo)}, Digit(carry)
 }
 
 func (d DoubleDigit) IsLessThan(b DoubleDigit) bool {

@@ -3,13 +3,13 @@ package recursive
 import (
 	"github.com/borisskert/go-biginteger/digits"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/burnikelZiegler"
-	"github.com/borisskert/go-biginteger/divmod/algorithms/chunkedDivision"
+	"github.com/borisskert/go-biginteger/divmod/algorithms/chunkBasedLongDivision"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/divideDigitByDigit"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/divideDigitsByDigit"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/divideDigitsByDoubleDigit"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/divideDoubleDigitByDigit"
-	"github.com/borisskert/go-biginteger/divmod/algorithms/divisionShortcut"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/donaldKnuth"
+	"github.com/borisskert/go-biginteger/divmod/algorithms/earlyExitDivisionOptimization"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/trailingZeroReduction"
 	"github.com/borisskert/go-biginteger/divmod/common"
 )
@@ -26,7 +26,7 @@ func (f *recursiveDivisionAlgorithm) DivMod(
 	numerator digits.Digits, denominator digits.Digits,
 ) (quotient digits.Digits, remainder digits.Digits) {
 	algorithm := f.selectSuitableDivideAlgorithm(numerator, denominator)
-	algorithm = divisionShortcut.DecorateWithShortcut(algorithm)
+	algorithm = earlyExitDivisionOptimization.DecorateWithEarlyExitDivisionOptimization(algorithm)
 	algorithm = trailingZeroReduction.DecorateWithTrailingZeroReduction(algorithm)
 
 	return algorithm.DivMod(numerator, denominator)
@@ -55,7 +55,7 @@ func (f *recursiveDivisionAlgorithm) selectSuitableDivideAlgorithm(
 		return f.divideManyByTwo
 	}
 
-	defaultAlgorithmFn := divisionShortcut.DecorateWithShortcut(f)
+	defaultAlgorithmFn := earlyExitDivisionOptimization.DecorateWithEarlyExitDivisionOptimization(f)
 
 	if m < 40 {
 		return &f.donaldKnuthsAlgorithmD
@@ -66,7 +66,7 @@ func (f *recursiveDivisionAlgorithm) selectSuitableDivideAlgorithm(
 	}
 
 	if m > 2*n {
-		return chunkedDivision.DecorateWithChunkedDivision(defaultAlgorithmFn)
+		return chunkBasedLongDivision.DecorateWithChunkBasedLongDivision(defaultAlgorithmFn)
 	}
 
 	return &f.donaldKnuthsAlgorithmD

@@ -41,7 +41,7 @@ func divModByDonaldKnuthsTAOCPv2(
 	for j := m; j >= 0; j-- {
 		qHat, rHat := d3ACalculateQHat(u, v, j, n)
 
-		qHat, rHat = d3BTestAndCorrectQHat(b, qHat, rHat, v, u, j, n)
+		qHat, _ = d3BTestAndCorrectQHat(b, qHat, rHat, v, u, j, n)
 
 		// Multiply and subtract: U_j:j+n = U_j:j+n - q̂ * V
 		wasNegative := d4MultiplyAndSubtract(j, n, &u, v, qHat)
@@ -154,7 +154,7 @@ func d4MultiplyAndSubtract(j int64, n int64, u *digits.Digits, v digits.Digits, 
 	return borrowed
 }
 
-func d6AddBack(j int64, qHat digits.DoubleDigit, u *digits.Digits, v digits.Digits) {
+func d6AddBack(j int64, qHat digits.DoubleDigit, u *digits.Digits, v digits.Digits) digits.DoubleDigit {
 	var borrow bool
 	qHat, borrow = qHat.Decrement()
 
@@ -166,6 +166,8 @@ func d6AddBack(j int64, qHat digits.DoubleDigit, u *digits.Digits, v digits.Digi
 	if borrow {
 		panic("Decrement must not underflow")
 	}
+
+	return qHat
 }
 
 func divideByDoubleDigit(dividend digits.Digits, divisor digits.DoubleDigit) (digits.Digits, digits.DoubleDigit) {

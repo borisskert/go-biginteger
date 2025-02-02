@@ -1,22 +1,22 @@
-package divisionShortcut
+package earlyExitDivisionOptimization
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
 	"github.com/borisskert/go-biginteger/divmod/common"
 )
 
-type shortCutDecorator struct {
+type earlyExitDivisionOptimization struct {
 	algorithm common.DivisionAlgorithm
 }
 
-func (d *shortCutDecorator) DivMod(
+func (d *earlyExitDivisionOptimization) DivMod(
 	numerator digits.Digits,
 	denominator digits.Digits,
 ) (digits.Digits, digits.Digits) {
-	return shortcutOrDivide(numerator, denominator, d.algorithm.DivMod)
+	return earlyExitDivision(numerator, denominator, d.algorithm.DivMod)
 }
 
-func shortcutOrDivide(
+func earlyExitDivision(
 	numerator digits.Digits,
 	denominator digits.Digits,
 	fn func(digits.Digits, digits.Digits) (digits.Digits, digits.Digits),
@@ -46,8 +46,8 @@ func shortcutOrDivide(
 	return fn(numerator, denominator)
 }
 
-func DecorateWithShortcut(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
-	return &shortCutDecorator{
+func DecorateWithEarlyExitDivisionOptimization(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+	return &earlyExitDivisionOptimization{
 		algorithm: algorithm,
 	}
 }

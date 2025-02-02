@@ -1,23 +1,23 @@
-package chunkedDivision
+package chunkBasedLongDivision
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
 	"github.com/borisskert/go-biginteger/divmod/common"
 )
 
-type chunkedDivision struct {
+type chunkBasedLongDivision struct {
 	algorithm common.DivisionAlgorithm
 }
 
-func (d *chunkedDivision) DivMod(numerator, denominator digits.Digits) (digits.Digits, digits.Digits) {
-	return divideChunked(
+func (d *chunkBasedLongDivision) DivMod(numerator, denominator digits.Digits) (digits.Digits, digits.Digits) {
+	return divideChunkBased(
 		numerator,
 		denominator,
 		d.algorithm.DivMod,
 	)
 }
 
-func divideChunked(
+func divideChunkBased(
 	numerator digits.Digits,
 	denominator digits.Digits,
 	fn func(numerator digits.Digits, denominator digits.Digits) (digits.Digits, digits.Digits),
@@ -56,8 +56,8 @@ func divideChunked(
 	return quotient.Trim(), remainder.Trim()
 }
 
-func DecorateWithChunkedDivision(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
-	return &chunkedDivision{
+func DecorateWithChunkBasedLongDivision(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+	return &chunkBasedLongDivision{
 		algorithm: algorithm,
 	}
 }
