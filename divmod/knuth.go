@@ -53,14 +53,10 @@ func d1Normalize(n uint64, b digits.DoubleDigit, u digits.Digits, v digits.Digit
 	vLast := v.DigitAt(uint(n - 1))               // Most significant digit of V
 
 	// Let d = ⌊b / (v_{n-1} + 1)⌋
-
 	if vLast.IsEqualDoubleDigit(bMaxValue) {
-		// If the most significant digit is b-1, set d to 1
-		d = digits.One().AsDoubleDigit()
+		d = digits.One().AsDoubleDigit() // If the most significant digit is b-1, set d to 1
 	} else {
-		// Otherwise, calculate d
-		vLastPlus1, _ := vLast.AsDoubleDigit().AddDigit(digits.OneAsDigit())
-		d, _ = b.Divide128(vLastPlus1) // Divide b by v_{n-1}+1 to get the scaling factor
+		d, _ = b.Divide128(vLast.Increment().AsDoubleDigit()) // Divide b by v_{n-1}+1 to get the scaling factor
 	}
 
 	// Multiply U and V by d to scale both
@@ -97,7 +93,7 @@ func d3BTestAndCorrectQHat(b, qHat digits.DoubleDigit, rHat digits.Digit, v digi
 
 	// “Now test if qHat ≥ b or qHat * v[n−2] > b*rHat + u[j+n−2]; i”
 	if qHat.IsGreaterThanOrEqual(b) || qHatMulVMinus2.IsGreaterThan(bMulRHatPlusUJPlusNMinus2) {
-		qHat, _ = qHat.Subtract(digits.OneAsDigit().AsDoubleDigit())
+		qHat, _ = qHat.Decrement()
 		rHat, _ = rHat.Add(vLast)
 
 		if rHat.IsLessThanDoubleDigit(b) {
@@ -108,7 +104,13 @@ func d3BTestAndCorrectQHat(b, qHat digits.DoubleDigit, rHat digits.Digit, v digi
 			bMulRHatPlusUJPlusNMinus2, _ = bMulRHat.AddDigit(uJPlusNMinus2)
 
 			if qHat.IsGreaterThanOrEqual(b) || qHatMulVMinus2.IsGreaterThan(bMulRHatPlusUJPlusNMinus2) {
-				qHat, _ = qHat.Subtract(digits.OneAsDigit().AsDoubleDigit())
+				var borrowed bool
+				qHat, borrowed = qHat.Decrement()
+
+				if borrowed {
+					panic("Decrement must not underflow")
+				}
+
 				rHat, _ = rHat.Add(vLast)
 			}
 		}
@@ -128,16 +130,16 @@ func d4MultiplyAndSubtract(j int64, n int64, u *digits.Digits, v digits.Digits, 
 }
 
 func d6AddBack(j int64, qHat digits.DoubleDigit, u *digits.Digits, v digits.Digits) {
-	borrow := digits.Zero()                                           // TODO empty
-	qHat, borrow = qHat.Subtract(digits.OneAsDigit().AsDoubleDigit()) // Decrement q̂
+	var borrow bool
+	qHat, borrow = qHat.Decrement()
 
-	ujToJPlusNMinusVMulQHat := u.TakeDigits(uint(j), uint(j)+uint(v.Length())) // TODO rename
-	ujToJPlusNMinusVMulQHat = ujToJPlusNMinusVMulQHat.Add(v)                   // Add back V to U_j:j+n
+	uChunk := u.TakeDigits(uint(j), uint(j)+uint(v.Length()))
+	uChunk = uChunk.Add(v) // Add back V to U_j:j+n
 
-	u.Replace(uint(j), uint(j)+uint(v.Length()), ujToJPlusNMinusVMulQHat)
+	u.Replace(uint(j), uint(j)+uint(v.Length()), uChunk)
 
-	if borrow != 0 {
-		panic("Borrow should be false")
+	if borrow {
+		panic("Decrement must not underflow")
 	}
 }
 

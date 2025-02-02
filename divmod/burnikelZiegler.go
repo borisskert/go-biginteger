@@ -16,13 +16,11 @@ func divThreeLongHalvesByTwo(a1, a2, a3, b1, b2 digits.Digits) (digits.Digits, d
 	r.SubtractInPlace(d)
 
 	if r.IsNegative() {
-		one := digits.One().AsDigits()
-
-		q.SubtractInPlace(one) // TODO decrement
+		q.DecrementInPlace()
 		r.AddInPlace(b)
 
 		if r.IsNegative() {
-			q.SubtractInPlace(one) // TODO decrement
+			q.DecrementInPlace()
 			r.AddInPlace(b)
 
 			if r.IsNegative() {

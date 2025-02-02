@@ -95,10 +95,10 @@ func One() Digit {
 	return Digit(1)
 }
 
-func OneAsDigit() Digit { // TODO later: One() returns Digit
-	return 1
-}
-
 func (a Digit) Hexadecimal() string {
 	return fmt.Sprintf("0x%X", uint64(a))
+}
+
+func (a Digit) Increment() Digit {
+	return a + 1
 }

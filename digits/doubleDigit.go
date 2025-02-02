@@ -2,7 +2,7 @@ package digits
 
 import "math/bits"
 
-type DoubleDigit struct { // TODO double digit
+type DoubleDigit struct {
 	hi Digit
 	lo Digit
 }
@@ -37,7 +37,7 @@ func (d DoubleDigit) DivideByDigit(b Digit) (DoubleDigit, Digit) {
 	return quotient, r
 }
 
-func (d DoubleDigit) Divide128(b DoubleDigit) (DoubleDigit, DoubleDigit) { // TODO remainder is Digit
+func (d DoubleDigit) Divide128(b DoubleDigit) (DoubleDigit, DoubleDigit) {
 	q, r := DivTwoDigitsByTwo(d, b)
 	return q, r
 }
@@ -201,4 +201,16 @@ func (d DoubleDigit) IsGreaterThan(doubleDigit DoubleDigit) bool {
 	}
 
 	return false
+}
+
+func (d DoubleDigit) Decrement() (DoubleDigit, bool) {
+	if d.lo == 0 && d.hi == 0 {
+		return DoubleDigit{^Digit(0), ^Digit(0)}, true
+	}
+
+	if d.lo == 0 {
+		return DoubleDigit{d.hi - 1, ^Digit(0)}, false
+	}
+
+	return DoubleDigit{d.hi, d.lo - 1}, false
 }

@@ -686,3 +686,18 @@ func (a Digits) Hexadecimal() string {
 
 	return strings.Join(result, "")
 }
+
+func (a Digits) DecrementInPlace() {
+	if len(a.value) == 0 {
+		return
+	}
+
+	a.SubtractInPlace(Digits{false, []uint64{1}})
+}
+
+func (a Digits) Decrement() (Digits, bool) {
+	result := a.Copy()
+	borrowed := result.SubtractUnderflowInPlace(Digits{false, []uint64{1}})
+
+	return result, borrowed
+}

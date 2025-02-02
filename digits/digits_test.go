@@ -32,7 +32,7 @@ var _ = Describe("Digits", func() {
 
 		It("1 - (2 pow 64 - 1)", func() {
 			a := Digit(1).AsDigits()
-			b, _ := Digit(1).AsDigits().LeftShiftBits(64).Subtract(Digit(1).AsDigits()) // TODO decrement method
+			b, _ := Digit(1).AsDigits().LeftShiftBits(64).Decrement()
 
 			result, borrow := a.SubtractUnderflow(b.Trim())
 
