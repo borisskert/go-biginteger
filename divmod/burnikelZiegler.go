@@ -16,11 +16,13 @@ func divThreeLongHalvesByTwo(a1, a2, a3, b1, b2 digits.Digits) (digits.Digits, d
 	r.SubtractInPlace(d)
 
 	if r.IsNegative() {
-		q.SubtractInPlace(digits.One())
+		one := digits.One().AsDigits()
+
+		q.SubtractInPlace(one) // TODO decrement
 		r.AddInPlace(b)
 
 		if r.IsNegative() {
-			q.SubtractInPlace(digits.One())
+			q.SubtractInPlace(one) // TODO decrement
 			r.AddInPlace(b)
 
 			if r.IsNegative() {
@@ -46,7 +48,9 @@ func divModSelect(numerator, denominator digits.Digits) (digits.Digits, digits.D
 		return digits.ZeroAsDigits(), digits.ZeroAsDigits()
 	}
 
-	if denominator.Compare(digits.One()) == 0 {
+	one := digits.One().AsDigits()
+
+	if denominator.Compare(one) == 0 {
 		return numerator, digits.ZeroAsDigits()
 	}
 
@@ -56,7 +60,7 @@ func divModSelect(numerator, denominator digits.Digits) (digits.Digits, digits.D
 	}
 
 	if cmp == 0 {
-		return digits.One(), digits.ZeroAsDigits()
+		return one, digits.ZeroAsDigits()
 	}
 
 	n := denominator.Length()

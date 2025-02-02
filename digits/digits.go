@@ -16,14 +16,6 @@ func ZeroAsDigits() Digits {
 	return Digits{false, []uint64{0}}
 }
 
-func One() Digits {
-	return Digits{false, []uint64{1}}
-}
-
-func Two() Digit {
-	return 2
-}
-
 func (a Digits) Length() uint64 { // TODO better int
 	return uint64(len(a.value))
 }

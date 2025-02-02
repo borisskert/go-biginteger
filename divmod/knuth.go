@@ -11,7 +11,9 @@ func divModOptimized(numerator digits.Digits, denominator digits.Digits) (digits
 		return digits.ZeroAsDigits(), digits.ZeroAsDigits()
 	}
 
-	if denominator.Compare(digits.One()) == 0 {
+	one := digits.One().AsDigits()
+
+	if denominator.Compare(one) == 0 {
 		return numerator, digits.ZeroAsDigits()
 	}
 
@@ -22,7 +24,7 @@ func divModOptimized(numerator digits.Digits, denominator digits.Digits) (digits
 	}
 
 	if cmp == 0 {
-		return digits.One(), digits.ZeroAsDigits()
+		return one, digits.ZeroAsDigits()
 	}
 
 	length := numerator.Length()
@@ -47,8 +49,8 @@ func divModOptimized(numerator digits.Digits, denominator digits.Digits) (digits
 func d1Normalize(n uint64, b digits.DoubleDigit, u digits.Digits, v digits.Digits) (digits.Digits, digits.Digits, digits.DoubleDigit) {
 	var d digits.DoubleDigit
 
-	bMaxValue, _ := b.SubtractDigit(digits.One().AsDigit()) // b-1
-	vLast := v.DigitAt(uint(n - 1))                         // Most significant digit of V
+	bMaxValue, _ := b.SubtractDigit(digits.One()) // b-1
+	vLast := v.DigitAt(uint(n - 1))               // Most significant digit of V
 
 	// Let d = ⌊b / (v_{n-1} + 1)⌋
 

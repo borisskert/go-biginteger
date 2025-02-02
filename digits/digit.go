@@ -91,6 +91,10 @@ func Zero() Digit {
 	return Digit(0)
 }
 
+func One() Digit {
+	return Digit(1)
+}
+
 func OneAsDigit() Digit { // TODO later: One() returns Digit
 	return 1
 }
