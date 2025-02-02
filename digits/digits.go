@@ -310,17 +310,6 @@ func (a Digits) IsNegative() bool {
 	return a.sign
 }
 
-func (a Digits) EnsureLength(length int) Digits {
-	if length <= len(a.value) {
-		return a
-	}
-
-	result := make([]uint64, length)
-	result = append(a.value, result[length-len(a.value):]...)
-
-	return Digits{a.sign, result}
-}
-
 func (a Digits) Quarter() (Digits, Digits, Digits, Digits) {
 	lenA := len(a.value)
 
@@ -432,7 +421,7 @@ func (a *Digits) SetDigitAt(position uint, b Digit) {
 	a.value[position] = uint64(b)
 }
 
-func (a Digits) Append(b Digits) Digits { // TODO replace this method
+func (a Digits) Append(b Digits) Digits {
 	result := make([]uint64, len(a.value)+len(b.value))
 	copy(result, a.value)
 	copy(result[len(a.value):], b.value)
@@ -592,7 +581,7 @@ func (a Digits) DoubleDigitAt(position uint) DoubleDigit {
 	return DoubleDigitOf(Digit(a.value[position+1]), Digit(a.value[position]))
 }
 
-func (a Digits) Chunk(start uint, end uint) Digits {
+func (a Digits) ChunkInclusive(start uint, end uint) Digits {
 	if start >= uint(len(a.value)) {
 		return ZeroAsDigits()
 	}
