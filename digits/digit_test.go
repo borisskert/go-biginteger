@@ -1,7 +1,7 @@
 package digits_test
 
 import (
-	. "github.com/borisskert/go-biginteger/divmod"
+	. "github.com/borisskert/go-biginteger/digits"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
