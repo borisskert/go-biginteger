@@ -120,7 +120,7 @@ func d3BTestAndCorrectQHat(b, qHat digits.DoubleDigit, rHat digits.Digit, v digi
 }
 
 func d4MultiplyAndSubtract(j int64, n int64, u *digits.Digits, v digits.Digits, qHat digits.DoubleDigit) bool {
-	ujToJPlusN := u.TakeDigits(uint(j), uint(j)+uint(n))
+	ujToJPlusN := u.Chunk(uint(j), uint(j)+uint(n))
 	vMulQHat := v.MultiplyByDoubleDigit(qHat)
 	ujToJPlusNMinusVMulQHat, borrowed := ujToJPlusN.Trim().SubtractUnderflow(vMulQHat.Trim())
 
@@ -133,7 +133,7 @@ func d6AddBack(j int64, qHat digits.DoubleDigit, u *digits.Digits, v digits.Digi
 	var borrow bool
 	qHat, borrow = qHat.Decrement()
 
-	uChunk := u.TakeDigits(uint(j), uint(j)+uint(v.Length()))
+	uChunk := u.Chunk(uint(j), uint(j)+v.Length())
 	uChunk = uChunk.Add(v) // Add back V to U_j:j+n
 
 	u.Replace(uint(j), uint(j)+uint(v.Length()), uChunk)

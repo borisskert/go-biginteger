@@ -20,7 +20,7 @@ func divModChunked(a digits.Digits, b digits.Digits) (digits.Digits, digits.Digi
 		end := min(m, start+2*n)
 		size := end - start
 
-		chunkOfA := a.Chunks(uint64(start), uint64(end))
+		chunkOfA := a.Chunk(uint(start), uint(end)-1)
 
 		// Align previous remainder and combine with current chunk
 		chunk := chunkOfA.Append(remainder)

@@ -432,18 +432,6 @@ func (a *Digits) SetDigitAt(position uint, b Digit) {
 	a.value[position] = uint64(b)
 }
 
-func (a Digits) Chunks(start uint64, end uint64) Digits { // TODO is this similar to TakeDigits?
-	if start >= uint64(len(a.value)) {
-		return ZeroAsDigits()
-	}
-
-	if end >= uint64(len(a.value)) {
-		return Digits{false, a.value[start:]}
-	}
-
-	return Digits{false, a.value[start:end]}
-}
-
 func (a Digits) Append(b Digits) Digits { // TODO replace this method
 	result := make([]uint64, len(a.value)+len(b.value))
 	copy(result, a.value)
@@ -604,38 +592,16 @@ func (a Digits) DoubleDigitAt(position uint) DoubleDigit {
 	return DoubleDigitOf(Digit(a.value[position+1]), Digit(a.value[position]))
 }
 
-func (a Digits) TakeDigits(start uint, end uint) Digits {
-	reverse := false
-
-	if start > end {
-		start, end = end, start
-		reverse = true
-	}
-
-	numDigits := end - start + 1
-
+func (a Digits) Chunk(start uint, end uint) Digits {
 	if start >= uint(len(a.value)) {
-		return Digits{a.sign, make([]uint64, numDigits)}
+		return ZeroAsDigits()
 	}
 
-	takeFromArray := int(end) - int(start) + 1
-	if takeFromArray > len(a.value)-int(start) {
-		takeFromArray = len(a.value) - int(start)
+	if end+1 >= uint(len(a.value)) {
+		return Digits{false, a.value[start:]}
 	}
 
-	result := make([]uint64, numDigits)
-
-	for i := start; i <= end; i++ {
-		if i < uint(len(a.value)) {
-			if reverse {
-				result[end-i] = a.value[i]
-			} else {
-				result[i-start] = a.value[i]
-			}
-		}
-	}
-
-	return Digits{a.sign, result}
+	return Digits{false, a.value[start : end+1]}
 }
 
 func (a *Digits) Replace(start, end uint, b Digits) {
