@@ -9,7 +9,7 @@ import (
 var _ = Describe("Digits", func() {
 	Context("SubtractUnderflow", func() {
 		It("1 - 2", func() {
-			a := One().AsDigits()
+			a := Digit(1).AsDigits()
 			b := Digit(2).AsDigits()
 
 			result, borrow := a.SubtractUnderflow(b)
@@ -21,7 +21,7 @@ var _ = Describe("Digits", func() {
 
 		It("2 - 1", func() {
 			a := Digit(2).AsDigits()
-			b := One().AsDigits()
+			b := Digit(1).AsDigits()
 
 			result, borrow := a.SubtractUnderflow(b)
 
@@ -31,8 +31,8 @@ var _ = Describe("Digits", func() {
 		})
 
 		It("1 - (2 pow 64 - 1)", func() {
-			a := One().AsDigits()
-			b, _ := Digit(1).AsDigits().LeftShiftBits(64).Subtract(One().AsDigits())
+			a := Digit(1).AsDigits()
+			b, _ := Digit(1).AsDigits().LeftShiftBits(64).Subtract(Digit(1).AsDigits()) // TODO decrement method
 
 			result, borrow := a.SubtractUnderflow(b.Trim())
 
@@ -42,7 +42,7 @@ var _ = Describe("Digits", func() {
 		})
 
 		It("1 - 2 pow 64", func() {
-			a := One().AsDigits()
+			a := Digit(1).AsDigits()
 			b := Digit(1).AsDigits().LeftShiftBits(64)
 
 			result, borrow := a.SubtractUnderflow(b)
@@ -54,9 +54,7 @@ var _ = Describe("Digits", func() {
 		})
 
 		It("2 - 2 pow 64", func() {
-			one := One().AsDigits()
-
-			a := one.Add(one)
+			a := Digit(2).AsDigits()
 			b := Digit(1).AsDigits().LeftShiftBits(64)
 
 			result, borrow := a.SubtractUnderflow(b)
