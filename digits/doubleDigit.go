@@ -175,10 +175,10 @@ func (d DoubleDigit) Multiply(b DoubleDigit) (DoubleDigit, DoubleDigit) {
 	bLo, bHi := b.lo, b.hi
 
 	// Perform 64-bit multiplications
-	lowLow := aLo.Multiply2(bLo) // 64-bit x 64-bit = 128-bit result
-	lowHigh := aLo.Multiply2(bHi)
-	highLow := aHi.Multiply2(bLo)
-	highHigh := aHi.Multiply2(bHi)
+	lowLow := aLo.Multiply(bLo) // 64-bit x 64-bit = 128-bit result
+	lowHigh := aLo.Multiply(bHi)
+	highLow := aHi.Multiply(bLo)
+	highHigh := aHi.Multiply(bHi)
 
 	// Summing the middle terms
 	mid1, carry1 := lowHigh.Add(highLow)           // mid1 = lowHigh + highLow

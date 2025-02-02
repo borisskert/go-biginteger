@@ -62,8 +62,8 @@ func d1Normalize(n uint64, b digits.DoubleDigit, u digits.Digits, v digits.Digit
 	}
 
 	// Multiply U and V by d to scale both
-	r := u.MultiplyDoubleDigit(d).Trim()
-	v = v.MultiplyDoubleDigit(d).Trim()
+	r := u.MultiplyByDoubleDigit(d).Trim()
+	v = v.MultiplyByDoubleDigit(d).Trim()
 
 	return r, v, d
 }
@@ -98,7 +98,7 @@ func d3BTestAndCorrectQHat(b, qHat digits.DoubleDigit, rHat digits.Digit, v digi
 		qHat, _ = qHat.Subtract(digits.OneAsDigit().AsDoubleDigit())
 		rHat, _ = rHat.Add(vLast)
 
-		if rHat.IsLessThan128(b) {
+		if rHat.IsLessThanDoubleDigit(b) {
 			vNMinus2 = v.DigitAt(uint(n - 2))
 			qHatMulVMinus2, _ = qHat.Multiply(vNMinus2.AsDoubleDigit())
 			bMulRHat, _ = b.Multiply(rHat.AsDoubleDigit())
@@ -117,7 +117,7 @@ func d3BTestAndCorrectQHat(b, qHat digits.DoubleDigit, rHat digits.Digit, v digi
 
 func d4MultiplyAndSubtract(j int64, n int64, u *digits.Digits, v digits.Digits, qHat digits.DoubleDigit) bool {
 	ujToJPlusN := u.TakeDigits(uint(j), uint(j)+uint(n))
-	vMulQHat := v.MultiplyDoubleDigit(qHat)
+	vMulQHat := v.MultiplyByDoubleDigit(qHat)
 	ujToJPlusNMinusVMulQHat, borrowed := ujToJPlusN.Trim().SubtractUnderflow(vMulQHat.Trim())
 
 	u.Replace(uint(j), uint(j)+uint(n), ujToJPlusNMinusVMulQHat)
@@ -188,7 +188,7 @@ func divModByDonaldKnuthsTAOCPv2(u digits.Digits, v digits.Digits) (digits.Digit
 
 func divideByDigit(a digits.Digits, b digits.Digit) (digits.Digits, digits.Digits) {
 	q, r := divideByWord(a, b)
-	return q, digits.MakeDigitsOfDigit(r)
+	return q, r.AsDigits()
 }
 
 func divideByWord(dividend digits.Digits, divisor digits.Digit) (digits.Digits, digits.Digit) {

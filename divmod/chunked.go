@@ -20,7 +20,7 @@ func divModChunked(a digits.Digits, b digits.Digits) (digits.Digits, digits.Digi
 		end := min(m, start+2*n)
 		size := end - start
 
-		chunkOfA := a.Chunks(uint64(start), uint64(end)) // Extract chunk
+		chunkOfA := a.Chunks(uint64(start), uint64(end))
 
 		// Align previous remainder and combine with current chunk
 		chunk := chunkOfA.Append(remainder)
@@ -29,7 +29,7 @@ func divModChunked(a digits.Digits, b digits.Digits) (digits.Digits, digits.Digi
 		q, r := divModSelect(chunk.Trim(), b.Trim())
 
 		// Accumulate the quotient correctly
-		quotient = q.Extend(int(size)).Append(quotient) // TODO use shift add logic here
+		quotient = q.EnsureLength(int(size)).Append(quotient) // TODO use shift add logic here
 
 		remainder = r
 	}

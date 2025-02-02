@@ -234,22 +234,25 @@ func (a *Digits) SubtractInPlace(b Digits) bool {
 	return carry == 1
 }
 
-func (a Digits) SubtractAbs(b Digits) (Digits, bool) {
+func (a Digits) SubtractUnderflow(b Digits) (Digits, bool) {
 	result := a.Copy()
-	borrow := result.SubtractAbsInPlace(b)
+	borrowed := result.SubtractUnderflowInPlace(b)
 
-	return result, borrow
+	return result, borrowed
 }
 
-func (a *Digits) SubtractAbsInPlace(b Digits) bool {
-	if len(a.value) < len(b.value) {
-		a.value, b.value = b.value, a.value
-		a.sign = !a.sign
-	}
+func (a *Digits) SubtractUnderflowInPlace(b Digits) bool {
+	needComplement := a.Compare(b) < 0
 
-	carry := uint64(0)
-	for i := 0; i < len(a.value); i++ {
-		ai := a.value[i]
+	size := max(len(a.value), len(b.value))
+	a.value = append(a.value, make([]uint64, size-len(a.value))...)
+	var carry uint64
+
+	for i := 0; i < size; i++ {
+		ai := uint64(0)
+		if i < len(a.value) {
+			ai = a.value[i]
+		}
 
 		bi := uint64(0)
 		if i < len(b.value) {
@@ -258,32 +261,16 @@ func (a *Digits) SubtractAbsInPlace(b Digits) bool {
 
 		diff, borrow := bits.Sub64(ai, bi+carry, 0)
 
-		a.value[i] = diff
+		if i >= len(a.value) {
+			a.value = append(a.value, diff)
+		} else {
+			a.value[i] = diff
+		}
 
 		carry = borrow
 	}
 
-	if carry > 0 {
-		base := uint64(1) << 32
-		carry = 1
-
-		for i := 0; i < len(a.value); i++ {
-			comp, newCarry := bits.Sub64(base-1, a.value[i], carry)
-			a.value[i] = comp
-			carry = newCarry
-		}
-
-		return true
-	}
-
-	return false
-}
-
-func (a Digits) SubtractUnderflow(b Digits) (Digits, bool) {
-	result := a.Copy()
-	borrowed := result.SubtractUnderflowInPlace(b)
-
-	return result, borrowed
+	return needComplement
 }
 
 func (a *Digits) TrimInPlace() {
@@ -321,7 +308,7 @@ func (a Digits) IsNegative() bool {
 	return a.sign
 }
 
-func (a Digits) Extend(length int) Digits {
+func (a Digits) EnsureLength(length int) Digits {
 	if length <= len(a.value) {
 		return a
 	}
@@ -394,10 +381,6 @@ func (a Digits) BitLength() uint64 {
 	return uint64(len(a.value)-1)*64 + last
 }
 
-func MakeDigitsOfDigit(d Digit) Digits {
-	return Digits{false, []uint64{uint64(d)}}
-}
-
 func Wrap(values []uint64) Digits {
 	return Digits{false, values}
 }
@@ -419,15 +402,7 @@ func (a Digits) Trim() Digits {
 	return result
 }
 
-func (a Digits) MostSignificantBit() int {
-	if len(a.value) == 0 {
-		return 0
-	}
-
-	return bits.Len64(a.value[len(a.value)-1]) + 64*(len(a.value)-1)
-}
-
-func (a Digits) MultiplyDigit(b Digit) Digits {
+func (a Digits) MultiplyByDigit(b Digit) Digits {
 	return a.Multiply(Digits{false, []uint64{uint64(b)}})
 }
 
@@ -455,24 +430,6 @@ func (a Digits) MostSignificantDigit() Digit {
 	return Digit(a.value[len(a.value)-1])
 }
 
-func (a Digits) MostSignificantDigits(n uint) Digits {
-	lenA := len(a.value)
-
-	if n >= uint(lenA) {
-		return a
-	}
-
-	return Digits{false, a.value[lenA-int(n):]}
-}
-
-func (a Digits) LessSignificantDigit() Digit {
-	if len(a.value) == 0 {
-		return 0
-	}
-
-	return Digit(a.value[0])
-}
-
 func (a *Digits) SetDigitAt(position uint, b Digit) {
 	lenA := len(a.value)
 
@@ -483,7 +440,7 @@ func (a *Digits) SetDigitAt(position uint, b Digit) {
 	a.value[position] = uint64(b)
 }
 
-func (a Digits) Chunks(start uint64, end uint64) Digits {
+func (a Digits) Chunks(start uint64, end uint64) Digits { // TODO is this similar to TakeDigits?
 	if start >= uint64(len(a.value)) {
 		return ZeroAsDigits()
 	}
@@ -495,7 +452,7 @@ func (a Digits) Chunks(start uint64, end uint64) Digits {
 	return Digits{false, a.value[start:end]}
 }
 
-func (a Digits) Append(b Digits) Digits {
+func (a Digits) Append(b Digits) Digits { // TODO replace this method
 	result := make([]uint64, len(a.value)+len(b.value))
 	copy(result, a.value)
 	copy(result[len(a.value):], b.value)
@@ -520,11 +477,11 @@ func (a Digits) TrailingZeros() uint64 {
 	return 0
 }
 
-func (a Digits) Array() []uint64 {
+func (a Digits) AsArray() []uint64 {
 	return a.value
 }
 
-func (a Digits) MultiplyDoubleDigit(b DoubleDigit) Digits {
+func (a Digits) MultiplyByDoubleDigit(b DoubleDigit) Digits {
 	result := make([]uint64, len(a.value)+2)
 
 	for i := 0; i < len(a.value); i++ {
@@ -562,37 +519,12 @@ func (a Digits) AsDoubleDigit() DoubleDigit {
 	return DoubleDigitOf(Digit(a.value[1]), Digit(a.value[0]))
 }
 
-func OneAsDigit() Digit { // TODO later: One() returns Digit
-	return 1
-}
-
 func (a Digits) AsDigit() Digit {
 	if len(a.value) == 0 {
 		return 0
 	}
 
 	return Digit(a.value[0])
-}
-
-func (a *Digits) SetDoubleDigitAt(position uint, d DoubleDigit) {
-	if position+1 >= uint(len(a.value)) {
-		a.value = append(a.value, make([]uint64, int(position+1)-len(a.value)+1)...)
-	}
-
-	a.value[position] = uint64(d.lo)
-	a.value[position+1] = uint64(d.hi)
-}
-
-func (a Digits) MostSignificantDoubleDigit() DoubleDigit {
-	if len(a.value) == 0 {
-		return DoubleDigitOf(0, 0)
-	}
-
-	if len(a.value) == 1 {
-		return DoubleDigitOf(0, Digit(a.value[0]))
-	}
-
-	return DoubleDigitOf(Digit(a.value[len(a.value)-1]), Digit(a.value[len(a.value)-2]))
 }
 
 func (a Digits) AddDoubleDigit(b DoubleDigit) Digits {
@@ -680,18 +612,6 @@ func (a Digits) DoubleDigitAt(position uint) DoubleDigit {
 	return DoubleDigitOf(Digit(a.value[position+1]), Digit(a.value[position]))
 }
 
-func (a Digits) TrimMostSignificantDigit() Digits {
-	if len(a.value) == 0 {
-		return ZeroAsDigits()
-	}
-
-	if len(a.value) == 1 {
-		return ZeroAsDigits()
-	}
-
-	return Digits{a.sign, a.value[:len(a.value)-1]}
-}
-
 func (a Digits) TakeDigits(start uint, end uint) Digits {
 	reverse := false
 
@@ -720,32 +640,6 @@ func (a Digits) TakeDigits(start uint, end uint) Digits {
 			} else {
 				result[i-start] = a.value[i]
 			}
-		}
-	}
-
-	return Digits{a.sign, result}
-}
-
-func (a Digits) TakeMasked(start uint, end uint) Digits {
-	if start > end {
-		start, end = end, start
-	}
-
-	numDigits := end + 1
-
-	if start >= uint(len(a.value)) {
-		return Digits{a.sign, make([]uint64, numDigits)}
-	}
-
-	takeFromArray := int(end) - int(start) + 1
-	if takeFromArray > len(a.value)-int(start) {
-		takeFromArray = len(a.value) - int(start)
-	}
-
-	result := make([]uint64, numDigits)
-	for i := start; i <= end; i++ {
-		if i < uint(len(a.value)) {
-			result[i] = a.value[i]
 		}
 	}
 
@@ -781,66 +675,14 @@ func (a Digits) Negate() Digits {
 	return Digits{!a.sign, a.value}
 }
 
-func (a *Digits) SubtractUnderflowInPlace(b Digits) bool {
-	needComplement := a.Compare(b) < 0
-
-	size := max(len(a.value), len(b.value))
-	a.value = append(a.value, make([]uint64, size-len(a.value))...)
-	var carry uint64
-
-	for i := 0; i < size; i++ {
-		ai := uint64(0)
-		if i < len(a.value) {
-			ai = a.value[i]
-		}
-
-		bi := uint64(0)
-		if i < len(b.value) {
-			bi = b.value[i]
-		}
-
-		diff, borrow := bits.Sub64(ai, bi+carry, 0)
-
-		if i >= len(a.value) {
-			a.value = append(a.value, diff)
-		} else {
-			a.value[i] = diff
-		}
-
-		carry = borrow
-	}
-
-	return needComplement
-}
-
-func (a *Digits) ComplementInPlace() {
-	for i := 0; i < len(a.value); i++ {
-		a.value[i] = ^a.value[i]
-	}
-
-	a.AddDigitInPlace(1)
-}
-
 func MakeDigits(size uint) Digits {
 	return Digits{
 		value: make([]uint64, size),
 	}
 }
 
-func DigitsOfUint64(value uint64) Digits {
-	return Digits{false, []uint64{value}}
-}
-
 func Empty() Digits {
 	return Digits{false, []uint64{}}
-}
-
-func DigitsOfDoubleDigit(value DoubleDigit) Digits {
-	result := make([]uint64, 2)
-	result[0] = uint64(value.lo)
-	result[1] = uint64(value.hi)
-
-	return Digits{false, result}
 }
 
 func (a Digits) Hexadecimal() string {

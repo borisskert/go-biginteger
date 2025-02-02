@@ -34,7 +34,7 @@ func divThreeLongHalvesByTwo(a1, a2, a3, b1, b2 digits.Digits) (digits.Digits, d
 
 func DivMod(numerator, denominator []uint64) ([]uint64, []uint64) {
 	quotient, remainder := divModSelect(digits.Wrap(numerator), digits.Wrap(denominator))
-	return quotient.Trim().Array(), remainder.Trim().Array()
+	return quotient.Trim().AsArray(), remainder.Trim().AsArray()
 }
 
 func divModSelect(numerator, denominator digits.Digits) (digits.Digits, digits.Digits) {
@@ -63,12 +63,12 @@ func divModSelect(numerator, denominator digits.Digits) (digits.Digits, digits.D
 	m := numerator.Length()
 
 	if n == 1 && m == 1 {
-		return numerator.DigitAt(0).DivModToDigits(denominator.DigitAt(0))
+		return numerator.DigitAt(0).DivideToDigits(denominator.DigitAt(0))
 	}
 
 	if n == 1 && m == 2 {
 		q, r := numerator.AsDoubleDigit().DivideByDigit(denominator.DigitAt(0))
-		return digits.DigitsOfDoubleDigit(q), digits.MakeDigitsOfDigit(r)
+		return q.AsDigits(), r.AsDigits()
 	}
 
 	if n == 1 {

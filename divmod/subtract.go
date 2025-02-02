@@ -6,5 +6,5 @@ func Subtract(a, b []uint64) []uint64 {
 	result, _ := digits.Wrap(a).Subtract(digits.Wrap(b))
 	result.NormalizeInPlace()
 
-	return result.Array()
+	return result.AsArray()
 }

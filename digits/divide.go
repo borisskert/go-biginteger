@@ -24,15 +24,15 @@ func DivTwoDigitsByTwo(d, v DoubleDigit) (DoubleDigit, DoubleDigit) {
 	v = v.LeftShift(shift)
 	d = d.LeftShift(shift)
 
-	quot, _ := d.High().DivMod(v.High())
+	quot, _ := d.High().Divide(v.High())
 
-	prod := quot.Multiply2(v.Low())
-	prod, _ = prod.Add128(quot.Multiply2(v.High()).Low().ShiftLeftToDoubleDigit(64))
+	prod := quot.Multiply(v.Low())
+	prod, _ = prod.Add128(quot.Multiply(v.High()).Low().ShiftLeftToDoubleDigit(64))
 
 	if prod.IsGreaterThanOrEqual(d) {
 		quot = quot - 1
-		prod = quot.Multiply2(v.Low())
-		prod, _ = prod.Add128(quot.Multiply2(v.High()).Low().ShiftLeftToDoubleDigit(64))
+		prod = quot.Multiply(v.Low())
+		prod, _ = prod.Add128(quot.Multiply(v.High()).Low().ShiftLeftToDoubleDigit(64))
 	}
 
 	rem, _ := d.Subtract(prod)
@@ -95,7 +95,7 @@ func divThreeHalvesByTwo(a1, a2, a3, b1, b2 HalfDigit) (HalfDigit, Digit) {
 	B := makeDigitOfHalfdigits(b1, b2)
 	A := makeDigitOfHalfdigits(a1, a2)
 
-	q, _ := A.Divide32(b1)
+	q, _ := A.DivideByHalfDigit(b1)
 	C, _ := A.Subtract(q.Multiply(b1))
 	c := C.Low()
 	d := q.Multiply(b2)
