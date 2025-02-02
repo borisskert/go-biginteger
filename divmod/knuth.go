@@ -56,7 +56,7 @@ func d1Normalize(n uint64, b digits.DoubleDigit, u digits.Digits, v digits.Digit
 	if vLast.IsEqualDoubleDigit(bMaxValue) {
 		d = digits.One().AsDoubleDigit() // If the most significant digit is b-1, set d to 1
 	} else {
-		d, _ = b.Divide128(vLast.Increment().AsDoubleDigit()) // Divide b by v_{n-1}+1 to get the scaling factor
+		d, _ = b.Divide(vLast.Increment().AsDoubleDigit()) // Divide b by v_{n-1}+1 to get the scaling factor
 	}
 
 	// Multiply U and V by d to scale both

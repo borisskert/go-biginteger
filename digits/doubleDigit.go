@@ -29,17 +29,74 @@ func (d DoubleDigit) Divide64(b Digit) (Digit, Digit) {
 
 func (d DoubleDigit) DivideByDigit(b Digit) (DoubleDigit, Digit) {
 	if b.High() == 0 {
-		quotient, r := DivTwoDigitsByHalf(d, b.Low())
-		return quotient, r
+		//quotient, r := DivTwoDigitsByHalf(d, b.Low())
+		quotient, r := d.DivideByHalfDigit(b.Low())
+		return quotient, r.AsDigit()
 	}
 
-	quotient, r := DivTwoDigitsByOne2(d, b)
-	return quotient, r
+	if uint64(b) == 0 {
+		panic("division by zero")
+	}
+
+	// Step 1: Divide the high 64-bit part
+	qHi, r := bits.Div64(0, uint64(d.High()), uint64(b))
+
+	// Step 2: Divide the lower 64-bit part using the remainder from step 1
+	qLo, r := bits.Div64(r, uint64(d.Low()), uint64(b))
+
+	return DoubleDigitOf(Digit(qHi), Digit(qLo)), Digit(r)
 }
 
-func (d DoubleDigit) Divide128(b DoubleDigit) (DoubleDigit, DoubleDigit) {
-	q, r := DivTwoDigitsByTwo(d, b)
-	return q, r
+func (d DoubleDigit) DivideByHalfDigit(b HalfDigit) (DoubleDigit, HalfDigit) {
+	if b == 0 {
+		panic("Division by zero")
+	}
+
+	v := b.AsDigit()
+
+	qHi, r := bits.Div64(0, uint64(d.High()), uint64(v))
+	qLo, r := bits.Div64(r, uint64(d.Low()), uint64(v))
+
+	return DoubleDigitOf(Digit(qHi), Digit(qLo)), HalfDigit(r)
+}
+
+func (d DoubleDigit) Divide(b DoubleDigit) (DoubleDigit, DoubleDigit) {
+	if b.IsZero() {
+		panic("Division by zero")
+	}
+
+	if d.IsLessThan(b) {
+		return Digit(0).AsDoubleDigit(), d
+	}
+
+	if d.IsEqual(b) {
+		return Digit(1).AsDoubleDigit(), Digit(0).AsDoubleDigit()
+	}
+
+	if b.High() == 0 {
+		quotient, remainder := d.DivideByDigit(b.Low())
+		return quotient, remainder.AsDoubleDigit()
+	}
+
+	shift := b.LeadingZeros()
+	b = b.LeftShift(shift)
+	d = d.LeftShift(shift)
+
+	quot, _ := d.High().Divide(b.High())
+
+	prod := quot.Multiply(b.Low())
+	prod, _ = prod.Add128(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
+
+	if prod.IsGreaterThanOrEqual(d) {
+		quot = quot - 1
+		prod = quot.Multiply(b.Low())
+		prod, _ = prod.Add128(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
+	}
+
+	rem, _ := d.Subtract(prod)
+	rem = rem.RightShift(shift)
+
+	return quot.AsDoubleDigit(), rem
 }
 
 func (d DoubleDigit) IsGreaterThanOrEqual(other DoubleDigit) bool {
