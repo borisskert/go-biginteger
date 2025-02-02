@@ -15,7 +15,7 @@ var _ = Describe("Digits", func() {
 			result, borrow := a.SubtractUnderflow(b)
 
 			Expect(borrow).To(BeTrue())
-			Expect(result.Length()).To(Equal(uint64(1)))
+			Expect(result.Length()).To(Equal(uint(1)))
 			Expect(result.DigitAt(0)).To(Equal(Digit(18446744073709551615)))
 		})
 
@@ -26,7 +26,7 @@ var _ = Describe("Digits", func() {
 			result, borrow := a.SubtractUnderflow(b)
 
 			Expect(borrow).To(BeFalse())
-			Expect(result.Length()).To(Equal(uint64(1)))
+			Expect(result.Length()).To(Equal(uint(1)))
 			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
 		})
 
@@ -37,7 +37,7 @@ var _ = Describe("Digits", func() {
 			result, borrow := a.SubtractUnderflow(b.Trim())
 
 			Expect(borrow).To(BeTrue())
-			Expect(result.Length()).To(Equal(uint64(1)))
+			Expect(result.Length()).To(Equal(uint(1)))
 			Expect(result.DigitAt(0)).To(Equal(Digit(2)))
 		})
 
@@ -48,7 +48,7 @@ var _ = Describe("Digits", func() {
 			result, borrow := a.SubtractUnderflow(b)
 
 			Expect(borrow).To(BeTrue())
-			Expect(result.Length()).To(Equal(uint64(2)))
+			Expect(result.Length()).To(Equal(uint(2)))
 			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
 			Expect(result.DigitAt(1)).To(Equal(Digit(18446744073709551615)))
 		})
@@ -60,7 +60,7 @@ var _ = Describe("Digits", func() {
 			result, borrow := a.SubtractUnderflow(b)
 
 			Expect(borrow).To(BeTrue())
-			Expect(result.Length()).To(Equal(uint64(2)))
+			Expect(result.Length()).To(Equal(uint(2)))
 			Expect(result.DigitAt(0)).To(Equal(Digit(2)))
 			Expect(result.DigitAt(1)).To(Equal(Digit(18446744073709551615)))
 		})

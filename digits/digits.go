@@ -16,12 +16,22 @@ func ZeroAsDigits() Digits {
 	return Digits{false, []uint64{0}}
 }
 
-func (a Digits) Length() uint64 { // TODO better int
-	return uint64(len(a.value))
+func (a Digits) Length() uint {
+	return uint(len(a.value))
 }
 
-func (a Digits) LeftShiftDigits(n uint64) Digits {
-	result := make([]uint64, uint64(len(a.value))+n)
+func (a Digits) BitLength() uint {
+	if len(a.value) == 0 {
+		return 0
+	}
+
+	last := uint(bits.Len64(a.value[len(a.value)-1]))
+
+	return uint(len(a.value)-1)*64 + last
+}
+
+func (a Digits) LeftShiftDigits(n uint) Digits {
+	result := make([]uint64, uint(len(a.value))+n)
 	copy(result[n:], a.value)
 	return Digits{a.sign, result}
 }
@@ -361,16 +371,6 @@ func (a Digits) compareAbs(other Digits) int {
 
 func (a Digits) IsLessThan(denominator Digits) bool {
 	return a.Compare(denominator) < 0
-}
-
-func (a Digits) BitLength() uint64 {
-	if len(a.value) == 0 {
-		return 0
-	}
-
-	last := uint64(bits.Len64(a.value[len(a.value)-1]))
-
-	return uint64(len(a.value)-1)*64 + last
 }
 
 func Wrap(values []uint64) Digits {
