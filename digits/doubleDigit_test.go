@@ -1,4 +1,4 @@
-package divmod_test
+package digits_test
 
 import (
 	. "github.com/borisskert/go-biginteger/divmod"

@@ -1,6 +1,8 @@
 package divmod
 
-func divModChunked(a Digits, b Digits) (Digits, Digits) {
+import "github.com/borisskert/go-biginteger/digits"
+
+func divModChunked(a digits.Digits, b digits.Digits) (digits.Digits, digits.Digits) {
 	n := int64(b.Length())
 	m := int64(a.Length())
 
@@ -8,11 +10,11 @@ func divModChunked(a Digits, b Digits) (Digits, Digits) {
 		panic("division by zero")
 	}
 	if m < n {
-		return Empty(), a // If dividend is smaller, return (0, remainder)
+		return digits.Empty(), a // If dividend is smaller, return (0, remainder)
 	}
 
-	quotient := Empty()
-	remainder := Empty()
+	quotient := digits.Empty()
+	remainder := digits.Empty()
 
 	for start := max(0, m-2*n); start >= 0; start -= 2 * n {
 		end := min(m, start+2*n)
