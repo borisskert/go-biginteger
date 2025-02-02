@@ -10,6 +10,7 @@ import (
 	"github.com/borisskert/go-biginteger/divmod/algorithms/divideDoubleDigitByDigit"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/divisionShortcut"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/donaldKnuth"
+	"github.com/borisskert/go-biginteger/divmod/algorithms/trailingZeroReduction"
 	"github.com/borisskert/go-biginteger/divmod/common"
 )
 
@@ -26,6 +27,7 @@ func (f *recursiveDivisionAlgorithm) DivMod(
 ) (quotient digits.Digits, remainder digits.Digits) {
 	algorithm := f.selectSuitableDivideAlgorithm(numerator, denominator)
 	algorithm = divisionShortcut.DecorateWithShortcut(algorithm)
+	algorithm = trailingZeroReduction.DecorateWithTrailingZeroReduction(algorithm)
 
 	return algorithm.DivMod(numerator, denominator)
 }

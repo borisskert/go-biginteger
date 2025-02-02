@@ -578,6 +578,10 @@ func (a Digits) IsGreaterThan(other Digits) bool {
 	return a.Compare(other) > 0
 }
 
+func (a Digits) IsGreaterThanOrEqual(b Digits) bool {
+	return a.Compare(b) >= 0
+}
+
 func (a Digits) Negate() Digits {
 	return Digits{!a.sign, a.value}
 }
@@ -615,4 +619,8 @@ func (a Digits) Decrement() (Digits, bool) {
 	borrowed := result.SubtractUnderflowInPlace(Digits{false, []uint64{1}})
 
 	return result, borrowed
+}
+
+func (a Digits) Increment() Digits {
+	return a.AddDigit(1)
 }
