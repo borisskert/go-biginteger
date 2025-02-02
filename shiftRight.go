@@ -1,7 +1,5 @@
 package biginteger
 
-import "github.com/borisskert/go-biginteger/divmod"
-
 func shiftRight(value BigInteger, count uint64) BigInteger {
 	if value.IsEqualTo(zero) {
 		return zero
@@ -13,7 +11,7 @@ func shiftRight(value BigInteger, count uint64) BigInteger {
 
 	return BigInteger{
 		sign:  value.sign,
-		value: divmod.ShiftRightUint64Array(value.value, uint(count)),
+		value: shiftRightUint64Array(value.value, count),
 	}
 }
 

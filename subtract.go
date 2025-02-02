@@ -1,7 +1,6 @@
 package biginteger
 
 import (
-	"github.com/borisskert/go-biginteger/divmod"
 	"math/bits"
 )
 
@@ -12,7 +11,7 @@ func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 
 	if !minuend.sign && !subtrahend.sign {
 		if minuend.IsLessThan(subtrahend) {
-			result := divmod.Subtract(subtrahend.value, minuend.value)
+			result := subtractUint64Arrays(subtrahend.value, minuend.value)
 
 			return BigInteger{
 				true,
@@ -20,7 +19,7 @@ func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 			}
 		}
 
-		result := divmod.Subtract(minuend.value, subtrahend.value)
+		result := subtractUint64Arrays(minuend.value, subtrahend.value)
 
 		return BigInteger{
 			false,
@@ -29,7 +28,7 @@ func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 	}
 
 	if minuend.sign && subtrahend.sign {
-		result := divmod.Add(minuend.value, subtrahend.value)
+		result := addUint64Arrays(minuend.value, subtrahend.value)
 
 		return BigInteger{
 			true,

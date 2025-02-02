@@ -1,10 +1,8 @@
 package biginteger
 
-import "github.com/borisskert/go-biginteger/divmod"
-
 func add(a BigInteger, b BigInteger) BigInteger {
 	if a.sign == b.sign {
-		result := divmod.Add(a.value, b.value)
+		result := addUint64Arrays(a.value, b.value)
 
 		return BigInteger{
 			a.sign,
