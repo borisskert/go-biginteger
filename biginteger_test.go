@@ -507,6 +507,13 @@ var _ = Describe("BigInteger", func() {
 			Expect(bigint1.Divide(*bigint2).String()).To(Equal("1"))
 		})
 
+		It("Should divide 1 by 2", func() {
+			bigint1, _ := biginteger.Of("1")
+			bigint2, _ := biginteger.Of("2")
+
+			Expect(bigint1.Divide(*bigint2).String()).To(Equal("0"))
+		})
+
 		It("Should divide 4 by 2", func() {
 			bigint1, _ := biginteger.Of("4")
 			bigint2, _ := biginteger.Of("2")
@@ -658,6 +665,22 @@ var _ = Describe("BigInteger", func() {
 			result := bigint1.Divide(*bigint2)
 
 			Expect(result.String()).To(Equal("11579208923731619542357098500868790785326998466564056403945758400791312963993"))
+		})
+
+		It("Should divide 10 by 115792089237316195423570985008687907853269984665640564039457584007913129639936", func() {
+			bigint1, _ := biginteger.Of("10")
+			bigint2, _ := biginteger.Of("115792089237316195423570985008687907853269984665640564039457584007913129639936")
+			result := bigint1.Divide(*bigint2)
+
+			Expect(result.String()).To(Equal("0"))
+		})
+
+		It("Should divide 7234724982749223422342342348234982734729384727349827498233423423474924 by 23049828420348234290384203840283402840923842320234242342094823", func() {
+			bigint1, _ := biginteger.Of("7234724982749223422342342348234982734729384727349827498233423423474924")
+			bigint2, _ := biginteger.Of("23049828420348234290384203840283402840923842320234242342094823")
+			result := bigint1.Divide(*bigint2)
+
+			Expect(result.String()).To(Equal("313873268"))
 		})
 
 		It("Should divide by BZ algorithm 1", func() {
@@ -996,6 +1019,14 @@ var _ = Describe("BigInteger", func() {
 			result := bigint1.Modulo(*bigint2)
 
 			Expect(result.String()).To(Equal("40"))
+		})
+
+		It("Should mod 7234724982749223422342342348234982734729384727349827498233423423474924 by 23049828420348234290384203840283402840923842320234242342094823", func() {
+			bigint1, _ := biginteger.Of("7234724982749223422342342348234982734729384727349827498233423423474924")
+			bigint2, _ := biginteger.Of("23049828420348234290384203840283402840923842320234242342094823")
+			result := bigint1.Modulo(*bigint2)
+
+			Expect(result.String()).To(Equal("9615245427589791313307081038888134199181203328816147362583360"))
 		})
 	})
 
