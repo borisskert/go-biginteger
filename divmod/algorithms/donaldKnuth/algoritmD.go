@@ -82,10 +82,10 @@ func d1Normalize(n uint64, b digits.DoubleDigit, u digits.Digits, v digits.Digit
 	}
 
 	// Multiply U and V by d to scale both
-	r := u.MultiplyByDoubleDigit(d).Trim()
+	u = u.MultiplyByDoubleDigit(d).Trim()
 	v = v.MultiplyByDoubleDigit(d).Trim()
 
-	return r, v, d
+	return u, v, d
 }
 
 func d3ACalculateQHat(u digits.Digits, v digits.Digits, j int64, n int64) (digits.DoubleDigit, digits.Digit) {
