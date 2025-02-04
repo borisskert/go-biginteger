@@ -3,6 +3,7 @@ package digits
 import (
 	"fmt"
 	"github.com/borisskert/go-biginteger/uintArray"
+	"github.com/borisskert/go-biginteger/uintUtils"
 	"math/bits"
 	"strings"
 )
@@ -413,27 +414,25 @@ func (a Digits) AsArray() []uint64 {
 func (a Digits) MultiplyByDoubleDigit(b DoubleDigit) Digits {
 	result := make([]uint64, len(a.value)+2)
 
-	for i := 0; i < len(a.value); i++ {
-		loHi, loLo := bits.Mul64(a.value[i], uint64(b.lo))
+	carry := uint64(0)
 
-		loLo += result[i]
-		if loLo < result[i] {
-			loHi++
-		}
-		result[i] = loLo
+	for i := range uint(len(a.value)) {
+		pi := a.DigitAt(i).Multiply(b.Low())
+		qi := a.DigitAt(i).Multiply(b.High())
 
-		hiHi, hiLo := bits.Mul64(a.value[i], uint64(b.hi))
+		lo, carryLo := bits.Add64(result[i], uint64(pi.Low()), carry)
+		result[i] = lo
 
-		hiLo += result[i+1]
-		if hiLo < result[i+1] {
-			hiHi++
-		}
-		result[i+1] = hiLo
+		mid, carryMid := uintUtils.AddFour64(result[i+1], uint64(pi.High()), uint64(qi.Low()), carryLo)
+		result[i+1] = mid
 
-		result[i+2] += loHi + hiHi
+		hi, carryHi := bits.Add64(result[i+2], uint64(qi.High()), carryMid)
+		result[i+2] = hi
+
+		carry = carryHi
 	}
 
-	return Digits{a.sign, result}
+	return Digits{a.sign, result}.Trim()
 }
 
 func (a Digits) AsDoubleDigit() DoubleDigit {
