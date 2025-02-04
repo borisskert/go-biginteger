@@ -36,6 +36,11 @@ func (a Digit) Add(b Digit) (Digit, Digit) {
 	return Digit(sum), Digit(carry)
 }
 
+func (a Digit) Add2(b, c Digit) (Digit, Digit) {
+	sum, carry := bits.Add64(uint64(a), uint64(b), uint64(c))
+	return Digit(sum), Digit(carry)
+}
+
 func (a Digit) Increment() Digit {
 	return a + 1
 }
@@ -105,4 +110,8 @@ func (a Digit) AsDigits() Digits {
 
 func (a Digit) AsDoubleDigit() DoubleDigit {
 	return DoubleDigitOf(0, a)
+}
+
+func (a Digit) IsNonZero() bool {
+	return a != 0
 }

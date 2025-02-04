@@ -1,6 +1,9 @@
 package biginteger
 
-import "math/bits"
+import (
+	mul "github.com/borisskert/go-biginteger/multiply"
+	"math/bits"
+)
 
 func multiply(multiplicand BigInteger, multiplier BigInteger) BigInteger {
 	if multiplicand.IsEqualTo(zero) || multiplier.IsEqualTo(zero) {
@@ -16,7 +19,7 @@ func multiply(multiplicand BigInteger, multiplier BigInteger) BigInteger {
 	}
 
 	sign := multiplicand.sign != multiplier.sign
-	product := multiplyUint64Array(multiplicand.value, multiplier.value)
+	product := mul.Multiply(multiplicand.value, multiplier.value)
 
 	return BigInteger{
 		sign:  sign,
