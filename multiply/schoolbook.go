@@ -13,7 +13,7 @@ func schoolbookMultiply(a, b digits.Digits) digits.Digits {
 		return result.Negate()
 	}
 
-	return result
+	return result.Trim()
 }
 
 func multiplyUint64Array(a, b []uint64) []uint64 {

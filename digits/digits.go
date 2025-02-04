@@ -157,6 +157,13 @@ func (a Digits) Subtract(b Digits) (Digits, bool) {
 	return result, result.IsNegative()
 }
 
+func (a Digits) SubtractNoBorrow(b Digits) Digits {
+	result := a.Copy()
+	result.SubtractInPlace(b)
+
+	return result
+}
+
 func (a *Digits) SubtractInPlace(b Digits) bool {
 	if a.sign != b.sign {
 		return a.AddInPlace(b.Negate())
@@ -622,4 +629,27 @@ func (a Digits) Decrement() (Digits, bool) {
 
 func (a Digits) Increment() Digits {
 	return a.AddDigit(1)
+}
+
+func (a Digits) Split(size uint) (Digits, Digits) {
+	if size >= uint(len(a.value)) {
+		return a, Zero().AsDigits()
+	}
+
+	return Digits{false, a.value[size:]}.Trim(),
+		Digits{false, a.value[:size]}.Trim()
+}
+
+func (a Digits) SubtractAbs(b Digits) Digits {
+	if a.IsGreaterThanOrEqual(b) {
+		diff, _ := a.Subtract(b)
+		return diff
+	}
+
+	diff, _ := b.Subtract(a)
+	return diff
+}
+
+func (a Digits) Sign(isNegative bool) Digits {
+	return Digits{isNegative, a.value}
 }
