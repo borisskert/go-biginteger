@@ -111,6 +111,13 @@ func OfUint64(i uint64) BigInteger {
 	return BigInteger{value: []uint64{i}}
 }
 
+func OfUint64Array(array []uint64) BigInteger {
+	values := make([]uint64, len(array))
+	copy(values, array)
+
+	return BigInteger{value: values}
+}
+
 func Of(s string) (*BigInteger, error) {
 	return parse(s)
 }

@@ -52,18 +52,19 @@ func divThreeByTwo(a1, a2, a3 digits.Digit, b digits.DoubleDigit) (digits.Double
 }
 
 func DivByDigit(dividend digits.Digits, divisor digits.Digit) (digits.Digits, digits.Digit) {
-	quotient := digits.Empty()
-	remainder := digits.Zero().AsDoubleDigit()
-
-	for i := int64(dividend.Length()) - 1; i >= 0; i-- {
-		di := dividend.DigitAt(uint(i))
-		remainder, _ = remainder.LeftShift(64).AddDigit(di)
-
-		qHat, rHat := remainder.DivideByDigit(divisor)
-
-		quotient = quotient.LeftShiftBits(64).AddDoubleDigit(qHat)
-		remainder = rHat.AsDoubleDigit()
-	}
-
-	return quotient.Trim(), remainder.Low()
+	//quotient := digits.Empty()
+	//remainder := digits.Zero().AsDoubleDigit()
+	//
+	//for i := int64(dividend.Length()) - 1; i >= 0; i-- {
+	//	di := dividend.DigitAt(uint(i))
+	//	remainder, _ = remainder.LeftShift(64).AddDigit(di)
+	//
+	//	qHat, rHat := remainder.DivideByDigit(divisor)
+	//
+	//	quotient = quotient.LeftShiftBits(64).AddDoubleDigit(qHat)
+	//	remainder = rHat.AsDoubleDigit()
+	//}
+	//
+	//return quotient.Trim(), remainder.Low()
+	return dividend.DivideByDigit(divisor)
 }

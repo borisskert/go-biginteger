@@ -2,31 +2,38 @@ package multiply
 
 import "github.com/borisskert/go-biginteger/digits"
 
-func karatsubaMultiply(a, b digits.Digits) digits.Digits {
-	m := min(a.Length(), b.Length())
-	if m < 2 {
-		return schoolbookMultiply(a, b)
+func KaratsubaMultiply(a, b digits.Digits) digits.Digits {
+	if min(a.Length(), b.Length()) < 2 {
+		return SchoolbookMultiply(a, b)
 	}
 
-	k := m/2 + m%2
+	n := max(a.Length(), b.Length())
 
-	a1, a0 := a.Split(k)
-	b1, b0 := b.Split(k)
+	k := max((n+1)/2, 1)
+
+	a1, a0 := a.Split2(k)
+	b1, b0 := b.Split2(k)
 
 	signA := a0.Compare(a1) < 0
 	signB := b0.Compare(b1) < 0
 
-	c0 := karatsubaMultiply(a0, b0)
-	c1 := karatsubaMultiply(a1, b1)
-	c2 := karatsubaMultiply(
-		a0.SubtractAbs(a1).Trim(),
-		b0.SubtractAbs(b1).Trim(),
+	c0 := KaratsubaMultiply(a0, b0)
+	c1 := KaratsubaMultiply(a1, b1)
+	c2 := KaratsubaMultiply(
+		a0.Difference(a1),
+		b0.Difference(b1),
 	)
 
 	signC2 := signA != signB
 	mid := c0.Add(c1).
-		SubtractNoBorrow(c2.Sign(signC2)).
+		Subtract(c2.Sign(signC2)).
 		LeftShiftDigits(k)
 
-	return c0.Add(mid).Add(c1.LeftShiftDigits(k * 2)).Trim()
+	result := c0.Add(mid).Add(c1.LeftShiftDigits(k * 2))
+
+	if a.IsNegative() != b.IsNegative() && !result.IsZero() {
+		result = result.Negate()
+	}
+
+	return result.Trim()
 }

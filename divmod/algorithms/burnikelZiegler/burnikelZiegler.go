@@ -3,6 +3,7 @@ package burnikelZiegler
 import (
 	"github.com/borisskert/go-biginteger/digits"
 	"github.com/borisskert/go-biginteger/divmod/common"
+	"github.com/borisskert/go-biginteger/multiply"
 )
 
 // DecorateWithBurnikelZiegler A Decorator to embed any DivideAlgorithm into Burnikel-Ziegler's Fast Recursive Division.
@@ -31,10 +32,17 @@ func divThreeLongHalvesByTwo(
 	a := a1.Concat(a2)
 
 	q, _ := fn(a.Trim(), b1.Trim())
-	c, _ := a.Subtract(q.Multiply(b1))
+	c := a.Subtract(multiply.MultiplySwitch(q, b1))
 
-	d := q.Multiply(b2)
-	r := c.LeftShiftDigits(a3.Length()).Add(a3)
+	d := multiply.MultiplySwitch(q, b2)
+
+	var r digits.Digits
+	if c.IsZero() {
+		r = a3.Copy()
+	} else {
+		r = c.Concat(a3)
+	}
+
 	r.SubtractInPlace(d)
 
 	if r.IsNegative() {

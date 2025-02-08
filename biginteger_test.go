@@ -101,6 +101,25 @@ var _ = Describe("BigInteger", func() {
 		})
 	})
 
+	Context("OfUint64Array", func() {
+		var array []uint64
+		var a biginteger.BigInteger
+
+		BeforeEach(func() {
+			array = []uint64{1, 2, 3}
+			a = biginteger.OfUint64Array(array)
+		})
+
+		It("Should create instance", func() {
+			Expect(a.String()).To(Equal("1020847100762815390427017310442723737601"))
+		})
+
+		It("Should be immutable", func() {
+			array[0] = 0
+			Expect(a.String()).To(Equal("1020847100762815390427017310442723737601"))
+		})
+	})
+
 	Context("Add", func() {
 		It("Should add 1 and 2", func() {
 			bigint1, _ := biginteger.Of("1")
@@ -236,6 +255,14 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("3"))
 		})
 
+		It("Should subtract 2 from -1", func() {
+			bigint1, _ := biginteger.Of("-1")
+			bigint2, _ := biginteger.Of("2")
+			result := bigint1.Subtract(*bigint2)
+
+			Expect(result.String()).To(Equal("-3"))
+		})
+
 		It("Should subtract 2 from 2", func() {
 			bigint1, _ := biginteger.Of("2")
 			bigint2, _ := biginteger.Of("2")
@@ -330,6 +357,64 @@ var _ = Describe("BigInteger", func() {
 
 			Expect(bigint1.Subtract(*bigint2).String()).To(
 				Equal("11579208923731619542357098500868790785326998466564056403945758400791312963983"))
+		})
+
+		It("[1, 0, 1] + -[0, 0, 1, 1]", func() {
+			b := biginteger.OfUint64Array([]uint64{
+				0, 0, 1, 1,
+			}).Negate()
+			a := biginteger.OfUint64Array([]uint64{
+				1, 0, 1,
+			})
+
+			result := a.Add(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				18446744073709551615,
+				18446744073709551615,
+				18446744073709551615,
+			}).Negate()
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
+		})
+
+		It("[1, 0, 0, 1] + -[0, 0, 0, 1, 1]", func() {
+			b := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 1, 1,
+			}).Negate()
+			a := biginteger.OfUint64Array([]uint64{
+				1, 0, 0, 1,
+			})
+
+			result := a.Add(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				18446744073709551615,
+				18446744073709551615,
+				18446744073709551615,
+				18446744073709551615,
+			}).Negate()
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
+		})
+
+		It("[1, 0, 1] - [0, 0, 1, 1]", func() {
+			b := biginteger.OfUint64Array([]uint64{
+				0, 0, 1, 1,
+			})
+			a := biginteger.OfUint64Array([]uint64{
+				1, 0, 1,
+			})
+
+			result := a.Subtract(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				18446744073709551615,
+				18446744073709551615,
+				18446744073709551615,
+			}).Negate()
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
 		})
 	})
 
@@ -462,6 +547,417 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("340282366920938463444927863358058659840"))
 		})
 
+		It("[2, 3] * [1]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64))))
+			bigint2 := biginteger.OfUint64(1)
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("55340232221128654850"))
+		})
+
+		It("[0, 0, 3] * [0, 1]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{0, 0, 3})
+			bigint2 := biginteger.OfUint64Array([]uint64{0, 1})
+
+			result := bigint1.Multiply(bigint2)
+			expected := biginteger.OfUint64Array([]uint64{0, 0, 0, 3})
+
+			Expect(result.String()).To(Equal(expected.String()))
+		})
+
+		It("[0, 0, 3] * [0, 2]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{0, 0, 3})
+			bigint2 := biginteger.OfUint64Array([]uint64{0, 2})
+
+			result := bigint1.Multiply(bigint2)
+			expected := biginteger.OfUint64Array([]uint64{0, 0, 0, 6})
+
+			Expect(result.String()).To(Equal(expected.String()))
+		})
+
+		It("[0, 0, 3] * [0, 0, 2]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{0, 0, 3})
+			bigint2 := biginteger.OfUint64Array([]uint64{0, 0, 2})
+
+			result := bigint1.Multiply(bigint2)
+			expected := biginteger.OfUint64Array([]uint64{0, 0, 0, 0, 6})
+
+			Expect(result.String()).To(Equal(expected.String()))
+		})
+
+		It("[1, 0, 3] * [0, 0, 2]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{1, 0, 3})
+			bigint2 := biginteger.OfUint64Array([]uint64{0, 0, 2})
+
+			result := bigint1.Multiply(bigint2)
+			expected := biginteger.OfUint64Array([]uint64{0, 0, 2, 0, 6})
+
+			Expect(result.String()).To(Equal(expected.String()))
+		})
+
+		It("[1, 1, 3] * [0, 0, 2]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{1, 1, 3})
+			bigint2 := biginteger.OfUint64Array([]uint64{0, 0, 2})
+
+			result := bigint1.Multiply(bigint2)
+			expected := biginteger.OfUint64Array([]uint64{0, 0, 2, 2, 6})
+
+			Expect(result.String()).To(Equal(expected.String()))
+		})
+
+		It("[0, 2, 0] * [0, 3, 0]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{0, 2, 0})
+			bigint2 := biginteger.OfUint64Array([]uint64{0, 3, 0})
+
+			result := bigint1.Multiply(bigint2)
+			expected := biginteger.OfUint64Array([]uint64{0, 0, 6})
+
+			Expect(result.String()).To(Equal(expected.String()))
+		})
+
+		It("[0, 2, 3] * [1, 5, 7]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{0, 2, 3})
+			bigint2 := biginteger.OfUint64Array([]uint64{1, 5, 7})
+
+			result := bigint1.Multiply(bigint2)
+			expected := biginteger.OfUint64Array([]uint64{0, 2, 13, 29, 21})
+
+			Expect(result.String()).To(Equal(expected.String()))
+		})
+
+		It("[1] * [2, 3]", func() {
+			bigint2 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64))))
+			bigint1 := biginteger.OfUint64(1)
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("55340232221128654850"))
+		})
+
+		It("[2, 3] * [5, 7]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64))))
+			bigint2 := biginteger.OfUint64(5).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("7145929705339707733265822334204709437450"))
+		})
+
+		It("-[2, 3] * [5, 7]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(5).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-7145929705339707733265822334204709437450"))
+		})
+
+		It("[2, 3] * -[5, 7]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64))))
+			bigint2 := biginteger.OfUint64(5).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-7145929705339707733265822334204709437450"))
+		})
+
+		It("-[2, 3] * -[5, 7]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(5).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("7145929705339707733265822334204709437450"))
+		})
+
+		It("[2, 3, 5] * [7, 11, 13]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2))))
+			bigint2 := biginteger.OfUint64(7).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("7526485800425552703122161588691062002295099751538725521244714795387728393404430"))
+		})
+
+		It("[2, 3, 5] * -[7, 11, 13]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2))))
+			bigint2 := biginteger.OfUint64(7).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-7526485800425552703122161588691062002295099751538725521244714795387728393404430"))
+		})
+
+		It("-[2, 3, 5] * [7, 11, 13]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(7).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-7526485800425552703122161588691062002295099751538725521244714795387728393404430"))
+		})
+
+		It("-[2, 3, 5] * -[7, 11, 13]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(7).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("7526485800425552703122161588691062002295099751538725521244714795387728393404430"))
+		})
+
+		It("[2, 3, 5, 7] * [11, 13, 17, 19]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3))))
+			bigint2 := biginteger.OfUint64(11).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("5240466824120465735690213559006175393735119524884483232897243840556903294164097445318873535703388519421361975688429590"))
+		})
+
+		It("-[2, 3, 5, 7] * [11, 13, 17, 19]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(11).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-5240466824120465735690213559006175393735119524884483232897243840556903294164097445318873535703388519421361975688429590"))
+		})
+
+		It("[2, 3, 5, 7] * -[11, 13, 17, 19]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3))))
+			bigint2 := biginteger.OfUint64(11).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-5240466824120465735690213559006175393735119524884483232897243840556903294164097445318873535703388519421361975688429590"))
+		})
+
+		It("-[2, 3, 5, 7] * -[11, 13, 17, 19]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(11).
+				Add(biginteger.OfUint64(13).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("5240466824120465735690213559006175393735119524884483232897243840556903294164097445318873535703388519421361975688429590"))
+		})
+
+		It("[2, 3, 5, 7, 11] * [13, 17, 19, 23, 29]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4))))
+			bigint2 := biginteger.OfUint64(13).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(23).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(29).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("4277090729651688475095552432706461656776701386357046711954515251904984437254503326852270488771354389001848379176532800563528495084040123606862209293454671898"))
+		})
+
+		It("-[2, 3, 5, 7, 11] * [13, 17, 19, 23, 29]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(13).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(23).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(29).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4))))
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-4277090729651688475095552432706461656776701386357046711954515251904984437254503326852270488771354389001848379176532800563528495084040123606862209293454671898"))
+		})
+
+		It("[2, 3, 5, 7, 11] * -[13, 17, 19, 23, 29]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4))))
+			bigint2 := biginteger.OfUint64(13).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(23).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(29).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-4277090729651688475095552432706461656776701386357046711954515251904984437254503326852270488771354389001848379176532800563528495084040123606862209293454671898"))
+		})
+
+		It("-[2, 3, 5, 7, 11] * -[13, 17, 19, 23, 29]", func() {
+			bigint1 := biginteger.Two().
+				Add(biginteger.OfUint64(3).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(5).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(7).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(11).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4)))).
+				Negate()
+			bigint2 := biginteger.OfUint64(13).
+				Add(biginteger.OfUint64(17).Multiply(biginteger.Two().Power(biginteger.OfUint64(64)))).
+				Add(biginteger.OfUint64(19).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 2)))).
+				Add(biginteger.OfUint64(23).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 3)))).
+				Add(biginteger.OfUint64(29).Multiply(biginteger.Two().Power(biginteger.OfUint64(64 * 4)))).
+				Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("4277090729651688475095552432706461656776701386357046711954515251904984437254503326852270488771354389001848379176532800563528495084040123606862209293454671898"))
+		})
+
+		It("[2, 3, 5, 7, 11, 13] * [17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3, 5, 7, 11, 13})
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37})
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("2194533937076275900366741167535054799875749382360025467904073191803561576452710729579359653785381716606050939386956344352048930805278246717119350772195259030481664056998925675893250901174357327906"))
+		})
+
+		It("-[2, 3, 5, 7, 11, 13] * [17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3, 5, 7, 11, 13}).Negate()
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37})
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-2194533937076275900366741167535054799875749382360025467904073191803561576452710729579359653785381716606050939386956344352048930805278246717119350772195259030481664056998925675893250901174357327906"))
+		})
+
+		It("[2, 3, 5, 7, 11, 13] * -[17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3, 5, 7, 11, 13})
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37}).Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("-2194533937076275900366741167535054799875749382360025467904073191803561576452710729579359653785381716606050939386956344352048930805278246717119350772195259030481664056998925675893250901174357327906"))
+		})
+
+		It("-[2, 3, 5, 7, 11, 13] * -[17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3, 5, 7, 11, 13}).Negate()
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37}).Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("2194533937076275900366741167535054799875749382360025467904073191803561576452710729579359653785381716606050939386956344352048930805278246717119350772195259030481664056998925675893250901174357327906"))
+		})
+
+		It("-[2, 3, 5, 7, 11] * -[17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3, 5, 7, 11}).Negate()
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37}).Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("100663473399553545370669210812961964604566924803333859089625794036125654728254304435718191721276530529593616055713017888717257920343814613824652276020843748436229242230746906658"))
+		})
+
+		It("-[2, 3, 5, 7] * -[17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3, 5, 7}).Negate()
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37}).Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("3472622253855132649081861641702148117036463459210516718392135432595196689365808939506596144213874079967253209885808263144992544392451121881350518022663569442"))
+		})
+
+		It("-[2, 3, 5] * -[17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3, 5}).Negate()
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37}).Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("134465163994687274762105838107521770326556304348999366369964713378245628850002121928477531488290893427306456222684114611038808332300189730"))
+		})
+
+		It("-[2, 3] * -[17, 19, 23, 29, 31, 37]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 3}).Negate()
+			bigint2 := biginteger.OfUint64Array([]uint64{17, 19, 23, 29, 31, 37}).Negate()
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("4373622687799787192919683286114733116141072705248339896399821491791524735944525748429014922836055156486784396417826850"))
+		})
+
+		It("[2, 5, 1] * [0, 3, 1]", func() {
+			bigint1 := biginteger.OfUint64Array([]uint64{2, 5, 1})
+			bigint2 := biginteger.OfUint64Array([]uint64{0, 3, 1})
+
+			result := bigint1.Multiply(bigint2)
+
+			Expect(result.String()).To(Equal("115792089237316195473787798891781353969741100288957849247264476354407722647552"))
+		})
+
 		It("Should multiply 340282366920938463463374607431768211456 by 340282366920938463463374607431768211456", func() {
 			bigint1, _ := biginteger.Of("340282366920938463463374607431768211456")
 			bigint2, _ := biginteger.Of("340282366920938463463374607431768211456")
@@ -498,7 +994,7 @@ var _ = Describe("BigInteger", func() {
 				Equal("13407807929942597099574024998205846127479365820592393377723561443721764030073431184712636981971479856705023170278632780869088242247907112362425735876444160"))
 		})
 
-		It("Should multiply 115792089237316195423570985008687907853269984665640564039457584007913129639936 by 115792089237316195423570985008687907853269984665640564039457584007913129639935", func() {
+		It("Should multiply 1 * (2 pow (1 * 64)) + 2 * (2 pow (2 * 64)) + 3 * (2 pow (3 * 64)) + 4 * (2 pow (4 * 64)) by 5 * (2 pow (1 * 64)) + 6 * (2 pow (2 * 64)) + 7 * (2 pow (3 * 64)) + 8 * (2 pow (4 * 64))", func() {
 			// 1 * (2 ^ (1 * 64)) + 2 * (2 ^ (2 * 64)) + 3 * (2 ^ (3 * 64)) + 4 * (2 ^ (4 * 64))
 			bigint1, _ := biginteger.Of("463168356949264781713115245240911673705267871666027132333082598323981868072960")
 
@@ -508,6 +1004,18 @@ var _ = Describe("BigInteger", func() {
 
 			Expect(result.String()).To(
 				Equal("429049853758163107224164413605958634390308066647112887105620497623101003144048495943955854647503111715161403869100645633766616505135266290336675715308584960"))
+		})
+
+		It("Should multiply 1 * (2 pow (1 * 64)) + 2 * (2 pow (2 * 64)) + 3 * (2 pow (3 * 64)) + 4 * (2 pow (4 * 64)) + 5 * (2 pow (5 * 64)) + 6 * (2 pow (6 * 64)) by 7 * (2 pow (1 * 64)) + 8 * (2 pow (2 * 64)) + 9 * (2 pow (3 * 64)) + 10 * (2 pow (4 * 64)) + 11 * (2 pow (5 * 64)) + 12 * (2 pow (6 * 64))", func() {
+			// 1 * (2 ^ (1 * 64)) + 2 * (2 ^ (2 * 64)) + 3 * (2 ^ (3 * 64)) + 4 * (2 ^ (4 * 64)) + 5 * (2 ^ (5 * 64)) + 6 * (2 ^ (6 * 64))
+			bigint1, _ := biginteger.Of("236412037178366875284354175780466233242916712510589705362416398282498506152423739579262723290545779193278560244596736")
+
+			// 7 * (2 ^ (1 * 64)) + 8 * (2 ^ (2 * 64)) + 9 * (2 ^ (3 * 64)) + 10 * (2 ^ (4 * 64)) + 11 * (2 ^ (5 * 64)) + 12 * (2 ^ (6 * 64))
+			bigint2, _ := biginteger.Of("472824074356733750570844338596853376568460030905823595230301474362577200932793929233416254188053366903079396559552512")
+			result := bigint1.Multiply(*bigint2)
+
+			Expect(result.String()).To(
+				Equal("111781302645651043341330957146821704969837306656960913212445251545967385814394946310465628903825385247865954089346563586529231026931576869977620392152317636317939302391742552473990007097776303763130396778309561449760511058894055800832"))
 		})
 
 		It("Should multiply 2003... (19k digits) ...56736 by itself", func() {
@@ -533,6 +1041,92 @@ var _ = Describe("BigInteger", func() {
 
 			Expect(result.String()).To(
 				Equal("115792089237316195423570985008687907852929702298719625575994209400481361428480"))
+		})
+
+		It("[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1] * ([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1] - 1)", func() {
+			a := biginteger.OfUint64Array([]uint64{
+				1, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				1,
+			})
+
+			b := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				1,
+			}).Subtract(biginteger.One())
+
+			result := a.Multiply(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				1,
+			}).Subtract(biginteger.One())
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
+		})
+
+		It("[1, 0, 0, 0, 0, 0, 0, 0, 1] * ([0, 0, 0, 0, 0, 0, 0, 0, 1] - 1)", func() {
+			a := biginteger.OfUint64Array([]uint64{
+				1, 0, 0, 0, 0, 0, 0, 0,
+				1,
+			})
+
+			b := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				1,
+			}).Subtract(biginteger.One())
+
+			result := a.Multiply(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				1,
+			}).Subtract(biginteger.One())
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
+		})
+
+		It("[1, 0, 0, 0, 1] * ([0, 0, 0, 0, 1] - 1)", func() {
+			a := biginteger.OfUint64Array([]uint64{
+				1, 0, 0, 0, 1,
+			})
+
+			b := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 0, 1,
+			}).Subtract(biginteger.One())
+
+			result := a.Multiply(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 0, 0, 0, 0, 0,
+				1,
+			}).Subtract(biginteger.One())
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
+		})
+
+		It("[1, 0, 1] * ([0, 0, 1] - 1)", func() {
+			a := biginteger.OfUint64Array([]uint64{
+				1, 0, 1,
+			})
+
+			b := biginteger.OfUint64Array([]uint64{
+				0, 0, 1,
+			}).Subtract(biginteger.One())
+
+			result := a.Multiply(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				0, 0, 0, 0,
+				1,
+			}).Subtract(biginteger.One())
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
 		})
 	})
 
@@ -721,16 +1315,42 @@ var _ = Describe("BigInteger", func() {
 		})
 
 		It("Should divide by BZ algorithm 1", func() {
-			a := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(64))).Subtract(biginteger.One())
-			b := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(32))).Subtract(biginteger.One())
+			a := biginteger.Two().
+				Power(biginteger.OfUint64(64 * 64)).
+				Subtract(biginteger.One())
+			b := biginteger.Two().Power(biginteger.OfUint64(64 * 32)).
+				Subtract(biginteger.One())
 
 			result := a.Divide(b)
+
+			expected := biginteger.OfUint64Array([]uint64{
+				1,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 0,
+				0, 0, 0, 0, 0, 0, 0, 1,
+			})
+
+			Expect(result.IsEqualTo(expected)).To(BeTrue())
 
 			Expect(result.Digits()).To(Equal(uint64(617)))
 			Expect(result.String()).To(Equal("32317006071311007300714876688669951960444102669715484032130345427524655138867890893197201411522913463688717960921898019494119559150490921095088152386448283120630877367300996091750197750389652106796057638384067568276792218642619756161838094338476170470581645852036305042887575891541065808607552399123930385521914333389668342420684974786564569494856176035326322058077805659331026192708460314150258592864177116725943603718461857357598351152301645904403697613233287231227125684710820209725157101726931323469678542580656697935045997268352998638215525166389437335543602135433229604645318478604952148193555853611059596230657"))
 
 			modulo1Mio := result.Modulo(biginteger.OfUint64(1_000_000))
 			Expect(modulo1Mio.String()).To(Equal("230657"))
+		})
+
+		It("[18446744073709551615,18446744073709551615] / [18446744073709551615]", func() {
+			a := biginteger.OfUint64Array([]uint64{18446744073709551615, 18446744073709551615})
+			b := biginteger.OfUint64(18446744073709551615)
+
+			result := a.Divide(b)
+
+			Expect(result.Digits()).To(Equal(uint64(20)))
+			Expect(result.String()).To(Equal("18446744073709551617"))
+
+			modulo1Mio := result.Modulo(biginteger.OfUint64(1_000_000))
+			Expect(modulo1Mio.String()).To(Equal("551617"))
 		})
 
 		It("Should divide by BZ algorithm 1a", func() {
@@ -783,6 +1403,19 @@ var _ = Describe("BigInteger", func() {
 
 			modulo1Mio := result.Modulo(biginteger.OfUint64(1_000_000))
 			Expect(modulo1Mio.String()).To(Equal("211457"))
+		})
+
+		It("Should divide by BZ algorithm 1e", func() {
+			a := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(2))).Subtract(biginteger.One())
+			b := biginteger.Two().Power(biginteger.OfUint64(64).Multiply(biginteger.OfUint64(1))).Subtract(biginteger.One())
+
+			result := a.Divide(b)
+
+			Expect(result.Digits()).To(Equal(uint64(20)))
+			Expect(result.String()).To(Equal("18446744073709551617"))
+
+			modulo1Mio := result.Modulo(biginteger.OfUint64(1_000_000))
+			Expect(modulo1Mio.String()).To(Equal("551617"))
 		})
 
 		It("Should divide by BZ algorithm 2", func() {
@@ -884,42 +1517,42 @@ var _ = Describe("BigInteger", func() {
 	})
 
 	Context("Modulo", func() {
-		It("Should return 0 for 1 % 1", func() {
+		It("Should return 0 for 1 mod 1", func() {
 			bigint1, _ := biginteger.Of("1")
 			bigint2, _ := biginteger.Of("1")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
 		})
 
-		It("Should return 0 for 2 % 1", func() {
+		It("Should return 0 for 2 mod 1", func() {
 			bigint1, _ := biginteger.Of("2")
 			bigint2, _ := biginteger.Of("1")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
 		})
 
-		It("Should return 1 for 1 % 2", func() {
+		It("Should return 1 for 1 mod 2", func() {
 			bigint1, _ := biginteger.Of("1")
 			bigint2, _ := biginteger.Of("2")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("1"))
 		})
 
-		It("Should return 0 for 0 % 2", func() {
+		It("Should return 0 for 0 mod 2", func() {
 			bigint1, _ := biginteger.Of("0")
 			bigint2, _ := biginteger.Of("2")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
 		})
 
-		It("Should return 0 for 2 % 2", func() {
+		It("Should return 0 for 2 mod 2", func() {
 			bigint1, _ := biginteger.Of("2")
 			bigint2, _ := biginteger.Of("2")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
 		})
 
-		It("Should return 0 for 4 % 2", func() {
+		It("Should return 0 for 4 mod 2", func() {
 			bigint1, _ := biginteger.Of("4")
 			bigint2, _ := biginteger.Of("2")
 			modulo := bigint1.Modulo(*bigint2)
@@ -927,98 +1560,98 @@ var _ = Describe("BigInteger", func() {
 			Expect(modulo.String()).To(Equal("0"))
 		})
 
-		It("Should return 0 for 8 % 4", func() {
+		It("Should return 0 for 8 mod 4", func() {
 			bigint1, _ := biginteger.Of("8")
 			bigint2, _ := biginteger.Of("4")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
 		})
 
-		It("Should return -15 for -15 % -16", func() {
+		It("Should return -15 for -15 mod -16", func() {
 			bigint1, _ := biginteger.Of("-15")
 			bigint2, _ := biginteger.Of("-16")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-15"))
 		})
 
-		It("Should return -15 for -15 % 16", func() {
+		It("Should return -15 for -15 mod 16", func() {
 			bigint1, _ := biginteger.Of("-15")
 			bigint2, _ := biginteger.Of("16")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-15"))
 		})
 
-		It("Should return 15 for 15 % -16", func() {
+		It("Should return 15 for 15 mod -16", func() {
 			bigint1, _ := biginteger.Of("15")
 			bigint2, _ := biginteger.Of("-16")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("15"))
 		})
 
-		It("Should return 1 for 17 % 16", func() {
+		It("Should return 1 for 17 mod 16", func() {
 			bigint1, _ := biginteger.Of("17")
 			bigint2, _ := biginteger.Of("16")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("1"))
 		})
 
-		It("Should return -1 for -17 % -16", func() {
+		It("Should return -1 for -17 mod -16", func() {
 			bigint1, _ := biginteger.Of("-17")
 			bigint2, _ := biginteger.Of("-16")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-1"))
 		})
 
-		It("Should return -1 for -17 % 16", func() {
+		It("Should return -1 for -17 mod 16", func() {
 			bigint1, _ := biginteger.Of("-17")
 			bigint2, _ := biginteger.Of("16")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("-1"))
 		})
 
-		It("Should return 1 for 17 % -16", func() {
+		It("Should return 1 for 17 mod -16", func() {
 			bigint1, _ := biginteger.Of("17")
 			bigint2, _ := biginteger.Of("-16")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("1"))
 		})
 
-		It("Should return 0 for 4294967296 % 4294967296", func() {
+		It("Should return 0 for 4294967296 mod 4294967296", func() {
 			bigint1, _ := biginteger.Of("4294967296")
 			bigint2, _ := biginteger.Of("4294967296")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
 		})
 
-		It("Should return 0 for 18446744073709551615 % 1", func() {
+		It("Should return 0 for 18446744073709551615 mod 1", func() {
 			bigint1, _ := biginteger.Of("18446744073709551615")
 			bigint2, _ := biginteger.Of("1")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("0"))
 		})
 
-		It("Should return 1 for 18446744073709551615 % 2", func() {
+		It("Should return 1 for 18446744073709551615 mod 2", func() {
 			bigint1, _ := biginteger.Of("18446744073709551615")
 			bigint2, _ := biginteger.Of("2")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("1"))
 		})
 
-		It("Should return 18446744073709551615 for 18446744073709551615 % 18446744073709551616", func() {
+		It("Should return 18446744073709551615 for 18446744073709551615 mod 18446744073709551616", func() {
 			bigint1, _ := biginteger.Of("18446744073709551615")
 			bigint2, _ := biginteger.Of("18446744073709551616")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("18446744073709551615"))
 		})
 
-		It("Should return 1 for 18446744073709551616 % 18446744073709551615", func() {
+		It("Should return 1 for 18446744073709551616 mod 18446744073709551615", func() {
 			bigint1, _ := biginteger.Of("18446744073709551616")
 			bigint2, _ := biginteger.Of("18446744073709551615")
 
 			Expect(bigint1.Modulo(*bigint2).String()).To(Equal("1"))
 		})
 
-		It("Should return 1 for 18446744073709551616 % 10", func() {
+		It("Should return 1 for 18446744073709551616 mod 10", func() {
 			bigint1, _ := biginteger.Of("18446744073709551616")
 			bigint2, _ := biginteger.Of("10")
 			result := bigint1.Modulo(*bigint2)
@@ -1026,7 +1659,7 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("6"))
 		})
 
-		It("Should return 1 for 36893488147419103230 % 10", func() {
+		It("Should return 1 for 36893488147419103230 mod 10", func() {
 			bigint1, _ := biginteger.Of("36893488147419103230")
 			bigint2, _ := biginteger.Of("10")
 			result := bigint1.Modulo(*bigint2)
@@ -1034,7 +1667,7 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("0"))
 		})
 
-		It("Should return 1 for 36893488147419103232 % 10", func() {
+		It("Should return 1 for 36893488147419103232 mod 10", func() {
 			bigint1, _ := biginteger.Of("36893488147419103232")
 			bigint2, _ := biginteger.Of("10")
 			result := bigint1.Modulo(*bigint2)
@@ -1042,7 +1675,7 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("2"))
 		})
 
-		It("Should return 0 for 340282366920938463444927863358058659840 % 10", func() {
+		It("Should return 0 for 340282366920938463444927863358058659840 mod 10", func() {
 			bigint1, _ := biginteger.Of("340282366920938463444927863358058659840")
 			bigint2, _ := biginteger.Of("10")
 			result := bigint1.Modulo(*bigint2)
@@ -1050,7 +1683,7 @@ var _ = Describe("BigInteger", func() {
 			Expect(result.String()).To(Equal("0"))
 		})
 
-		It("Should return 40 for 340282366920938463444927863358058659840 % 100", func() {
+		It("Should return 40 for 340282366920938463444927863358058659840 mod 100", func() {
 			bigint1, _ := biginteger.Of("340282366920938463444927863358058659840")
 			bigint2, _ := biginteger.Of("100")
 			result := bigint1.Modulo(*bigint2)
@@ -1505,63 +2138,63 @@ var _ = Describe("BigInteger", func() {
 	})
 
 	Context("ShiftLeft", func() {
-		It("Should return 0 << 0", func() {
+		It("Should return 0 shiftLeft 0", func() {
 			bigint, _ := biginteger.Of("0")
 
 			Expect(bigint.ShiftLeft(0).String()).
 				To(Equal("0"))
 		})
 
-		It("Should return 0 << 1000000", func() {
+		It("Should return 0 shiftLeft 1000000", func() {
 			bigint, _ := biginteger.Of("0")
 
 			Expect(bigint.ShiftLeft(1000000).String()).
 				To(Equal("0"))
 		})
 
-		It("Should return 1 << 0", func() {
+		It("Should return 1 shiftLeft 0", func() {
 			bigint, _ := biginteger.Of("1")
 
 			Expect(bigint.ShiftLeft(0).String()).
 				To(Equal("1"))
 		})
 
-		It("Should return 2 << 0", func() {
+		It("Should return 2 shiftLeft 0", func() {
 			bigint, _ := biginteger.Of("2")
 
 			Expect(bigint.ShiftLeft(0).String()).
 				To(Equal("2"))
 		})
 
-		It("Should return 3 << 0", func() {
+		It("Should return 3 shiftLeft 0", func() {
 			bigint, _ := biginteger.Of("3")
 
 			Expect(bigint.ShiftLeft(0).String()).
 				To(Equal("3"))
 		})
 
-		It("Should return 2 << 1", func() {
+		It("Should return 2 shiftLeft 1", func() {
 			bigint, _ := biginteger.Of("2")
 
 			Expect(bigint.ShiftLeft(1).String()).
 				To(Equal("4"))
 		})
 
-		It("Should return 2 << 2", func() {
+		It("Should return 2 shiftLeft 2", func() {
 			bigint, _ := biginteger.Of("2")
 
 			Expect(bigint.ShiftLeft(2).String()).
 				To(Equal("8"))
 		})
 
-		It("Should return 2 << 3", func() {
+		It("Should return 2 shiftLeft 3", func() {
 			bigint, _ := biginteger.Of("2")
 
 			Expect(bigint.ShiftLeft(3).String()).
 				To(Equal("16"))
 		})
 
-		It("Should return 1 << 32", func() {
+		It("Should return 1 shiftLeft 32", func() {
 			bigint, _ := biginteger.Of("1")
 			result := bigint.ShiftLeft(32)
 
@@ -1569,7 +2202,7 @@ var _ = Describe("BigInteger", func() {
 				To(Equal("4294967296"))
 		})
 
-		It("Should return 1 << 62", func() {
+		It("Should return 1 shiftLeft 62", func() {
 			bigint, _ := biginteger.Of("1")
 			result := bigint.ShiftLeft(62)
 
@@ -1585,7 +2218,7 @@ var _ = Describe("BigInteger", func() {
 				To(Equal("9223372036854775808"))
 		})
 
-		It("Should return 1 << 64", func() {
+		It("Should return 1 shiftLeft 64", func() {
 			bigint, _ := biginteger.Of("1")
 
 			result := bigint.ShiftLeft(64)
@@ -1594,14 +2227,14 @@ var _ = Describe("BigInteger", func() {
 				To(Equal("18446744073709551616"))
 		})
 
-		It("Should return 1 << 65", func() {
+		It("Should return 1 shiftLeft 65", func() {
 			bigint, _ := biginteger.Of("1")
 
 			Expect(bigint.ShiftLeft(65).String()).
 				To(Equal("36893488147419103232"))
 		})
 
-		It("Should return 9223372036854775808 << 1", func() {
+		It("Should return 9223372036854775808 shiftLeft 1", func() {
 			bigint, _ := biginteger.Of("9223372036854775808")
 			result := bigint.ShiftLeft(1)
 

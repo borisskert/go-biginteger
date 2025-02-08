@@ -5,45 +5,56 @@ import (
 	"math/bits"
 )
 
-func schoolbookMultiply(a, b digits.Digits) digits.Digits {
-	array := multiplyUint64Array(a.AsArray(), b.AsArray())
-	result := digits.Wrap(array)
+func SchoolbookMultiply(a, b digits.Digits) digits.Digits {
+	result := multiplyByDigits(a, b)
 
-	if a.IsNegative() != b.IsNegative() {
-		return result.Negate()
+	if a.IsNegative() != b.IsNegative() && !result.IsZero() {
+		return result.Trim().Negative()
 	}
 
 	return result.Trim()
 }
 
-func multiplyUint64Array(a, b []uint64) []uint64 {
-	result := make([]uint64, len(a)+len(b))
-
-	for i := 0; i < len(a); i++ {
-		var carry uint64 = 0
-
-		for j := 0; j < len(b); j++ {
-			high, low := bits.Mul64(a[i], b[j])
-			low += result[i+j]
-
-			if low < result[i+j] {
-				high++
-			}
-
-			result[i+j] = low
-
-			high += carry
-			result[i+j+1] += high
-
-			if result[i+j+1] < high {
-				carry = 1
-			} else {
-				carry = 0
-			}
-		}
-
-		result[i+len(b)] += carry
+func multiplyByDigits(a digits.Digits, b digits.Digits) digits.Digits {
+	if a.IsZero() || b.IsZero() {
+		return digits.Zero().AsDigits()
 	}
 
-	return result
+	if a.IsOne() {
+		return b
+	}
+
+	if b.IsOne() {
+		return a
+	}
+
+	result := make([]uint64, a.Length()+b.Length())
+
+	for i := uint(0); i < a.Length(); i++ {
+		ai := a.DigitAt(i)
+		var carry uint64 = 0
+
+		for j := uint(0); j < b.Length(); j++ {
+			bi := b.DigitAt(j)
+
+			hi, lo := bits.Mul64(uint64(ai), uint64(bi))
+
+			sumLo, carryLo := bits.Add64(result[i+j], lo, 0)
+			result[i+j] = sumLo
+
+			sumMid, carryMid := bits.Add64(result[i+j+1], hi, carryLo)
+			result[i+j+1] = sumMid
+
+			// Carry propagation
+			carry = carryMid
+
+			if carry > 0 && i+j+2 < uint(len(result)) {
+				sumCarry, carryNext := bits.Add64(result[i+j+2], carry, 0)
+				result[i+j+2] = sumCarry
+				carry = carryNext
+			}
+		}
+	}
+
+	return digits.Wrap(result).Trim()
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/borisskert/go-biginteger/uintArray"
 	"github.com/borisskert/go-biginteger/uintUtils"
 	"math/bits"
+	"strconv"
 	"strings"
 )
 
@@ -88,10 +89,37 @@ func (a *Digits) RightShiftBitsInPlace(n uint) { // TODO is this working?
 }
 
 func (a Digits) Add(b Digits) Digits {
-	result := a.Copy()
-	result.AddInPlace(b)
+	if a.sign != b.sign {
+		return a.Subtract(b.Negate())
+	}
 
-	return result
+	carry := uint64(0)
+	sizeA := len(a.value)
+	sizeB := len(b.value)
+	size := max(sizeA, sizeB)
+
+	result := make([]uint64, size+1) // Extra space for carry
+
+	for i := 0; i < size; i++ {
+		ai := uint64(0)
+		if i < sizeA {
+			ai = a.value[i]
+		}
+
+		bi := uint64(0)
+		if i < sizeB {
+			bi = b.value[i]
+		}
+
+		// Perform addition with carry
+		result[i], carry = bits.Add64(ai, bi, carry)
+	}
+
+	// If there's a carry left, store it
+	result[size] = carry
+
+	// Return result (Trim() ensures we don't keep unnecessary leading zeros)
+	return Digits{sign: a.sign, value: result}.Trim()
 }
 
 func (a *Digits) AddInPlace(b Digits) bool {
@@ -137,31 +165,61 @@ func (a *Digits) addInPlaceAbs(b Digits) bool {
 	return carry == 1
 }
 
-func (a Digits) Multiply(b Digits) Digits {
-	if len(a.value) == 0 || len(b.value) == 0 {
-		return Digits{false, []uint64{0}}
+func (a Digits) MultiplyDoNotUse(b Digits) Digits { // TODO remove
+	//if len(a.value) == 0 || len(b.value) == 0 {
+	//	return Digits{false, []uint64{0}}
+	//}
+	//
+	//result := uintArray.
+	//	MultiplyUint64Array(a.value, b.value)
+	//
+	//digits := Digits{a.sign != b.sign, result}
+	//
+	//return digits.Trim()
+	panic("Do not use this function (yet)")
+}
+
+func (a Digits) SubtractAndBorrow(b Digits) (Digits, bool) {
+	if a.sign != b.sign {
+		return a.Add(b.Negate()), false
 	}
 
-	result := uintArray.MultiplyUint64Array(a.value, b.value)
+	if a.IsGreaterThanOrEqual(b) {
+		return a.Subtract(b), false
+	}
 
-	digits := Digits{a.sign != b.sign, result}
-	digits.NormalizeInPlace()
-
-	return digits
+	return b.Subtract(a).Negate(), true
 }
 
-func (a Digits) Subtract(b Digits) (Digits, bool) {
-	result := a.Copy()
-	result.SubtractInPlace(b)
+func (a Digits) Subtract(b Digits) Digits {
+	if a.sign != b.sign {
+		return a.Add(b.Negate())
+	}
 
-	return result, result.IsNegative()
+	if a.Abs().IsLessThan(b.Abs()) {
+		diff := b.Difference(a)
+		return Digits{!a.sign, diff.value}
+	}
+
+	diff := a.Difference(b)
+
+	if diff.IsZero() {
+		return Zero().AsDigits()
+	}
+
+	return Digits{a.sign, diff.value}.Trim()
 }
 
-func (a Digits) SubtractNoBorrow(b Digits) Digits {
-	result := a.Copy()
-	result.SubtractInPlace(b)
+func (a Digits) SubtractExact(b Digits) Digits {
+	if a.sign != b.sign {
+		return a.Add(b.Negate())
+	}
 
-	return result
+	if a.IsGreaterThanOrEqual(b) {
+		return a.Subtract(b)
+	}
+
+	panic("Subtraction is not exact")
 }
 
 func (a *Digits) SubtractInPlace(b Digits) bool {
@@ -169,40 +227,56 @@ func (a *Digits) SubtractInPlace(b Digits) bool {
 		return a.AddInPlace(b.Negate())
 	}
 
-	if a.compareAbs(b) < 0 {
-		a.value, b.value = b.value, a.value
+	if a.Abs().IsLessThan(b.Abs()) {
+		diff := b.Difference(*a)
+
+		a.value = diff.value
 		a.sign = !a.sign
+
+		return true
+	}
+
+	diff := a.Difference(b)
+	a.value = diff.value
+
+	return false
+}
+
+func (a Digits) Difference(b Digits) Digits {
+	if a.sign != b.sign {
+		// If signs are different, Difference(a, b) = Abs(a + (-b))
+		return a.Add(b.Negate()).Abs()
+	}
+
+	// Ensure a ≥ b, otherwise swap (since Difference should always be positive)
+	if a.Abs().IsLessThan(b.Abs()) {
+		return b.Difference(a).Abs()
 	}
 
 	carry := uint64(0)
-	size := max(len(a.value), len(b.value))
+	size := len(a.value) // Since a ≥ b, we use len(a.value)
+	result := make([]uint64, size)
 
 	for i := 0; i < size; i++ {
-		ai := uint64(0)
-		if i < len(a.value) {
-			ai = a.value[i]
-		}
-
+		ai := a.value[i] // Guaranteed valid since size = len(a.value)
 		bi := uint64(0)
 		if i < len(b.value) {
 			bi = b.value[i]
 		}
 
-		diff, borrow := bits.Sub64(ai, bi+carry, 0)
-
-		if i >= len(a.value) {
-			a.value = append(a.value, diff)
-		} else {
-			a.value[i] = diff
-		}
-
+		// Perform subtraction with borrow
+		diff, borrow := bits.Sub64(ai, bi, carry)
+		result[i] = diff
 		carry = borrow
 	}
 
-	return carry == 1
+	// Always return a positive number
+	digits := Digits{sign: false, value: result}
+
+	return digits.Trim()
 }
 
-func (a Digits) SubtractUnderflow(b Digits) (Digits, bool) {
+func (a Digits) SubtractUnderflow(b Digits) (Digits, bool) { // TODO rename to NoBorrow
 	result := a.Copy()
 	borrowed := result.SubtractUnderflowInPlace(b)
 
@@ -254,6 +328,7 @@ func (a *Digits) TrimInPlace() {
 
 	if size == 0 {
 		a.value = []uint64{0}
+		a.sign = false
 		return
 	}
 
@@ -350,7 +425,38 @@ func (a Digits) Trim() Digits {
 }
 
 func (a Digits) MultiplyByDigit(b Digit) Digits {
-	return a.Multiply(Digits{false, []uint64{uint64(b)}})
+	if b == 0 {
+		return Zero().AsDigits()
+	}
+
+	if b == 1 {
+		return a.Copy()
+	}
+
+	if b == 2 {
+		return a.LeftShiftBits(1)
+	}
+
+	result := make([]uint64, len(a.value)+2)
+
+	carry := uint64(0)
+
+	for i := range uint(len(a.value)) {
+		pi := a.DigitAt(i).Multiply(b)
+
+		lo, carryLo := bits.Add64(result[i], uint64(pi.Low()), carry)
+		result[i] = lo
+
+		mid, carryMid := bits.Add64(result[i+1], uint64(pi.High()), carryLo)
+		result[i+1] = mid
+
+		hi, carryHi := bits.Add64(result[i+2], carryMid, 0)
+		result[i+2] = hi
+
+		carry = carryHi
+	}
+
+	return Digits{a.sign, result}.Trim()
 }
 
 func (a Digits) LeadingZeros() uint64 {
@@ -592,6 +698,10 @@ func (a Digits) Negate() Digits {
 	return Digits{!a.sign, a.value}
 }
 
+func (a Digits) Negative() Digits {
+	return Digits{true, a.value}
+}
+
 func MakeDigits(size uint) Digits {
 	return Digits{
 		value: make([]uint64, size),
@@ -612,9 +722,10 @@ func (a Digits) Hexadecimal() string {
 	return strings.Join(result, "")
 }
 
-func (a Digits) DecrementInPlace() {
+func (a *Digits) DecrementInPlace() {
 	if len(a.value) == 0 {
-		return
+		a.value = []uint64{1}
+		a.sign = true
 	}
 
 	a.SubtractInPlace(Digits{false, []uint64{1}})
@@ -624,32 +735,201 @@ func (a Digits) Decrement() (Digits, bool) {
 	result := a.Copy()
 	borrowed := result.SubtractUnderflowInPlace(Digits{false, []uint64{1}})
 
-	return result, borrowed
+	return result.Trim(), borrowed
 }
 
 func (a Digits) Increment() Digits {
 	return a.AddDigit(1)
 }
 
-func (a Digits) Split(size uint) (Digits, Digits) {
+func (a Digits) Split2(size uint) (Digits, Digits) {
 	if size >= uint(len(a.value)) {
-		return a, Zero().AsDigits()
+		values := make([]uint64, len(a.value))
+		copy(values, a.value)
+
+		return Zero().AsDigits(), Digits{false, values}
 	}
 
-	return Digits{false, a.value[size:]}.Trim(),
-		Digits{false, a.value[:size]}.Trim()
+	a1 := Digits{false, a.value[size:]}
+	a0 := Digits{false, a.value[:size]}
+
+	return a1.Trim(),
+		a0.Trim()
+}
+
+func (a Digits) Split3(size uint) (Digits, Digits, Digits) {
+	if size >= uint(len(a.value)) {
+		values := make([]uint64, len(a.value))
+		copy(values, a.value)
+
+		return Zero().AsDigits(), Zero().AsDigits(), Digits{false, values}
+	}
+
+	a0 := Digits{false, a.value[:size]}.Trim()
+
+	if 2*size >= uint(len(a.value)) {
+		return Zero().AsDigits(), Digits{false, a.value[size:]}.Trim(), a0
+	}
+
+	a1 := Digits{false, a.value[size : 2*size]}.Trim()
+	a2 := Digits{false, a.value[2*size:]}.Trim()
+
+	return a2, a1, a0
 }
 
 func (a Digits) SubtractAbs(b Digits) Digits {
 	if a.IsGreaterThanOrEqual(b) {
-		diff, _ := a.Subtract(b)
+		diff := a.Subtract(b)
 		return diff
 	}
 
-	diff, _ := b.Subtract(a)
+	diff := b.Subtract(a)
 	return diff
 }
 
 func (a Digits) Sign(isNegative bool) Digits {
 	return Digits{isNegative, a.value}
+}
+
+func (a Digits) DivideByDigit(b Digit) (Digits, Digit) {
+	if b == 0 {
+		panic("Division by zero")
+	}
+
+	if a.IsZero() {
+		return Zero().AsDigits(), 0
+	}
+
+	if b == 1 {
+		return a, 0
+	}
+
+	if b == 2 {
+		return a.RightShiftBits(1), Digit(a.value[0] & 1)
+	}
+
+	quotient := Empty()
+	remainder := Zero().AsDoubleDigit()
+
+	for i := int64(a.Length()) - 1; i >= 0; i-- {
+		di := a.DigitAt(uint(i))
+		remainder, _ = remainder.LeftShift(64).AddDigit(di)
+
+		qHat, rHat := remainder.DivideByDigit(b)
+
+		quotient = quotient.LeftShiftDigits(1).AddDoubleDigit(qHat)
+		remainder = rHat.AsDoubleDigit()
+	}
+
+	if a.IsNegative() {
+		quotient = quotient.Negate()
+	}
+
+	return quotient.Trim(), remainder.Low()
+}
+
+func (a Digits) DivideByDigitNoRemainder(b Digit) Digits {
+	if b == 2 {
+		return a.RightShiftBits(1)
+	}
+
+	quotient := Empty()
+	remainder := Zero().AsDoubleDigit()
+
+	for i := int64(a.Length()) - 1; i >= 0; i-- {
+		di := a.DigitAt(uint(i))
+		remainder, _ = remainder.LeftShift(64).AddDigit(di)
+
+		qHat, rHat := remainder.DivideByDigit(b)
+
+		quotient = quotient.LeftShiftBits(64).AddDoubleDigit(qHat)
+		remainder = rHat.AsDoubleDigit()
+	}
+
+	if a.IsNegative() {
+		quotient = quotient.Negate()
+	}
+
+	return quotient.Trim()
+}
+
+func (a Digits) DivideByDigitExact(b Digit) Digits {
+	quotient, remainder := a.DivideByDigit(b)
+
+	if remainder != 0 {
+		panic("Division is not exact")
+	}
+
+	return quotient
+}
+
+func (a Digits) Abs() Digits {
+	return Digits{false, a.value}
+}
+
+func (a Digits) IsEven() bool {
+	if len(a.value) == 0 {
+		return true
+	}
+
+	return a.value[0]&1 == 0
+}
+
+func (a Digits) IsOdd() bool {
+	return !a.IsEven()
+}
+
+func (a Digits) String() string {
+	if a.IsNegative() {
+		return "-" + a.Abs().stringAbs()
+	}
+
+	return a.stringAbs()
+}
+
+func (a Digits) stringAbs() string {
+	var e19 = Digit(1000000000000000000)
+
+	if a.IsLessThan(e19.AsDigits()) {
+		return strconv.FormatUint(a.value[0], 10)
+	}
+
+	result := ""
+	for a.IsGreaterThan(Zero().AsDigits()) {
+		quotient, remainder := a.DivideByDigit(e19)
+		a = quotient
+
+		if a.IsGreaterThan(Zero().AsDigits()) {
+			result = fmt.Sprintf("%018d", uint64(remainder)) + result
+		} else {
+			result = strconv.FormatUint(uint64(remainder), 10) + result
+		}
+	}
+
+	return result
+}
+
+func (a Digits) IsEqualTo(result Digits) bool {
+	if a.sign != result.sign {
+		return false
+	}
+
+	if len(a.value) != len(result.value) {
+		return false
+	}
+
+	for i := range a.value {
+		if a.value[i] != result.value[i] {
+			return false
+		}
+	}
+
+	return true
+}
+
+func OfUint64Array(array []uint64) Digits {
+	values := make([]uint64, len(array))
+	copy(values, array)
+
+	return Digits{false, values}
 }
