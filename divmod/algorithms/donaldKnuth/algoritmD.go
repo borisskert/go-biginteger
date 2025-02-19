@@ -2,7 +2,6 @@ package donaldKnuth
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/divmod/functions"
 )
 
 // DonaldKnuthsAlgorithmD Implements Algorithm D (Division of nonnegative integers) introduced by Donald Knuth
@@ -188,9 +187,9 @@ func divideByDoubleDigit(dividend digits.Digits, divisor digits.DoubleDigit) (di
 	}
 
 	if divisor.High() == 0 {
-		quotient, remainder := functions.DivByDigit(dividend, divisor.Low())
+		quotient, remainder := dividend.DivideByDigit(divisor.Low())
 		return quotient, remainder.AsDoubleDigit()
 	}
 
-	return functions.DivByDoubleDigit(dividend, divisor)
+	return dividend.DivideByDoubleDigit(divisor)
 }

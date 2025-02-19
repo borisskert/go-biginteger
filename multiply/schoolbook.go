@@ -16,18 +16,6 @@ func SchoolbookMultiply(a, b digits.Digits) digits.Digits {
 }
 
 func multiplyByDigits(a digits.Digits, b digits.Digits) digits.Digits {
-	if a.IsZero() || b.IsZero() {
-		return digits.Zero().AsDigits()
-	}
-
-	if a.IsOne() {
-		return b
-	}
-
-	if b.IsOne() {
-		return a
-	}
-
 	result := make([]uint64, a.Length()+b.Length())
 
 	for i := uint(0); i < a.Length(); i++ {

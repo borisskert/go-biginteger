@@ -2,18 +2,18 @@ package burnikelZiegler
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/divmod/common"
+	"github.com/borisskert/go-biginteger/divmod/api"
 	"github.com/borisskert/go-biginteger/multiply"
 )
 
 // DecorateWithBurnikelZiegler A Decorator to embed any DivideAlgorithm into Burnikel-Ziegler's Fast Recursive Division.
 // See Christoph Burnikel and Joachim Ziegler: Fast Recursive Division, October 1998
-func DecorateWithBurnikelZiegler(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+func DecorateWithBurnikelZiegler(algorithm api.DivisionAlgorithm) api.DivisionAlgorithm {
 	return burnikelZiegler{algorithm}
 }
 
 type burnikelZiegler struct {
-	algorithm common.DivisionAlgorithm
+	algorithm api.DivisionAlgorithm
 }
 
 func (bz burnikelZiegler) DivMod(

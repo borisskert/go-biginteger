@@ -11,7 +11,7 @@ import (
 	"github.com/borisskert/go-biginteger/divmod/algorithms/donaldKnuth"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/earlyExitDivisionOptimization"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/trailingZeroReduction"
-	"github.com/borisskert/go-biginteger/divmod/common"
+	"github.com/borisskert/go-biginteger/divmod/api"
 )
 
 type recursiveDivisionAlgorithm struct {
@@ -35,7 +35,7 @@ func (f *recursiveDivisionAlgorithm) DivMod(
 func (f *recursiveDivisionAlgorithm) selectSuitableDivideAlgorithm(
 	numerator,
 	denominator digits.Digits,
-) common.DivisionAlgorithm {
+) api.DivisionAlgorithm {
 	n := denominator.Length()
 	m := numerator.Length()
 
@@ -72,6 +72,6 @@ func (f *recursiveDivisionAlgorithm) selectSuitableDivideAlgorithm(
 	return &f.donaldKnuthsAlgorithmD
 }
 
-func NewRecursiveDivisionAlgorithm() common.DivisionAlgorithm {
+func NewRecursiveDivisionAlgorithm() api.DivisionAlgorithm {
 	return &recursiveDivisionAlgorithm{}
 }

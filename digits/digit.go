@@ -111,3 +111,7 @@ func (a Digit) AsDoubleDigit() DoubleDigit {
 func (a Digit) IsNonZero() bool {
 	return a != 0
 }
+
+func (a Digit) LeadingZeros() uint {
+	return uint(bits.LeadingZeros64(uint64(a)))
+}

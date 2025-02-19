@@ -1,6 +1,8 @@
 package digits
 
-import "math/bits"
+import (
+	"math/bits"
+)
 
 type DoubleDigit struct {
 	hi Digit
@@ -59,43 +61,44 @@ func (d DoubleDigit) DivideByHalfDigit(b HalfDigit) (DoubleDigit, HalfDigit) {
 	return DoubleDigitOf(Digit(qHi), Digit(qLo)), HalfDigit(r)
 }
 
-func (d DoubleDigit) Divide(b DoubleDigit) (DoubleDigit, DoubleDigit) {
-	if b.IsZero() {
-		panic("Division by zero")
+func (a DoubleDigit) Divide(b DoubleDigit) (DoubleDigit, DoubleDigit) {
+	// Handle division by zero
+	if b.hi == 0 && b.lo == 0 {
+		panic("division by zero")
 	}
 
-	if d.IsLessThan(b) {
-		return Digit(0).AsDoubleDigit(), d
+	// If the divisor is larger than the dividend, the quotient is 0 and the remainder is the dividend.
+	if a.IsLessThan(b) {
+		return DoubleDigit{hi: 0, lo: 0}, a
 	}
 
-	if d.IsEqual(b) {
-		return Digit(1).AsDoubleDigit(), Digit(0).AsDoubleDigit()
+	// If the divisor is a single uint64 (Hi == 0), use a simpler algorithm.
+	if b.hi == 0 {
+		q, r := a.DivideByDigit(b.Low())
+		return q, r.AsDoubleDigit()
 	}
 
-	if b.High() == 0 {
-		quotient, remainder := d.DivideByDigit(b.Low())
-		return quotient, remainder.AsDoubleDigit()
+	// Perform long division for the general case.
+	var quotient DoubleDigit
+	remainder := a
+
+	for !remainder.IsLessThan(b) {
+		// Calculate how many times we can subtract the divisor from the remainder.
+		shift := max(int(remainder.LeadingZeros())-int(b.LeadingZeros()), 0)
+		shiftedDivisor := b.LeftShift(uint(shift))
+
+		if shiftedDivisor.IsLessThan(remainder) || shiftedDivisor.IsEqual(remainder) {
+			quotient, _ = quotient.Add(DoubleDigit{lo: 1}.LeftShift(uint(shift)))
+			remainder, _ = remainder.Subtract(shiftedDivisor)
+		} else {
+			shift--
+			shiftedDivisor = b.LeftShift(uint(shift))
+			quotient, _ = quotient.Add(DoubleDigit{lo: 1}.LeftShift(uint(shift)))
+			remainder, _ = remainder.Subtract(shiftedDivisor)
+		}
 	}
 
-	shift := b.LeadingZeros()
-	b = b.LeftShift(shift)
-	d = d.LeftShift(shift)
-
-	quot, _ := d.High().Divide(b.High())
-
-	prod := quot.Multiply(b.Low())
-	prod, _ = prod.Add(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
-
-	if prod.IsGreaterThanOrEqual(d) {
-		quot = quot - 1
-		prod = quot.Multiply(b.Low())
-		prod, _ = prod.Add(quot.Multiply(b.High()).Low().ShiftLeftToDoubleDigit(64))
-	}
-
-	rem, _ := d.Subtract(prod)
-	rem = rem.RightShift(shift)
-
-	return quot.AsDoubleDigit(), rem
+	return quotient, remainder
 }
 
 func (d DoubleDigit) IsGreaterThanOrEqual(other DoubleDigit) bool {
@@ -220,37 +223,76 @@ func (d DoubleDigit) SubtractDigit(b Digit) (DoubleDigit, Digit) {
 }
 
 func (d DoubleDigit) MultiplyIgnoreOverflow(b DoubleDigit) DoubleDigit {
-	product, _ := d.Multiply(b)
-	return product
+	rHi, rLo := bits.Mul64(uint64(d.lo), uint64(b.lo))
+
+	_, lo := bits.Mul64(uint64(d.lo), uint64(b.hi))
+	rHi, _ = bits.Add64(rHi, lo, 0)
+
+	_, lo = bits.Mul64(uint64(d.hi), uint64(b.lo))
+	rHi, _ = bits.Add64(rHi, lo, 0)
+
+	return DoubleDigitOf(
+		Digit(rHi),
+		Digit(rLo),
+	)
 }
 
 func (d DoubleDigit) Multiply(b DoubleDigit) (DoubleDigit, DoubleDigit) {
-	// Extract high and low parts
-	aLo, aHi := d.lo, d.hi
-	bLo, bHi := b.lo, b.hi
+	result := [4]uint64{}
+	carry := uint64(0)
 
-	// Perform 64-bit multiplications
-	lowLow := aLo.Multiply(bLo) // 64-bit x 64-bit = 128-bit result
-	lowHigh := aLo.Multiply(bHi)
-	highLow := aHi.Multiply(bLo)
-	highHigh := aHi.Multiply(bHi)
+	hi, lo := bits.Mul64(uint64(d.lo), uint64(b.lo))
 
-	// Summing the middle terms
-	mid1, carry1 := lowHigh.Add(highLow)           // mid1 = lowHigh + highLow
-	mid2, carry2 := mid1.Add(lowLow.LeftShift(64)) // mid2 = mid1 + (lowLow << 64)
+	result[0], carry = bits.Add64(result[0], lo, 0)
+	result[1], carry = bits.Add64(result[1], hi, carry)
+	result[2], carry = bits.Add64(result[2], carry, 0)
 
-	// Carry propagation to high part
-	highResult, carry3 := highHigh.AddDigit(mid2.hi)
-	highResult, _ = highResult.AddDigit(carry1 + carry2 + carry3) // Propagate all carries
+	hi, lo = bits.Mul64(uint64(d.lo), uint64(b.hi))
 
-	return highResult, mid2
+	result[1], carry = bits.Add64(result[1], lo, 0)
+	result[2], carry = bits.Add64(result[2], hi, carry)
+	result[3], carry = bits.Add64(result[3], carry, 0)
+
+	hi, lo = bits.Mul64(uint64(d.hi), uint64(b.lo))
+
+	result[1], carry = bits.Add64(result[1], lo, 0)
+	result[2], carry = bits.Add64(result[2], hi, carry)
+	result[3], carry = bits.Add64(result[3], carry, 0)
+
+	hi, lo = bits.Mul64(uint64(d.hi), uint64(b.hi))
+
+	result[2], carry = bits.Add64(result[2], lo, 0)
+	result[3], _ = bits.Add64(result[3], hi, carry)
+
+	return DoubleDigitOf(
+			Digit(result[3]),
+			Digit(result[2]),
+		), DoubleDigitOf(
+			Digit(result[1]),
+			Digit(result[0]),
+		)
 }
 
-func (d DoubleDigit) MultiplyDigit(b Digit) (DoubleDigit, Digit) {
-	lo := d.lo.Multiply(b)
-	hi := d.hi.Multiply(b)
+func (d DoubleDigit) MultiplyDigit(b Digit) (DoubleDigit, Digit) { // TODO return hi,lo in this order
+	mLo := d.lo.Multiply(b)
+	mHi := d.hi.Multiply(b)
 
-	return DoubleDigit{lo.High() + hi.Low(), lo.Low()}, hi.High()
+	u, v := mHi.High(), mHi.Low()
+	w, x := mLo.High(), mLo.Low()
+
+	//   u, v
+	// +    w, x
+	// -----------
+	//   z, y, x
+
+	y, carryMid := v.Add(w)
+	z, carryHi := u.Add(carryMid)
+
+	if carryHi != 0 {
+		panic("unexpected carry")
+	}
+
+	return DoubleDigit{y, x}, z
 }
 
 func (d DoubleDigit) IsGreaterThan(doubleDigit DoubleDigit) bool {
@@ -275,4 +317,8 @@ func (d DoubleDigit) Decrement() (DoubleDigit, bool) {
 	}
 
 	return DoubleDigit{d.hi, d.lo - 1}, false
+}
+
+func (d DoubleDigit) IsNonZero() bool {
+	return d.hi != 0 || d.lo != 0
 }

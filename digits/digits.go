@@ -557,7 +557,11 @@ func (a Digits) AsDoubleDigit() DoubleDigit {
 		return DoubleDigitOf(0, Digit(a.value[0]))
 	}
 
-	return DoubleDigitOf(Digit(a.value[1]), Digit(a.value[0]))
+	if len(a.value) == 2 {
+		return DoubleDigitOf(Digit(a.value[1]), Digit(a.value[0]))
+	}
+
+	panic("This should never happen")
 }
 
 func (a Digits) AsDigit() Digit {
@@ -569,8 +573,17 @@ func (a Digits) AsDigit() Digit {
 }
 
 func (a Digits) AddDoubleDigit(b DoubleDigit) Digits {
-	result := a.Copy()
-	result.AddDoubleDigitInPlace(b)
+	result := a.Abs().Copy()
+
+	if a.IsNegative() {
+		result.SubtractDoubleDigitInPlace(b)
+		result.TrimInPlace()
+		result.NegateInPlace()
+	} else {
+		result.AddDoubleDigitInPlace(b)
+		result.TrimInPlace()
+		result.sign = a.sign
+	}
 
 	return result
 }
@@ -698,6 +711,14 @@ func (a Digits) Negate() Digits {
 	return Digits{!a.sign, a.value}
 }
 
+func (a *Digits) NegateInPlace() {
+	if a.IsZero() {
+		return
+	}
+
+	a.sign = !a.sign
+}
+
 func (a Digits) Negative() Digits {
 	return Digits{true, a.value}
 }
@@ -777,6 +798,25 @@ func (a Digits) Split3(size uint) (Digits, Digits, Digits) {
 	return a2, a1, a0
 }
 
+func (a Digits) SplitEvenOdd() (Digits, Digits) {
+	m := (a.Length() + 1) / 2
+	n := a.Length() / 2
+
+	even := make([]uint64, m)
+	odd := make([]uint64, n)
+
+	for i := uint(0); i < a.Length(); i++ {
+		if i%2 == 0 {
+			even[i/2] = a.value[i]
+		} else {
+			odd[i/2] = a.value[i]
+		}
+	}
+
+	return Digits{false, even}.Trim(),
+		Digits{false, odd}.Trim()
+}
+
 func (a Digits) SubtractAbs(b Digits) Digits {
 	if a.IsGreaterThanOrEqual(b) {
 		diff := a.Subtract(b)
@@ -789,6 +829,64 @@ func (a Digits) SubtractAbs(b Digits) Digits {
 
 func (a Digits) Sign(isNegative bool) Digits {
 	return Digits{isNegative, a.value}
+}
+
+func (a Digits) DivideByDoubleDigit(divisor DoubleDigit) (Digits, DoubleDigit) {
+	if divisor.High() == 0 {
+		q, r := a.DivideByDigit(divisor.Low())
+		return q, r.AsDoubleDigit()
+	}
+
+	quotient := Empty()
+	remainder := Zero().AsDigits()
+
+	for i := int64(a.Length()) - 1; i >= 0; i-- {
+		di := a.DigitAt(uint(i))
+		remainder = remainder.LeftShiftBits(64).AddDigit(di)
+
+		r1 := remainder.DigitAt(2)
+		r2 := remainder.DigitAt(1)
+		r3 := remainder.DigitAt(0)
+
+		b1 := divisor.High()
+		b2 := divisor.Low()
+
+		qHat, rHat := DivThreeByTwo(r1, r2, r3, b1, b2)
+		//_, qHat, rHat := Div3By2(r1, r2, r3, b1, b2)
+
+		quotient = quotient.LeftShiftBits(64).Add(qHat.AsDigits())
+		remainder = rHat.AsDigits()
+	}
+
+	return quotient.Trim(), remainder.AsDoubleDigit()
+}
+
+func divThreeByTwo(a1, a2, a3 Digit, b DoubleDigit) (DoubleDigit, DoubleDigit) {
+	a := MakeDoubleDigitOfDigits(a1, a2)
+
+	q, _ := a.DivideByDigit(b.High())
+	qMulB, _ := q.MultiplyDigit(b.High())
+	c, _ := a.Subtract(qMulB)
+
+	d, _ := q.MultiplyDigit(b.Low())
+	r, _ := c.LeftShift(64).AddDigit(a3)
+	r, borrow := r.Subtract(d)
+
+	if borrow > 0 {
+		q, _ = q.Decrement()
+		r, borrow = r.Add(b)
+
+		if borrow > 0 {
+			q, _ = q.Decrement()
+			r, borrow = r.Add(b)
+
+			if borrow > 0 {
+				panic("This should never happen: r was negative twice")
+			}
+		}
+	}
+
+	return q, r
 }
 
 func (a Digits) DivideByDigit(b Digit) (Digits, Digit) {
@@ -805,10 +903,10 @@ func (a Digits) DivideByDigit(b Digit) (Digits, Digit) {
 	}
 
 	if b == 2 {
-		return a.RightShiftBits(1), Digit(a.value[0] & 1)
+		return a.RightShiftBits(1).Trim(), Digit(a.value[0] & 1)
 	}
 
-	quotient := Empty()
+	quotient := Zero().AsDigits()
 	remainder := Zero().AsDoubleDigit()
 
 	for i := int64(a.Length()) - 1; i >= 0; i-- {
@@ -857,6 +955,8 @@ func (a Digits) DivideByDigitExact(b Digit) Digits {
 	quotient, remainder := a.DivideByDigit(b)
 
 	if remainder != 0 {
+		fmt.Println("a:", a)
+		fmt.Println("b:", b)
 		panic("Division is not exact")
 	}
 
@@ -927,9 +1027,112 @@ func (a Digits) IsEqualTo(result Digits) bool {
 	return true
 }
 
+func (a Digits) SubtractDoubleDigit(b DoubleDigit) Digits {
+	result := a.Copy()
+	result.SubtractDoubleDigitInPlace(b)
+
+	return result
+}
+
+func (a *Digits) SubtractDoubleDigitInPlace(b DoubleDigit) {
+	a.SubtractInPlace(b.AsDigits())
+}
+
 func OfUint64Array(array []uint64) Digits {
 	values := make([]uint64, len(array))
 	copy(values, array)
 
 	return Digits{false, values}
+}
+
+//func divThreeByTwo(a1, a2, a3 Digit, b DoubleDigit) (DoubleDigit, Digit) {
+//	a := MakeDoubleDigitOfDigits(a1, a2)
+//
+//	q, _ := a.DivideByDigit(b.High())
+//	qMulB, _ := q.MultiplyDigit(b.High())
+//	c, _ := a.Subtract(qMulB)
+//
+//	d, _ := q.MultiplyDigit(b.Low())
+//	r, _ := c.LeftShift(64).AddDigit(a3)
+//	r, borrow := r.Subtract(d)
+//
+//	if borrow > 0 {
+//		q, _ = q.Decrement()
+//		r, borrow = r.Add(b)
+//
+//		if borrow > 0 {
+//			q, _ = q.Decrement()
+//			r, borrow = r.Add(b)
+//
+//			if borrow > 0 {
+//				panic("This should never happen: r was negative twice")
+//			}
+//		}
+//	}
+//
+//	return q, r.Low()
+//}
+
+func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
+	b := DoubleDigitOf(b1, b2)
+
+	if b.IsZero() {
+		panic("division by zero")
+	}
+
+	a := DoubleDigitOf(a1, a2)
+
+	q, _ := a.DivideByDigit(b1)
+	qMulB1, overflow := q.MultiplyDigit(b1)
+
+	if overflow > 0 {
+		panic("overflow")
+	}
+
+	c, overflow := a.Subtract(qMulB1)
+
+	if overflow > 0 {
+		panic("overflow")
+	}
+
+	d := q.AsDigits().MultiplyByDigit(b2)
+
+	//if overflow > 0 {
+	//	panic("overflow")
+	//}
+
+	c_a2 := c.AsDigits().
+		LeftShiftDigits(1).
+		AddDigit(a3)
+	r := c_a2.
+		Subtract(d)
+
+	if r.IsNegative() {
+		q, _ = q.Decrement()
+		r = r.AddDoubleDigit(b)
+
+		if r.IsNegative() {
+			q, _ = q.Decrement()
+			r = r.AddDoubleDigit(b)
+
+			if r.IsNegative() {
+				panic("This should never happen: r was negative twice")
+			}
+		}
+	}
+
+	if r.IsGreaterThanOrEqual(b.AsDigits()) {
+		panic("r is greater than or equal b")
+	}
+
+	return q, r.AsDoubleDigit()
+}
+
+func DivThreeByTwoA(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
+	shift := b1.LeadingZeros()
+	bShifted := DoubleDigitOf(b1, b2).LeftShift(shift)
+
+	q, r := DivThreeByTwo(a1, a2, a3, bShifted.High(), bShifted.Low())
+
+	return q.RightShift(shift), r.RightShift(shift)
 }

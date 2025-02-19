@@ -2,7 +2,6 @@ package divideDigitsByDoubleDigit
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/divmod/functions"
 )
 
 type DivideDigitsByDoubleDigit struct {
@@ -13,6 +12,6 @@ func (d DivideDigitsByDoubleDigit) DivMod(numerator digits.Digits, denominator d
 		panic("numerator must be positive")
 	}
 
-	quotient, remainder := functions.DivByDoubleDigit(numerator, denominator.AsDoubleDigit())
+	quotient, remainder := numerator.DivideByDoubleDigit(denominator.AsDoubleDigit())
 	return quotient, remainder.AsDigits()
 }

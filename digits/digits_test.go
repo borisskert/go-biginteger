@@ -644,6 +644,18 @@ var _ = Describe("Digits", func() {
 
 			Expect(result.IsEqualTo(pm1mx1)).To(BeTrue())
 		})
+
+		// [327839218333391898, 12018134535777490305] - [17963987839374373744, 12018134535777490304]
+		It("[327839218333391898, 12018134535777490305] - [17963987839374373744, 12018134535777490304]", func() {
+			a := OfUint64Array([]uint64{327839218333391898, 12018134535777490305})
+			b := OfUint64Array([]uint64{17963987839374373744, 12018134535777490304})
+
+			result := a.Subtract(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(810595452668569770)))
+			Expect(result.IsNegative()).To(BeFalse())
+		})
 	})
 
 	Context("MultiplyByDoubleDigit", func() {
@@ -783,6 +795,19 @@ var _ = Describe("Digits", func() {
 			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
 			Expect(result.DigitAt(1)).To(Equal(Digit(18446744073709551615)))
 			Expect(result.DigitAt(2)).To(Equal(Digit(18446744073709551614)))
+		})
+
+		It("[11579921336388089544, 3] * 3312835375285772574", func() {
+			a := OfUint64Array([]uint64{
+				11579921336388089544, 3,
+			})
+			b := Digit(3312835375285772574)
+
+			result := a.MultiplyByDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(17963987839374373744)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(12018134535777490304)))
 		})
 	})
 
@@ -1289,6 +1314,160 @@ var _ = Describe("Digits", func() {
 		})
 	})
 
+	Context("SplitEvenOdd", func() {
+		It("[1] -> [[1], []]", func() {
+			a := Digit(1).AsDigits()
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(1)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(1)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(0)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("-[1] -> [[1], []]", func() {
+			a := Digit(1).AsDigits().Negative()
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(1)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(1)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(0)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("[1, 2] -> [[1], [2]]", func() {
+			a := OfUint64Array([]uint64{1, 2})
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(1)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(1)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("-[1, 2] -> [[1], [2]]", func() {
+			a := OfUint64Array([]uint64{1, 2}).Negative()
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(1)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(1)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("[1, 2, 3] -> [[1, 3], [2]]", func() {
+			a := OfUint64Array([]uint64{1, 2, 3})
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(2)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.DigitAt(1)).To(Equal(Digit(3)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(1)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("-[1, 2, 3] -> [[1, 3], [2]]", func() {
+			a := OfUint64Array([]uint64{1, 2, 3}).Negative()
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(2)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.DigitAt(1)).To(Equal(Digit(3)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(1)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("[1, 2, 3, 4] -> [[1, 3], [2, 4]]", func() {
+			a := OfUint64Array([]uint64{1, 2, 3, 4})
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(2)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.DigitAt(1)).To(Equal(Digit(3)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(2)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.DigitAt(1)).To(Equal(Digit(4)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("-[1, 2, 3, 4] -> [[1, 3], [2, 4]]", func() {
+			a := OfUint64Array([]uint64{1, 2, 3, 4}).Negative()
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(2)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.DigitAt(1)).To(Equal(Digit(3)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(2)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.DigitAt(1)).To(Equal(Digit(4)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("[1, 2, 3, 4, 5] -> [[1, 3, 5], [2, 4]]", func() {
+			a := OfUint64Array([]uint64{1, 2, 3, 4, 5})
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(3)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.DigitAt(1)).To(Equal(Digit(3)))
+			Expect(even.DigitAt(2)).To(Equal(Digit(5)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(2)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.DigitAt(1)).To(Equal(Digit(4)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+
+		It("-[1, 2, 3, 4, 5] -> [[1, 3, 5], [2, 4]]", func() {
+			a := OfUint64Array([]uint64{1, 2, 3, 4, 5}).Negative()
+
+			even, odd := a.SplitEvenOdd()
+
+			Expect(even.Length()).To(Equal(uint(3)))
+			Expect(even.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(even.DigitAt(1)).To(Equal(Digit(3)))
+			Expect(even.DigitAt(2)).To(Equal(Digit(5)))
+			Expect(even.IsNegative()).To(BeFalse())
+
+			Expect(odd.Length()).To(Equal(uint(2)))
+			Expect(odd.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(odd.DigitAt(1)).To(Equal(Digit(4)))
+			Expect(odd.IsNegative()).To(BeFalse())
+		})
+	})
+
 	Context("DivideByDigit", func() {
 		It("1 / 1", func() {
 			a := Digit(1).AsDigits()
@@ -1412,8 +1591,290 @@ var _ = Describe("Digits", func() {
 			result, remainder := a.DivideByDigit(b)
 
 			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(6148914691236517206)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(9223372036854775808)))
 			Expect(remainder).To(Equal(Digit(0)))
 			Expect(result.String()).To(Equal("170141183460469231737836218407120622934"))
+		})
+
+		It("[2, 2] / 2", func() {
+			a := OfUint64Array([]uint64{2, 2}).Negate()
+			b := Digit(2)
+
+			result, remainder := a.DivideByDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(1)))
+			Expect(remainder).To(Equal(Digit(0)))
+		})
+	})
+
+	Context("DivideByDoubleDigit", func() {
+		It("1 / 1", func() {
+			a := Digit(1).AsDigits()
+			b := Digit(1).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("2 / 1", func() {
+			a := Digit(2).AsDigits()
+			b := Digit(1).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("2 / 2", func() {
+			a := Digit(2).AsDigits()
+			b := Digit(2).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[0, 1] / 2", func() {
+			a := OfUint64Array([]uint64{0, 1})
+			b := Digit(2).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(9223372036854775808)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[0, 2] / 2", func() {
+			a := OfUint64Array([]uint64{0, 2})
+			b := Digit(2).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(0)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(1)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[2, 2] / 2", func() {
+			a := OfUint64Array([]uint64{2, 2})
+			b := Digit(2).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(1)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[2, 2] / [1, 1]", func() {
+			a := OfUint64Array([]uint64{2, 2})
+			b := OfUint64Array([]uint64{1, 1}).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(2)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[2, 2] / [2, 2]", func() {
+			a := OfUint64Array([]uint64{2, 2})
+			b := OfUint64Array([]uint64{2, 2}).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[0, 2, 4] / [2, 2]", func() {
+			a := OfUint64Array([]uint64{0, 2, 2})
+			b := OfUint64Array([]uint64{2, 2}).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(0)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(1)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[9350441601238114644 12018134535777490305 327839218333391898 2249300428400506475] / [11595963786453332908 3312835375285772574]", func() {
+			a := OfUint64Array([]uint64{9350441601238114644, 12018134535777490305, 327839218333391898, 2249300428400506475})
+			b := OfUint64Array([]uint64{11595963786453332908, 3312835375285772574}).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(6742305324661190591)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(12524700037052152845)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[184 18446744073709551476 23] / [5 18446744073709551593]", func() {
+			a := OfUint64Array([]uint64{184, 18446744073709551476, 23})
+			b := OfUint64Array([]uint64{5, 18446744073709551593}).AsDoubleDigit()
+
+			result, remainder := a.DivideByDoubleDigit(b)
+
+			Expect(result.Length()).To(Equal(uint(1)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(24)))
+			Expect(remainder.Low()).To(Equal(Digit(64)))
+			Expect(remainder.High()).To(Equal(Digit(412)))
+		})
+	})
+
+	Context("DivThreeByTwo", func() {
+		XIt("[2249300428400506475 327839218333391898 12018134535777490305] / [11595963786453332908 3312835375285772574]", func() {
+			// TODO this test is not valid
+			aHi := Digit(12018134535777490305)
+			aMid := Digit(327839218333391898)
+			aLo := Digit(2249300428400506475)
+
+			bHi := Digit(3312835375285772574)
+			bLo := Digit(11595963786453332908)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(11579921336388089531)))
+			Expect(result.High()).To(Equal(Digit(3)))
+			Expect(remainder.Low()).To(Equal(Digit(11185678565676756935)))
+			Expect(remainder.High()).To(Equal(Digit(1810211695536404770)))
+		})
+
+		It("[0 2 2] / [2 2]", func() {
+			aLo := Digit(0)
+			aMid := Digit(2)
+			aHi := Digit(2)
+
+			bLo := Digit(2)
+			bHi := Digit(2)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(0)))
+			Expect(result.High()).To(Equal(Digit(1)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[0 1 2] / [2 2]", func() {
+			aLo := Digit(0)
+			aMid := Digit(1)
+			aHi := Digit(2)
+
+			bLo := Digit(2)
+			bHi := Digit(2)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(18446744073709551615)))
+			Expect(result.High()).To(Equal(Digit(0)))
+			Expect(remainder.Low()).To(Equal(Digit(2)))
+			Expect(remainder.High()).To(Equal(Digit(1)))
+		})
+
+		It("[2 2 1] / [2 2]", func() {
+			aLo := Digit(2)
+			aMid := Digit(2)
+			aHi := Digit(1)
+
+			bLo := Digit(2)
+			bHi := Digit(2)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(9223372036854775808)))
+			Expect(result.High()).To(Equal(Digit(0)))
+			Expect(remainder.Low()).To(Equal(Digit(2)))
+			Expect(remainder.High()).To(Equal(Digit(1)))
+		})
+
+		It("[0 4 4] / [2 2]", func() {
+			aLo := Digit(0)
+			aMid := Digit(4)
+			aHi := Digit(4)
+
+			bLo := Digit(2)
+			bHi := Digit(2)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(0)))
+			Expect(result.High()).To(Equal(Digit(2)))
+			Expect(remainder.Low()).To(Equal(Digit(0)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[1 4 4] / [2 2]", func() {
+			aLo := Digit(1)
+			aMid := Digit(4)
+			aHi := Digit(4)
+
+			bLo := Digit(2)
+			bHi := Digit(2)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(0)))
+			Expect(result.High()).To(Equal(Digit(2)))
+			Expect(remainder.Low()).To(Equal(Digit(1)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[2 4 4] / [2 2]", func() {
+			aLo := Digit(2)
+			aMid := Digit(4)
+			aHi := Digit(4)
+
+			bLo := Digit(2)
+			bHi := Digit(2)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(0)))
+			Expect(result.High()).To(Equal(Digit(2)))
+			Expect(remainder.Low()).To(Equal(Digit(2)))
+			Expect(remainder.High()).To(Equal(Digit(0)))
+		})
+
+		It("[12018134535777490305 327839218333391898 2249300428400506475] / [3312835375285772574 11595963786453332908]", func() {
+			aHi := Digit(2249300428400506475)
+			aMid := Digit(327839218333391898)
+			aLo := Digit(12018134535777490305)
+			bHi := Digit(11595963786453332908)
+			bLo := Digit(3312835375285772574)
+
+			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
+
+			Expect(result.Low()).To(Equal(Digit(3578164791792606809)))
+			Expect(result.High()).To(Equal(Digit(0)))
+			Expect(remainder.Low()).To(Equal(Digit(10451349232378154515)))
+			Expect(remainder.High()).To(Equal(Digit(11363108077110180365)))
 		})
 	})
 
@@ -1534,6 +1995,18 @@ var _ = Describe("Digits", func() {
 			Expect(result.Length()).To(Equal(uint(1)))
 			Expect(result.DigitAt(0)).To(Equal(Digit(18446744073709551615)))
 			Expect(result.IsNegative()).To(BeFalse())
+		})
+	})
+
+	Context("RightShiftBits", func() {
+		It("[2, 2] by one", func() {
+			a := OfUint64Array([]uint64{2, 2})
+
+			result := a.RightShiftBits(1)
+
+			Expect(result.Length()).To(Equal(uint(2)))
+			Expect(result.DigitAt(0)).To(Equal(Digit(1)))
+			Expect(result.DigitAt(1)).To(Equal(Digit(1)))
 		})
 	})
 })

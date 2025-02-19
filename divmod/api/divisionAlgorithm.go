@@ -1,4 +1,4 @@
-package common
+package api
 
 import "github.com/borisskert/go-biginteger/digits"
 

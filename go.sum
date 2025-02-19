@@ -1,3 +1,7 @@
+github.com/borisskert/go-schoenhageStrassen v0.0.0-20250216151639-167f0dd0f6d6 h1:YhA9Xiodqf7AaYDcsISW3vYSBD+0LkYl0VMY3+ijpJQ=
+github.com/borisskert/go-schoenhageStrassen v0.0.0-20250216151639-167f0dd0f6d6/go.mod h1:QV9EsSxlSjjO5vg8Jzaq1AcEyyNtkguw83h8Z/SRFvA=
+github.com/borisskert/go-schoenhageStrassen v0.0.0-20250216200706-42e630b5bafd h1:3h7BAJ4HTQxwKqh3ufAqVoUI/rKiNwLWECoumGrjiwM=
+github.com/borisskert/go-schoenhageStrassen v0.0.0-20250216200706-42e630b5bafd/go.mod h1:QV9EsSxlSjjO5vg8Jzaq1AcEyyNtkguw83h8Z/SRFvA=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/go-logr/logr v1.4.2 h1:6pFjapn8bFcIbiKo3XT4j/BhANplGihG6tvd+8rYgrY=

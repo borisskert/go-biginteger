@@ -2,11 +2,11 @@ package trailingZeroReduction
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/divmod/common"
+	"github.com/borisskert/go-biginteger/divmod/api"
 )
 
 type trailingZeroReduction struct {
-	algorithm common.DivisionAlgorithm
+	algorithm api.DivisionAlgorithm
 }
 
 func (t trailingZeroReduction) DivMod(numerator digits.Digits, denominator digits.Digits) (digits.Digits, digits.Digits) {
@@ -40,7 +40,7 @@ func (t trailingZeroReduction) reduceTrailingZeroBits(
 	return t.algorithm.DivMod(numerator, denominator)
 }
 
-func DecorateWithTrailingZeroReduction(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+func DecorateWithTrailingZeroReduction(algorithm api.DivisionAlgorithm) api.DivisionAlgorithm {
 	return &trailingZeroReduction{
 		algorithm: algorithm,
 	}
