@@ -5,6 +5,7 @@ import (
 	. "github.com/borisskert/go-biginteger/digits"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"testing"
 )
 
 var _ = Describe("Digits", func() {
@@ -1749,23 +1750,6 @@ var _ = Describe("Digits", func() {
 	})
 
 	Context("DivThreeByTwo", func() {
-		XIt("[2249300428400506475 327839218333391898 12018134535777490305] / [11595963786453332908 3312835375285772574]", func() {
-			// TODO this test is not valid
-			aHi := Digit(12018134535777490305)
-			aMid := Digit(327839218333391898)
-			aLo := Digit(2249300428400506475)
-
-			bHi := Digit(3312835375285772574)
-			bLo := Digit(11595963786453332908)
-
-			result, remainder := DivThreeByTwo(aHi, aMid, aLo, bHi, bLo)
-
-			Expect(result.Low()).To(Equal(Digit(11579921336388089531)))
-			Expect(result.High()).To(Equal(Digit(3)))
-			Expect(remainder.Low()).To(Equal(Digit(11185678565676756935)))
-			Expect(remainder.High()).To(Equal(Digit(1810211695536404770)))
-		})
-
 		It("[0 2 2] / [2 2]", func() {
 			aLo := Digit(0)
 			aMid := Digit(2)
@@ -2010,3 +1994,8 @@ var _ = Describe("Digits", func() {
 		})
 	})
 })
+
+func TestSuite(t *testing.T) {
+	RegisterFailHandler(Fail)
+	RunSpecs(t, "digits package Test Suite")
+}

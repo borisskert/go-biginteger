@@ -861,34 +861,6 @@ func (a Digits) DivideByDoubleDigit(divisor DoubleDigit) (Digits, DoubleDigit) {
 	return quotient.Trim(), remainder.AsDoubleDigit()
 }
 
-func divThreeByTwo(a1, a2, a3 Digit, b DoubleDigit) (DoubleDigit, DoubleDigit) {
-	a := MakeDoubleDigitOfDigits(a1, a2)
-
-	q, _ := a.DivideByDigit(b.High())
-	qMulB, _ := q.MultiplyDigit(b.High())
-	c, _ := a.Subtract(qMulB)
-
-	d, _ := q.MultiplyDigit(b.Low())
-	r, _ := c.LeftShift(64).AddDigit(a3)
-	r, borrow := r.Subtract(d)
-
-	if borrow > 0 {
-		q, _ = q.Decrement()
-		r, borrow = r.Add(b)
-
-		if borrow > 0 {
-			q, _ = q.Decrement()
-			r, borrow = r.Add(b)
-
-			if borrow > 0 {
-				panic("This should never happen: r was negative twice")
-			}
-		}
-	}
-
-	return q, r
-}
-
 func (a Digits) DivideByDigit(b Digit) (Digits, Digit) {
 	if b == 0 {
 		panic("Division by zero")
@@ -1045,34 +1017,6 @@ func OfUint64Array(array []uint64) Digits {
 	return Digits{false, values}
 }
 
-//func divThreeByTwo(a1, a2, a3 Digit, b DoubleDigit) (DoubleDigit, Digit) {
-//	a := MakeDoubleDigitOfDigits(a1, a2)
-//
-//	q, _ := a.DivideByDigit(b.High())
-//	qMulB, _ := q.MultiplyDigit(b.High())
-//	c, _ := a.Subtract(qMulB)
-//
-//	d, _ := q.MultiplyDigit(b.Low())
-//	r, _ := c.LeftShift(64).AddDigit(a3)
-//	r, borrow := r.Subtract(d)
-//
-//	if borrow > 0 {
-//		q, _ = q.Decrement()
-//		r, borrow = r.Add(b)
-//
-//		if borrow > 0 {
-//			q, _ = q.Decrement()
-//			r, borrow = r.Add(b)
-//
-//			if borrow > 0 {
-//				panic("This should never happen: r was negative twice")
-//			}
-//		}
-//	}
-//
-//	return q, r.Low()
-//}
-
 func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
 	b := DoubleDigitOf(b1, b2)
 
@@ -1096,10 +1040,6 @@ func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
 	}
 
 	d := q.AsDigits().MultiplyByDigit(b2)
-
-	//if overflow > 0 {
-	//	panic("overflow")
-	//}
 
 	c_a2 := c.AsDigits().
 		LeftShiftDigits(1).
@@ -1126,13 +1066,4 @@ func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
 	}
 
 	return q, r.AsDoubleDigit()
-}
-
-func DivThreeByTwoA(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
-	shift := b1.LeadingZeros()
-	bShifted := DoubleDigitOf(b1, b2).LeftShift(shift)
-
-	q, r := DivThreeByTwo(a1, a2, a3, bShifted.High(), bShifted.Low())
-
-	return q.RightShift(shift), r.RightShift(shift)
 }

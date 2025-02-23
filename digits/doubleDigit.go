@@ -245,19 +245,19 @@ func (d DoubleDigit) Multiply(b DoubleDigit) (DoubleDigit, DoubleDigit) {
 
 	result[0], carry = bits.Add64(result[0], lo, 0)
 	result[1], carry = bits.Add64(result[1], hi, carry)
-	result[2], carry = bits.Add64(result[2], carry, 0)
+	result[2], _ = bits.Add64(result[2], carry, 0)
 
 	hi, lo = bits.Mul64(uint64(d.lo), uint64(b.hi))
 
 	result[1], carry = bits.Add64(result[1], lo, 0)
 	result[2], carry = bits.Add64(result[2], hi, carry)
-	result[3], carry = bits.Add64(result[3], carry, 0)
+	result[3], _ = bits.Add64(result[3], carry, 0)
 
 	hi, lo = bits.Mul64(uint64(d.hi), uint64(b.lo))
 
 	result[1], carry = bits.Add64(result[1], lo, 0)
 	result[2], carry = bits.Add64(result[2], hi, carry)
-	result[3], carry = bits.Add64(result[3], carry, 0)
+	result[3], _ = bits.Add64(result[3], carry, 0)
 
 	hi, lo = bits.Mul64(uint64(d.hi), uint64(b.hi))
 

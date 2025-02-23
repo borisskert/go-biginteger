@@ -27,7 +27,7 @@ func multiply(a digits.Digits, b digits.Digits) digits.Digits {
 
 	for i := uint(0); i < a.Length(); i++ {
 		ai := a.DigitAt(i)
-		var carry uint64 = 0
+		var carry uint64
 
 		for j := uint(0); j < b.Length(); j++ {
 			bi := b.DigitAt(j)
@@ -44,9 +44,7 @@ func multiply(a digits.Digits, b digits.Digits) digits.Digits {
 			carry = carryMid
 
 			if carry > 0 && i+j+2 < uint(len(result)) {
-				sumCarry, carryNext := bits.Add64(result[i+j+2], carry, 0)
-				result[i+j+2] = sumCarry
-				carry = carryNext
+				result[i+j+2], _ = bits.Add64(result[i+j+2], carry, 0)
 			}
 		}
 	}
