@@ -207,7 +207,7 @@ var _ = Describe("Digits", func() {
 			a := Digit(1).AsDigits()
 			b := Digit(2).AsDigits()
 
-			result, borrow := a.SubtractUnderflow(b)
+			result, borrow := a.SubtractNoBorrow(b)
 
 			Expect(borrow).To(BeTrue())
 			Expect(result.Length()).To(Equal(uint(1)))
@@ -218,7 +218,7 @@ var _ = Describe("Digits", func() {
 			a := Digit(2).AsDigits()
 			b := Digit(1).AsDigits()
 
-			result, borrow := a.SubtractUnderflow(b)
+			result, borrow := a.SubtractNoBorrow(b)
 
 			Expect(borrow).To(BeFalse())
 			Expect(result.Length()).To(Equal(uint(1)))
@@ -229,7 +229,7 @@ var _ = Describe("Digits", func() {
 			a := Digit(1).AsDigits()
 			b, _ := Digit(1).AsDigits().LeftShiftBits(64).Decrement()
 
-			result, borrow := a.SubtractUnderflow(b.Trim())
+			result, borrow := a.SubtractNoBorrow(b.Trim())
 
 			Expect(borrow).To(BeTrue())
 			Expect(result.Length()).To(Equal(uint(1)))
@@ -240,7 +240,7 @@ var _ = Describe("Digits", func() {
 			a := Digit(1).AsDigits()
 			b := Digit(1).AsDigits().LeftShiftBits(64)
 
-			result, borrow := a.SubtractUnderflow(b)
+			result, borrow := a.SubtractNoBorrow(b)
 
 			Expect(borrow).To(BeTrue())
 			Expect(result.Length()).To(Equal(uint(2)))
@@ -252,7 +252,7 @@ var _ = Describe("Digits", func() {
 			a := Digit(2).AsDigits()
 			b := Digit(1).AsDigits().LeftShiftBits(64)
 
-			result, borrow := a.SubtractUnderflow(b)
+			result, borrow := a.SubtractNoBorrow(b)
 
 			Expect(borrow).To(BeTrue())
 			Expect(result.Length()).To(Equal(uint(2)))
@@ -269,7 +269,7 @@ var _ = Describe("Digits", func() {
 				Add(Digit(1).AsDigits().LeftShiftBits(64)).
 				Add(Digit(2).AsDigits().LeftShiftBits(64 * 2))
 
-			result, borrow := a.SubtractUnderflow(b)
+			result, borrow := a.SubtractNoBorrow(b)
 
 			Expect(borrow).To(BeTrue())
 			Expect(result.Length()).To(Equal(uint(3)))

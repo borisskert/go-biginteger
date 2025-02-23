@@ -58,7 +58,7 @@ func (a Digits) RightShiftBits(n uint) Digits {
 	return result
 }
 
-func (a *Digits) RightShiftBitsInPlace(n uint) { // TODO is this working?
+func (a *Digits) RightShiftBitsInPlace(n uint) {
 	shift := n % 64
 	shifts := n / 64
 	sizeA := uint(len(a.value))
@@ -165,20 +165,6 @@ func (a *Digits) addInPlaceAbs(b Digits) bool {
 	return carry == 1
 }
 
-func (a Digits) MultiplyDoNotUse(b Digits) Digits { // TODO remove
-	//if len(a.value) == 0 || len(b.value) == 0 {
-	//	return Digits{false, []uint64{0}}
-	//}
-	//
-	//result := uintArray.
-	//	MultiplyUint64Array(a.value, b.value)
-	//
-	//digits := Digits{a.sign != b.sign, result}
-	//
-	//return digits.Trim()
-	panic("Do not use this function (yet)")
-}
-
 func (a Digits) SubtractAndBorrow(b Digits) (Digits, bool) {
 	if a.sign != b.sign {
 		return a.Add(b.Negate()), false
@@ -276,14 +262,14 @@ func (a Digits) Difference(b Digits) Digits {
 	return digits.Trim()
 }
 
-func (a Digits) SubtractUnderflow(b Digits) (Digits, bool) { // TODO rename to NoBorrow
+func (a Digits) SubtractNoBorrow(b Digits) (Digits, bool) {
 	result := a.Copy()
-	borrowed := result.SubtractUnderflowInPlace(b)
+	borrowed := result.SubtractNoBorrowInPlace(b)
 
 	return result, borrowed
 }
 
-func (a *Digits) SubtractUnderflowInPlace(b Digits) bool {
+func (a *Digits) SubtractNoBorrowInPlace(b Digits) bool {
 	needComplement := a.Compare(b) < 0
 
 	size := max(len(a.value), len(b.value))
@@ -501,7 +487,7 @@ func (a Digits) Append(b Digits) Digits {
 	return Digits{a.sign, result}
 }
 
-func (a Digits) TrailingZeros() uint { // TODO this logic is weird
+func (a Digits) TrailingZeros() uint {
 	if len(a.value) == 0 {
 		return 0
 	}
@@ -754,7 +740,7 @@ func (a *Digits) DecrementInPlace() {
 
 func (a Digits) Decrement() (Digits, bool) {
 	result := a.Copy()
-	borrowed := result.SubtractUnderflowInPlace(Digits{false, []uint64{1}})
+	borrowed := result.SubtractNoBorrowInPlace(Digits{false, []uint64{1}})
 
 	return result.Trim(), borrowed
 }

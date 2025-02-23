@@ -146,7 +146,7 @@ func checkIfQHatTooLarge(b, qHat digits.DoubleDigit, rHat digits.Digit, u, v dig
 
 func d4MultiplyAndSubtract(j int64, n int64, u *digits.Digits, v digits.Digits, qHat digits.DoubleDigit) bool {
 	uDigits := u.ChunkInclusive(uint(j), uint(j)+uint(n))
-	uDigitsDifference, borrowed := uDigits.Trim().SubtractUnderflow(v.MultiplyByDoubleDigit(qHat).Trim())
+	uDigitsDifference, borrowed := uDigits.Trim().SubtractNoBorrow(v.MultiplyByDoubleDigit(qHat).Trim())
 
 	u.Replace(uint(j), uint(j)+uint(n), uDigitsDifference)
 
