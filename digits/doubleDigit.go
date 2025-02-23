@@ -273,7 +273,7 @@ func (d DoubleDigit) Multiply(b DoubleDigit) (DoubleDigit, DoubleDigit) {
 		)
 }
 
-func (d DoubleDigit) MultiplyDigit(b Digit) (DoubleDigit, Digit) { // TODO return hi,lo in this order
+func (d DoubleDigit) MultiplyDigit(b Digit) (Digit, DoubleDigit) {
 	mLo := d.lo.Multiply(b)
 	mHi := d.hi.Multiply(b)
 
@@ -292,7 +292,7 @@ func (d DoubleDigit) MultiplyDigit(b Digit) (DoubleDigit, Digit) { // TODO retur
 		panic("unexpected carry")
 	}
 
-	return DoubleDigit{y, x}, z
+	return z, DoubleDigit{y, x}
 }
 
 func (d DoubleDigit) IsGreaterThan(doubleDigit DoubleDigit) bool {

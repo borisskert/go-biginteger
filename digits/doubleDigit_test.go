@@ -36,7 +36,7 @@ var _ = Describe("DoubleDigits", func() {
 			a := DoubleDigitOf(1, 0)
 			b := One()
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(0)))
 			Expect(lo.High()).To(Equal(Digit(1)))
@@ -47,7 +47,7 @@ var _ = Describe("DoubleDigits", func() {
 			a := DoubleDigitOf(1, 0)
 			b := Digit(2)
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(0)))
 			Expect(lo.High()).To(Equal(Digit(2)))
@@ -58,7 +58,7 @@ var _ = Describe("DoubleDigits", func() {
 			a := DoubleDigitOf(3, 0)
 			b := Digit(2)
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(0)))
 			Expect(lo.High()).To(Equal(Digit(6)))
@@ -69,7 +69,7 @@ var _ = Describe("DoubleDigits", func() {
 			a := DoubleDigitOf(3, 1)
 			b := Digit(2)
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(2)))
 			Expect(lo.High()).To(Equal(Digit(6)))
@@ -80,7 +80,7 @@ var _ = Describe("DoubleDigits", func() {
 			a := DoubleDigitOf(2, 0)
 			b := Digit(18446744073709551615)
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(0)))
 			Expect(lo.High()).To(Equal(Digit(18446744073709551614)))
@@ -91,7 +91,7 @@ var _ = Describe("DoubleDigits", func() {
 			a := DoubleDigitOf(18446744073709551615, 18446744073709551615)
 			b := Digit(18446744073709551615)
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(1)))
 			Expect(lo.High()).To(Equal(Digit(18446744073709551615)))
@@ -107,7 +107,7 @@ var _ = Describe("DoubleDigits", func() {
 			// ----------------
 			// 1, 6853548467895971550, 15771953601206468298
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(15771953601206468298)))
 			Expect(lo.High()).To(Equal(Digit(6853548467895971550)))
@@ -124,7 +124,7 @@ var _ = Describe("DoubleDigits", func() {
 			//											  1, 21717254218781315572, 15771953601206468298
 			//											  2,  3270510145071763956, 15771953601206468298
 
-			lo, hi := a.MultiplyDigit(b)
+			hi, lo := a.MultiplyDigit(b)
 
 			Expect(lo.Low()).To(Equal(Digit(15771953601206468298)))
 			Expect(lo.High()).To(Equal(Digit(3270510145071763956)))

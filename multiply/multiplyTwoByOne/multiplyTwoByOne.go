@@ -11,7 +11,7 @@ type multiplyTwoByOne struct {
 func (m multiplyTwoByOne) Multiply(
 	multiplicand digits.Digits, multiplier digits.Digits,
 ) (product digits.Digits) {
-	lo, hi := multiplicand.AsDoubleDigit().MultiplyDigit(multiplier.AsDigit())
+	hi, lo := multiplicand.AsDoubleDigit().MultiplyDigit(multiplier.AsDigit())
 
 	result := digits.OfUint64Array([]uint64{
 		uint64(lo.Low()),

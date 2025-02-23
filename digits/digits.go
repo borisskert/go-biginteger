@@ -1013,7 +1013,7 @@ func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
 	a := DoubleDigitOf(a1, a2)
 
 	q, _ := a.DivideByDigit(b1)
-	qMulB1, overflow := q.MultiplyDigit(b1)
+	overflow, qMulB1 := q.MultiplyDigit(b1)
 
 	if overflow > 0 {
 		panic("overflow")
