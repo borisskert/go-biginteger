@@ -1,15 +1,11 @@
 package multiply_test
 
 import (
-	"crypto/rand"
-	"encoding/binary"
-	"fmt"
 	"github.com/borisskert/go-biginteger"
 	"github.com/borisskert/go-biginteger/digits"
 	"github.com/borisskert/go-biginteger/multiply"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"log"
 	"testing"
 )
 
@@ -22,18 +18,7 @@ var _ = Describe("Multiply", func() {
 			11595963786453332908, 3312835375285772574,
 		})
 
-		v0 := biginteger.OfUint64Array([]uint64{
-			9350441601238114644,
-			4238337566216384099,
-		}).Add(biginteger.OfUint64Array([]uint64{
-			0, 10035107158203101116, 7873257605001359234,
-		})).Add(biginteger.OfUint64Array([]uint64{
-			0, 16191433885067556706, 1210844987129673233,
-		})).Add(biginteger.OfUint64Array([]uint64{
-			0, 0, 9690480699911911046, 2249300428400506474,
-		}))
-
-		v0a := biginteger.OfUint64Array([]uint64{
+		expectedResult := biginteger.OfUint64Array([]uint64{
 			9350441601238114644,
 			12018134535777490305,
 			327839218333391898,
@@ -42,8 +27,7 @@ var _ = Describe("Multiply", func() {
 
 		result := p0.Multiply(q0)
 
-		Expect(result.IsEqualTo(v0)).To(BeTrue())
-		Expect(result.IsEqualTo(v0a)).To(BeTrue())
+		Expect(result.IsEqualTo(expectedResult)).To(BeTrue())
 	})
 
 	It("Should multiply 2 digit numbers (Example a, v1)", func() {
@@ -56,22 +40,7 @@ var _ = Describe("Multiply", func() {
 			11431115928381940648, 16206270981547339579,
 		})
 
-		v1 := digits.OfUint64Array([]uint64{
-			14427007699956832520,
-			9506070988346243313,
-		}).Add(digits.OfUint64Array([]uint64{
-			0, 5579982626574496392, 4425433252922641980,
-		})).Add(digits.OfUint64Array([]uint64{
-			0, 10009622014008779215, 13477071125178542569,
-		})).Add(digits.OfUint64Array([]uint64{
-			0, 0, 4100825592147456927, 6274083034145792244,
-		})).Add(digits.OfUint64Array([]uint64{
-			0, 0, 11431115928381940648,
-		})).Add(digits.OfUint64Array([]uint64{
-			0, 0, 0, 16206270981547339579,
-		}))
-
-		v1a := digits.OfUint64Array([]uint64{
+		expectedResult := digits.OfUint64Array([]uint64{
 			14427007699956832520,
 			6648931555219967304,
 			14987701824921030509,
@@ -79,14 +48,9 @@ var _ = Describe("Multiply", func() {
 			1,
 		})
 
-		schoolbookResult := multiply.SchoolbookMultiply(p1, q1)
-		karatsubaResult := multiply.KaratsubaMultiply(p1, q1)
-		toomCookResult := multiply.ToomCook3Multiply(p1, q1)
+		result := multiply.MultiplySwitch(p1, q1)
 
-		Expect(v1.IsEqualTo(v1a)).To(BeTrue())
-		Expect(schoolbookResult.IsEqualTo(v1)).To(BeTrue())
-		Expect(karatsubaResult.IsEqualTo(v1)).To(BeTrue())
-		Expect(toomCookResult.IsEqualTo(v1)).To(BeTrue())
+		Expect(result.IsEqualTo(expectedResult)).To(BeTrue())
 	})
 
 	It("Should multiply 2 digit numbers (Example a, vm1)", func() {
@@ -97,38 +61,16 @@ var _ = Describe("Multiply", func() {
 			6685932429184826448, 9580600230975794430,
 		}).Negative()
 
-		vm1 := digits.OfUint64Array([]uint64{
-			1965498881762243504,
-			672563709114694768,
-		}).Add(digits.OfUint64Array([]uint64{
-			0, 813134769680983298, 963749498688218842,
-		})).Add(digits.OfUint64Array([]uint64{
-			0, 17035339216484193776, 195286167811551559,
-		})).Add(digits.OfUint64Array([]uint64{
-			0, 0, 8286399929178466650, 279835120120985550,
-		}))
-
-		vm1a := digits.OfUint64Array([]uint64{
+		expectedResult := digits.OfUint64Array([]uint64{
 			1965498881762243504,
 			74293621570320226,
 			9445435595678237052,
 			279835120120985550,
 		})
 
-		schoolbookResult := multiply.SchoolbookMultiply(pm1, qm1)
-		karatsubaResult := multiply.KaratsubaMultiply(pm1, qm1)
-		toomCookResult := multiply.ToomCook3Multiply(pm1, qm1)
+		result := multiply.MultiplySwitch(pm1, qm1)
 
-		if !schoolbookResult.IsEqualTo(karatsubaResult) ||
-			!schoolbookResult.IsEqualTo(toomCookResult) ||
-			!karatsubaResult.IsEqualTo(toomCookResult) {
-			log.Fatalf("Results are not equal")
-		}
-
-		Expect(vm1a.IsEqualTo(vm1)).To(BeTrue())
-		Expect(schoolbookResult.IsEqualTo(vm1)).To(BeTrue())
-		Expect(karatsubaResult.IsEqualTo(vm1)).To(BeTrue())
-		Expect(toomCookResult.IsEqualTo(vm1)).To(BeTrue())
+		Expect(result.IsEqualTo(expectedResult)).To(BeTrue())
 	})
 
 	It("Should multiply 2 digit numbers (Example a, vm2)", func() {
@@ -139,7 +81,7 @@ var _ = Describe("Multiply", func() {
 			6521084571113434188, 4027291763527809819, 1,
 		}).Negative()
 
-		vm2 := digits.OfUint64Array([]uint64{
+		expectedResult := digits.OfUint64Array([]uint64{
 			10718923615238770716, 3695425665771625431,
 		}).Add(digits.OfUint64Array([]uint64{
 			0, 14328280640247263727, 2282221183331507844,
@@ -153,13 +95,9 @@ var _ = Describe("Multiply", func() {
 			0, 0, 0, 13602304095098071475,
 		}))
 
-		schoolbookResult := multiply.SchoolbookMultiply(pm2, qm2)
-		karatsubaResult := multiply.KaratsubaMultiply(pm2, qm2)
-		toomCookResult := multiply.ToomCook3Multiply(pm2, qm2)
+		result := multiply.MultiplySwitch(pm2, qm2)
 
-		Expect(vm2.IsEqualTo(schoolbookResult)).To(BeTrue())
-		Expect(vm2.IsEqualTo(karatsubaResult)).To(BeTrue())
-		Expect(vm2.IsEqualTo(toomCookResult)).To(BeTrue())
+		Expect(expectedResult.IsEqualTo(result)).To(BeTrue())
 	})
 
 	It("Should multiply 4 digit numbers", func() {
@@ -209,59 +147,7 @@ var _ = Describe("Multiply", func() {
 
 		Expect(result.IsEqualTo(expected)).To(BeTrue())
 	})
-
-	XIt("Multiply random numbers", func() {
-		maxDigit := uint64(0xFFFFFFFFFFFFFFFF)
-
-		for i := 0; i < 1000000000; i++ {
-			a := digits.OfUint64Array([]uint64{
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-			})
-
-			b := digits.OfUint64Array([]uint64{
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-				randomUint64(0, maxDigit),
-			})
-
-			schoolbookResult := multiply.SchoolbookMultiply(a, b)
-			karatsubaResult := multiply.KaratsubaMultiply(a, b)
-			toomCookResult := multiply.ToomCook3Multiply(a, b)
-
-			if !schoolbookResult.IsEqualTo(karatsubaResult) ||
-				!schoolbookResult.IsEqualTo(toomCookResult) ||
-				!karatsubaResult.IsEqualTo(toomCookResult) {
-				fmt.Println("a:", a.AsArray())
-				fmt.Println("b:", b.AsArray())
-
-				fmt.Println("schoolbookResult:", schoolbookResult.AsArray())
-				fmt.Println("karatsubaResult:", karatsubaResult.AsArray())
-				fmt.Println("toomCookResult:", toomCookResult.AsArray())
-
-				log.Fatalf("Results are not equal")
-			}
-		}
-	})
 })
-
-func randomUint64(min, max uint64) uint64 {
-	var num uint64
-	err := binary.Read(rand.Reader, binary.LittleEndian, &num)
-
-	if err != nil {
-		log.Fatalf("Failed to generate random number: %v", err)
-	}
-
-	return num%(max-min) + min
-}
 
 func TestSuite(t *testing.T) {
 	RegisterFailHandler(Fail)

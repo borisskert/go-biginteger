@@ -1,21 +1,28 @@
-package multiply
+package schoolbook
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
+	"github.com/borisskert/go-biginteger/multiply/api"
 	"math/bits"
 )
 
-func SchoolbookMultiply(a, b digits.Digits) digits.Digits {
-	result := multiplyByDigits(a, b)
+type schoolbookMultiplyAlgorithm struct {
+}
 
-	if a.IsNegative() != b.IsNegative() && !result.IsZero() {
+func (s schoolbookMultiplyAlgorithm) Multiply(
+	multiplicand digits.Digits,
+	multiplier digits.Digits,
+) (product digits.Digits) {
+	result := multiply(multiplicand, multiplier)
+
+	if multiplicand.IsNegative() != multiplier.IsNegative() && !result.IsZero() {
 		return result.Trim().Negative()
 	}
 
 	return result.Trim()
 }
 
-func multiplyByDigits(a digits.Digits, b digits.Digits) digits.Digits {
+func multiply(a digits.Digits, b digits.Digits) digits.Digits {
 	result := make([]uint64, a.Length()+b.Length())
 
 	for i := uint(0); i < a.Length(); i++ {
@@ -45,4 +52,9 @@ func multiplyByDigits(a digits.Digits, b digits.Digits) digits.Digits {
 	}
 
 	return digits.Wrap(result).Trim()
+}
+
+// NewSchoolbookMultiplyAlgorithm creates a new instance of the schoolbook multiply algorithm.
+func NewSchoolbookMultiplyAlgorithm() api.MultiplyAlgorithm {
+	return &schoolbookMultiplyAlgorithm{}
 }
