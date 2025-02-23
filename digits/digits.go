@@ -1031,3 +1031,20 @@ func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
 
 	return q, r.AsDoubleDigit()
 }
+
+func (a *Digits) DivModByDigitInplace(divisor Digit) Digit {
+	remainder := Digit(0)
+
+	for j := len(a.value) - 1; j >= 0; j-- {
+		dividend := DoubleDigitOf(remainder, Digit(a.value[j]))
+
+		var quotient DoubleDigit
+		quotient, remainder = dividend.DivideByDigit(divisor) // Fast division
+
+		a.value[j] = uint64(quotient.Low()) // Store back
+	}
+
+	a.TrimInPlace()
+
+	return remainder
+}

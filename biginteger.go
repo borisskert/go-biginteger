@@ -1,12 +1,19 @@
 package biginteger
 
+import "github.com/borisskert/go-biginteger/stringify"
+
 type BigInteger struct {
 	sign  bool
 	value []uint64
 }
 
 func (i BigInteger) String() string {
-	return toString(i)
+	sign := ""
+	if i.sign {
+		sign = "-"
+	}
+
+	return sign + stringify.Stringify(i.value)
 }
 
 func (i BigInteger) Add(summand BigInteger) BigInteger {
