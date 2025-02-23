@@ -3,12 +3,12 @@ module github.com/borisskert/go-biginteger
 go 1.23
 
 require (
+	github.com/borisskert/go-schoenhageStrassen v0.0.0-20250216200706-42e630b5bafd
 	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
 )
 
 require (
-	github.com/borisskert/go-schoenhageStrassen v0.0.0-20250216200706-42e630b5bafd // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
