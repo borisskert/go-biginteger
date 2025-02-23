@@ -5,6 +5,15 @@ import (
 	"github.com/borisskert/go-biginteger/multiply/api"
 )
 
+// DecorateWithToomCook3 A Decorator to embed any MultiplyAlgorithm into Toom-Cook-3's Fast Multiplication.
+// See André Toom: The Complexity of a Scheme of Functional Elements Realizing the Multiplication of Integers, 1963
+// and Robert E. Cook: On the Minimum Computation Time of Functions, 1966
+func DecorateWithToomCook3(algorithm api.MultiplyAlgorithm) api.MultiplyAlgorithm {
+	return &toomCook3Algorithm{
+		algorithm: algorithm,
+	}
+}
+
 type toomCook3Algorithm struct {
 	algorithm api.MultiplyAlgorithm
 }
@@ -72,10 +81,4 @@ func polynoms(x2, x1, x0 digits.Digits) (p0, p1, pm1, pm2, pInf digits.Digits) {
 	pInf = x2
 
 	return
-}
-
-func DecorateWithToomCook3(algorithm api.MultiplyAlgorithm) api.MultiplyAlgorithm {
-	return &toomCook3Algorithm{
-		algorithm: algorithm,
-	}
 }

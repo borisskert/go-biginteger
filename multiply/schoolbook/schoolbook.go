@@ -6,6 +6,11 @@ import (
 	"math/bits"
 )
 
+// NewSchoolbookMultiplyAlgorithm creates a new instance of the schoolbook multiply algorithm.
+func NewSchoolbookMultiplyAlgorithm() api.MultiplyAlgorithm {
+	return &schoolbookMultiplyAlgorithm{}
+}
+
 type schoolbookMultiplyAlgorithm struct {
 }
 
@@ -50,9 +55,4 @@ func multiply(a digits.Digits, b digits.Digits) digits.Digits {
 	}
 
 	return digits.Wrap(result).Trim()
-}
-
-// NewSchoolbookMultiplyAlgorithm creates a new instance of the schoolbook multiply algorithm.
-func NewSchoolbookMultiplyAlgorithm() api.MultiplyAlgorithm {
-	return &schoolbookMultiplyAlgorithm{}
 }

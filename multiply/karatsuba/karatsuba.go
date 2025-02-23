@@ -5,6 +5,14 @@ import (
 	"github.com/borisskert/go-biginteger/multiply/api"
 )
 
+// DecorateWithKaratsuba A Decorator to embed any MultiplyAlgorithm into Karatsuba's Fast Multiplication.
+// See Anatolii Alexeevitch Karatsuba: The Complexity of Computations, 1962 and 1995
+func DecorateWithKaratsuba(algorithm api.MultiplyAlgorithm) api.MultiplyAlgorithm {
+	return &karatsubaMultiplyAlgorithm{
+		algorithm: algorithm,
+	}
+}
+
 type karatsubaMultiplyAlgorithm struct {
 	algorithm api.MultiplyAlgorithm
 }
@@ -52,10 +60,4 @@ func karatsubaMultiply(
 	}
 
 	return result.Trim()
-}
-
-func DecorateWithKaratsuba(algorithm api.MultiplyAlgorithm) api.MultiplyAlgorithm {
-	return &karatsubaMultiplyAlgorithm{
-		algorithm: algorithm,
-	}
 }
