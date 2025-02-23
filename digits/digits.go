@@ -709,12 +709,6 @@ func (a Digits) Negative() Digits {
 	return Digits{true, a.value}
 }
 
-func MakeDigits(size uint) Digits {
-	return Digits{
-		value: make([]uint64, size),
-	}
-}
-
 func Empty() Digits {
 	return Digits{false, []uint64{}}
 }
