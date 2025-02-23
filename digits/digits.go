@@ -838,7 +838,6 @@ func (a Digits) DivideByDoubleDigit(divisor DoubleDigit) (Digits, DoubleDigit) {
 		b2 := divisor.Low()
 
 		qHat, rHat := DivThreeByTwo(r1, r2, r3, b1, b2)
-		//_, qHat, rHat := Div3By2(r1, r2, r3, b1, b2)
 
 		quotient = quotient.LeftShiftBits(64).Add(qHat.AsDigits())
 		remainder = rHat.AsDigits()
@@ -913,8 +912,6 @@ func (a Digits) DivideByDigitExact(b Digit) Digits {
 	quotient, remainder := a.DivideByDigit(b)
 
 	if remainder != 0 {
-		fmt.Println("a:", a)
-		fmt.Println("b:", b)
 		panic("Division is not exact")
 	}
 
@@ -1013,24 +1010,15 @@ func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
 	a := DoubleDigitOf(a1, a2)
 
 	q, _ := a.DivideByDigit(b1)
-	overflow, qMulB1 := q.MultiplyDigit(b1)
+	_, qMulB1 := q.MultiplyDigit(b1)
 
-	if overflow > 0 {
-		panic("overflow")
-	}
-
-	c, overflow := a.Subtract(qMulB1)
-
-	if overflow > 0 {
-		panic("overflow")
-	}
+	c, _ := a.Subtract(qMulB1)
 
 	d := q.AsDigits().MultiplyByDigit(b2)
 
-	c_a2 := c.AsDigits().
+	r := c.AsDigits().
 		LeftShiftDigits(1).
-		AddDigit(a3)
-	r := c_a2.
+		AddDigit(a3).
 		Subtract(d)
 
 	if r.IsNegative() {
@@ -1045,10 +1033,6 @@ func DivThreeByTwo(a1, a2, a3 Digit, b1, b2 Digit) (DoubleDigit, DoubleDigit) {
 				panic("This should never happen: r was negative twice")
 			}
 		}
-	}
-
-	if r.IsGreaterThanOrEqual(b.AsDigits()) {
-		panic("r is greater than or equal b")
 	}
 
 	return q, r.AsDoubleDigit()
