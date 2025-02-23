@@ -37,7 +37,7 @@ func subtract(minuend BigInteger, subtrahend BigInteger) BigInteger {
 	}
 
 	if minuend.sign {
-		return subtrahend.Add(minuend.Abs())
+		return subtrahend.Add(minuend.Abs()).Negate()
 	}
 
 	return minuend.Add(subtrahend.Abs())

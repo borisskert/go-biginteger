@@ -34,19 +34,11 @@ func powerAbs(a BigInteger, b BigInteger) BigInteger {
 		return one
 	}
 
-	if b.IsEqualTo(one) {
-		return a
-	}
-
 	if a.IsEqualTo(zero) {
 		return zero
 	}
 
-	if a.IsEqualTo(one) {
-		return one
-	}
-
-	if b.IsEqualTo(one) {
+	if a.IsEqualTo(one) || b.IsEqualTo(one) {
 		return a
 	}
 
@@ -55,11 +47,10 @@ func powerAbs(a BigInteger, b BigInteger) BigInteger {
 	for b.IsGreaterThan(zero) {
 		if b.IsOdd() {
 			result = result.Multiply(a)
-			b = b.Subtract(one)
-		} else {
-			a = a.Multiply(a)
-			b = b.ShiftRight(1)
 		}
+
+		a = a.Multiply(a)
+		b = b.ShiftRight(1) // Proper halving of exponent
 	}
 
 	return result

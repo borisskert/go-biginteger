@@ -2,11 +2,11 @@ package earlyExitDivisionOptimization
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/divmod/common"
+	"github.com/borisskert/go-biginteger/divmod/api"
 )
 
 type earlyExitDivisionOptimization struct {
-	algorithm common.DivisionAlgorithm
+	algorithm api.DivisionAlgorithm
 }
 
 func (d *earlyExitDivisionOptimization) DivMod(
@@ -46,7 +46,7 @@ func earlyExitDivision(
 	return fn(numerator, denominator)
 }
 
-func DecorateWithEarlyExitDivisionOptimization(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+func DecorateWithEarlyExitDivisionOptimization(algorithm api.DivisionAlgorithm) api.DivisionAlgorithm {
 	return &earlyExitDivisionOptimization{
 		algorithm: algorithm,
 	}

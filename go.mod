@@ -3,6 +3,7 @@ module github.com/borisskert/go-biginteger
 go 1.23
 
 require (
+	github.com/borisskert/go-schoenhageStrassen v0.0.0-20250216200706-42e630b5bafd
 	github.com/onsi/ginkgo/v2 v2.22.2
 	github.com/onsi/gomega v1.36.2
 )

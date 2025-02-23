@@ -2,11 +2,11 @@ package chunkBasedLongDivision
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/divmod/common"
+	"github.com/borisskert/go-biginteger/divmod/api"
 )
 
 type chunkBasedLongDivision struct {
-	algorithm common.DivisionAlgorithm
+	algorithm api.DivisionAlgorithm
 }
 
 func (d *chunkBasedLongDivision) DivMod(numerator, denominator digits.Digits) (digits.Digits, digits.Digits) {
@@ -56,7 +56,7 @@ func divideChunkBased(
 	return quotient.Trim(), remainder.Trim()
 }
 
-func DecorateWithChunkBasedLongDivision(algorithm common.DivisionAlgorithm) common.DivisionAlgorithm {
+func DecorateWithChunkBasedLongDivision(algorithm api.DivisionAlgorithm) api.DivisionAlgorithm {
 	return &chunkBasedLongDivision{
 		algorithm: algorithm,
 	}
