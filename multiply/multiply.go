@@ -14,7 +14,3 @@ func Multiply(a, b []uint64) []uint64 {
 	)
 	return product.Trim().AsArray()
 }
-
-func MultiplySwitch(a, b digits.Digits) digits.Digits {
-	return recursiveMultiply.Multiply(a, b)
-}

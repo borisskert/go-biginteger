@@ -3,13 +3,23 @@ package multiply_test
 import (
 	"github.com/borisskert/go-biginteger"
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/multiply"
+	"github.com/borisskert/go-biginteger/multiply/recursive"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"testing"
 )
 
 var _ = Describe("Multiply", func() {
+	var MultiplySwitch func(a, b digits.Digits) digits.Digits
+
+	BeforeEach(func() {
+		alg := recursive.NewRecursiveMultiplyAlgorithm()
+
+		MultiplySwitch = func(a, b digits.Digits) digits.Digits {
+			return alg.Multiply(a, b)
+		}
+	})
+
 	It("Should multiply 2 digit numbers (Example a, v0)", func() {
 		p0 := biginteger.OfUint64Array([]uint64{
 			6742305324661190591, 12524700037052152845,
@@ -48,7 +58,7 @@ var _ = Describe("Multiply", func() {
 			1,
 		})
 
-		result := multiply.MultiplySwitch(p1, q1)
+		result := MultiplySwitch(p1, q1)
 
 		Expect(result.IsEqualTo(expectedResult)).To(BeTrue())
 	})
@@ -68,7 +78,7 @@ var _ = Describe("Multiply", func() {
 			279835120120985550,
 		})
 
-		result := multiply.MultiplySwitch(pm1, qm1)
+		result := MultiplySwitch(pm1, qm1)
 
 		Expect(result.IsEqualTo(expectedResult)).To(BeTrue())
 	})
@@ -95,7 +105,7 @@ var _ = Describe("Multiply", func() {
 			0, 0, 0, 13602304095098071475,
 		}))
 
-		result := multiply.MultiplySwitch(pm2, qm2)
+		result := MultiplySwitch(pm2, qm2)
 
 		Expect(expectedResult.IsEqualTo(result)).To(BeTrue())
 	})

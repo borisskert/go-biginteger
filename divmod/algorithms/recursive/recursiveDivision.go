@@ -12,9 +12,12 @@ import (
 	"github.com/borisskert/go-biginteger/divmod/algorithms/earlyExitDivisionOptimization"
 	"github.com/borisskert/go-biginteger/divmod/algorithms/trailingZeroReduction"
 	"github.com/borisskert/go-biginteger/divmod/api"
+	multApi "github.com/borisskert/go-biginteger/multiply/api"
+	recursiveMultiply "github.com/borisskert/go-biginteger/multiply/recursive"
 )
 
 type recursiveDivisionAlgorithm struct {
+	multiplyAlg            multApi.MultiplyAlgorithm
 	divideOneByOne         divideDigitByDigit.DivideDigitByDigit
 	divideTwoByOne         divideDoubleDigitByDigit.DivideDoubleDigitByDigit
 	divideManyByOne        divideDigitsByDigit.DivideDigitsByDigit
@@ -62,7 +65,7 @@ func (f *recursiveDivisionAlgorithm) selectSuitableDivideAlgorithm(
 	}
 
 	if m == 2*n {
-		return burnikelZiegler.DecorateWithBurnikelZiegler(defaultAlgorithmFn)
+		return burnikelZiegler.DecorateWithBurnikelZiegler(defaultAlgorithmFn, f.multiplyAlg)
 	}
 
 	if m > 2*n {
@@ -73,5 +76,7 @@ func (f *recursiveDivisionAlgorithm) selectSuitableDivideAlgorithm(
 }
 
 func NewRecursiveDivisionAlgorithm() api.DivisionAlgorithm {
-	return &recursiveDivisionAlgorithm{}
+	return &recursiveDivisionAlgorithm{
+		multiplyAlg: recursiveMultiply.NewRecursiveMultiplyAlgorithm(),
+	}
 }

@@ -2,18 +2,24 @@ package burnikelZiegler
 
 import (
 	"github.com/borisskert/go-biginteger/digits"
-	"github.com/borisskert/go-biginteger/divmod/api"
-	"github.com/borisskert/go-biginteger/multiply"
+	divApi "github.com/borisskert/go-biginteger/divmod/api"
+	multApi "github.com/borisskert/go-biginteger/multiply/api"
 )
 
 // DecorateWithBurnikelZiegler A Decorator to embed any DivideAlgorithm into Burnikel-Ziegler's Fast Recursive Division.
 // See Christoph Burnikel and Joachim Ziegler: Fast Recursive Division, October 1998
-func DecorateWithBurnikelZiegler(algorithm api.DivisionAlgorithm) api.DivisionAlgorithm {
-	return burnikelZiegler{algorithm}
+func DecorateWithBurnikelZiegler(
+	division divApi.DivisionAlgorithm, multiply multApi.MultiplyAlgorithm,
+) divApi.DivisionAlgorithm {
+	return burnikelZiegler{
+		division,
+		multiply,
+	}
 }
 
 type burnikelZiegler struct {
-	algorithm api.DivisionAlgorithm
+	division divApi.DivisionAlgorithm
+	multiply multApi.MultiplyAlgorithm
 }
 
 func (bz burnikelZiegler) DivMod(
@@ -21,20 +27,21 @@ func (bz burnikelZiegler) DivMod(
 ) (
 	quotient digits.Digits, remainder digits.Digits,
 ) {
-	return divModBurnikelZiegler(numerator, denominator, bz.algorithm.DivMod)
+	return divModBurnikelZiegler(numerator, denominator, bz.division.DivMod, bz.multiply.Multiply)
 }
 
 func divThreeLongHalvesByTwo(
 	a1, a2, a3, b1, b2 digits.Digits,
-	fn func(digits.Digits, digits.Digits) (digits.Digits, digits.Digits),
+	divmodFn func(digits.Digits, digits.Digits) (digits.Digits, digits.Digits),
+	multiplyFn func(digits.Digits, digits.Digits) digits.Digits,
 ) (digits.Digits, digits.Digits) {
 	b := b1.Concat(b2)
 	a := a1.Concat(a2)
 
-	q, _ := fn(a.Trim(), b1.Trim())
-	c := a.Subtract(multiply.MultiplySwitch(q, b1))
+	q, _ := divmodFn(a.Trim(), b1.Trim())
+	c := a.Subtract(multiplyFn(q, b1))
 
-	d := multiply.MultiplySwitch(q, b2)
+	d := multiplyFn(q, b2)
 
 	var r digits.Digits
 	if c.IsZero() {
@@ -64,7 +71,8 @@ func divThreeLongHalvesByTwo(
 
 func divModBurnikelZiegler(
 	a digits.Digits, b digits.Digits,
-	fn func(digits.Digits, digits.Digits) (digits.Digits, digits.Digits),
+	divmodFn func(digits.Digits, digits.Digits) (digits.Digits, digits.Digits),
+	multiplyFn func(digits.Digits, digits.Digits) digits.Digits,
 ) (digits.Digits, digits.Digits) {
 	n := b.Length()
 
@@ -76,11 +84,11 @@ func divModBurnikelZiegler(
 	a1, a2, a3, a4 := a.Quarter()
 	b1, b2 := b.Halve()
 
-	q1, r := divThreeLongHalvesByTwo(a1, a2, a3, b1, b2, fn)
+	q1, r := divThreeLongHalvesByTwo(a1, a2, a3, b1, b2, divmodFn, multiplyFn)
 
 	r1, r2 := r.Halve()
 
-	q2, s := divThreeLongHalvesByTwo(r1, r2, a4, b1, b2, fn)
+	q2, s := divThreeLongHalvesByTwo(r1, r2, a4, b1, b2, divmodFn, multiplyFn)
 
 	q := q1.LeftShiftDigits(n / 2).Add(q2)
 
