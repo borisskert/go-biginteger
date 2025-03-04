@@ -3311,7 +3311,7 @@ var _ = Describe("BigInteger", func() {
 		It("Should return 1 for 3", func() {
 			bigint, _ := biginteger.Of("3")
 
-			Expect(bigint.Log2()).To(BeNumerically("==", 1.584962500721156))
+			Expect(bigint.Log2()).To(BeNumerically("==", 1.5849625007211563))
 		})
 
 		It("Should return 2 for 4", func() {
@@ -3467,7 +3467,13 @@ var _ = Describe("BigInteger", func() {
 		It("log2(100000000000000000000)", func() {
 			bigint, _ := biginteger.Of("100000000000000000000")
 
-			Expect(bigint.Log2()).To(BeNumerically("==", 66.438561897747))
+			Expect(bigint.Log2()).To(BeNumerically("==", 66.43856189774725))
+		})
+
+		It("log2([18446744073709551615])", func() {
+			bigint := biginteger.OfUint64Array([]uint64{18446744073709551615})
+
+			Expect(bigint.Log2()).To(BeNumerically("==", 64.0))
 		})
 
 		It("log2([0, 1])", func() {
@@ -3475,11 +3481,23 @@ var _ = Describe("BigInteger", func() {
 
 			Expect(bigint.Log2()).To(BeNumerically("==", 64.0))
 		})
-		
+
+		It("log2([18446744073709551615, 1])", func() {
+			bigint := biginteger.OfUint64Array([]uint64{18446744073709551615, 1})
+
+			Expect(bigint.Log2()).To(BeNumerically("==", 65.0))
+		})
+
 		It("log2([0, 2])", func() {
 			bigint := biginteger.OfUint64Array([]uint64{0, 2})
 
 			Expect(bigint.Log2()).To(BeNumerically("==", 65.0))
+		})
+
+		It("log2([0, 3])", func() {
+			bigint := biginteger.OfUint64Array([]uint64{0, 3})
+
+			Expect(bigint.Log2()).To(BeNumerically("==", 65.58496250072116))
 		})
 	})
 
@@ -3517,7 +3535,7 @@ var _ = Describe("BigInteger", func() {
 		It("Should return 2 for 999", func() {
 			bigint, _ := biginteger.Of("999")
 
-			Expect(bigint.Log10()).To(BeNumerically("==", 2.999565488225983))
+			Expect(bigint.Log10()).To(BeNumerically("==", 2.9995654882259823))
 		})
 
 		It("Should return 3 for 1000", func() {
@@ -3581,7 +3599,7 @@ var _ = Describe("BigInteger", func() {
 			bigint, _ := biginteger.Of("753457234543")
 			base, _ := biginteger.Of("3")
 
-			Expect(bigint.Log(*base)).To(BeNumerically("==", 24.8931660238464))
+			Expect(bigint.Log(*base)).To(BeNumerically("==", 24.893166023846398))
 		})
 
 		It("753457234543.log(4)", func() {
