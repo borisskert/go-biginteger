@@ -1,6 +1,10 @@
 package biginteger
 
-import "github.com/borisskert/go-biginteger/stringify"
+import (
+	"github.com/borisskert/go-biginteger/stringify"
+	"math"
+	"math/bits"
+)
 
 type BigInteger struct {
 	sign  bool
@@ -87,7 +91,11 @@ func (i BigInteger) BitLength() uint64 {
 }
 
 func (i BigInteger) Digits() uint64 {
-	return digitsAbs(i)
+	if i.IsEqualTo(zero) {
+		return 1
+	}
+
+	return uint64(i.Abs().Log10()) + 1
 }
 
 func (i BigInteger) CompareTo(other BigInteger) int {
@@ -104,6 +112,89 @@ func (i BigInteger) IsGreaterThan(other BigInteger) bool {
 
 func (i BigInteger) IsEqualTo(other BigInteger) bool {
 	return compareTo(i, other) == 0
+}
+
+func (i BigInteger) Log2() float64 {
+	if i.IsEqualTo(zero) {
+		panic("Logarithm of zero is undefined")
+	}
+	if i.IsLessThan(zero) {
+		panic("Logarithm of negative number is undefined")
+	}
+
+	for index := len(i.value) - 1; index >= 0; index-- {
+		u := i.value[index]
+
+		if u != 0 {
+			n := bits.Len64(u)
+
+			// Calculate the position of the most significant bit (MSB)
+			msbPos := index*64 + (n - 1)
+
+			// Normalize the value to the range [1, 2)
+			numerator := float64(u)
+			denominator := float64(uint64(1) << (n - 1))
+			normValue := numerator / denominator
+
+			// Return the log2 value
+			return float64(msbPos) + math.Log2(normValue)
+		}
+	}
+
+	// This should never happen if the BigInteger is well-formed
+	panic("Invalid BigInteger: no non-zero words found")
+}
+
+func (i BigInteger) Log10() float64 {
+	return i.Log(ten)
+}
+
+func (i BigInteger) Log(base BigInteger) float64 {
+	if base.IsEqualTo(zero) || base.IsEqualTo(one) {
+		panic("Logarithm base must be greater than one")
+	}
+
+	log2i := i.Log2()
+	log2base := base.Log2()
+
+	return log2i / log2base
+}
+
+func log2Uint64Array(arr []uint64) float64 {
+	// Find the highest set bit (integer part of log2)
+	var integerPart int
+	var msbIndex int
+	var msbValue uint64
+
+	// Iterate through the array to find the most significant set bit
+	for i := len(arr) - 1; i >= 0; i-- {
+		if arr[i] != 0 {
+			msbValue = arr[i]
+			msbIndex = i
+			break
+		}
+	}
+
+	// If all elements are zero, return NaN (log2 of zero is undefined)
+	if msbValue == 0 {
+		return math.NaN()
+	}
+
+	// Find the position of the highest set bit in the most significant uint64
+	integerPart = msbIndex*64 + 63 - bits.LeadingZeros64(msbValue)
+
+	// Calculate the fractional part
+	fractionalPart := 0.0
+	if integerPart > 0 {
+		// Shift the most significant uint64 to the left to isolate the bits below the MSB
+		shift := uint(64 - bits.LeadingZeros64(msbValue))
+		shiftedValue := msbValue << shift
+
+		// Use the shifted value to approximate the fractional part
+		fractionalPart = math.Log2(float64(shiftedValue)) - float64(shift)
+	}
+
+	return float64(integerPart) + fractionalPart
 }
 
 func (i BigInteger) Uint() uint {
