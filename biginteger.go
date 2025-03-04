@@ -122,27 +122,7 @@ func (i BigInteger) Log2() float64 {
 		panic("Logarithm of negative number is undefined")
 	}
 
-	for index := len(i.value) - 1; index >= 0; index-- {
-		u := i.value[index]
-
-		if u != 0 {
-			n := bits.Len64(u)
-
-			// Calculate the position of the most significant bit (MSB)
-			msbPos := index*64 + (n - 1)
-
-			// Normalize the value to the range [1, 2)
-			numerator := float64(u)
-			denominator := float64(uint64(1) << (n - 1))
-			normValue := numerator / denominator
-
-			// Return the log2 value
-			return float64(msbPos) + math.Log2(normValue)
-		}
-	}
-
-	// This should never happen if the BigInteger is well-formed
-	panic("Invalid BigInteger: no non-zero words found")
+	return log2Uint64Array(i.value)
 }
 
 func (i BigInteger) Log10() float64 {

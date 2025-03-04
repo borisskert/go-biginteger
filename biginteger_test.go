@@ -3469,6 +3469,18 @@ var _ = Describe("BigInteger", func() {
 
 			Expect(bigint.Log2()).To(BeNumerically("==", 66.438561897747))
 		})
+
+		It("log2([0, 1])", func() {
+			bigint := biginteger.OfUint64Array([]uint64{0, 1})
+
+			Expect(bigint.Log2()).To(BeNumerically("==", 64.0))
+		})
+		
+		It("log2([0, 2])", func() {
+			bigint := biginteger.OfUint64Array([]uint64{0, 2})
+
+			Expect(bigint.Log2()).To(BeNumerically("==", 65.0))
+		})
 	})
 
 	Context("Log10", func() {
