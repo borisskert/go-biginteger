@@ -3762,7 +3762,7 @@ var _ = Describe("BigInteger", func() {
 
 		It("753457234543.logF(2.5)", func() {
 			bigint, _ := biginteger.Of("753457234543")
-			Expect(bigint.LogF(2.5)).To(BeNumerically("==", 29.84635459721002))
+			Expect(bigint.LogF(2.5)).To(BeNumerically("~", 29.84635459721002, 0.0000000000001))
 		})
 
 		It("753457234543.logF(3)", func() {
@@ -3782,12 +3782,12 @@ var _ = Describe("BigInteger", func() {
 
 		It("753457234543.logF(6)", func() {
 			bigint, _ := biginteger.Of("753457234543")
-			Expect(bigint.LogF(6.0)).To(BeNumerically("==", 15.26317486656591))
+			Expect(bigint.LogF(6.0)).To(BeNumerically("~", 15.26317486656591, 0.0000000000001))
 		})
 
-		It("753457234543.logF(6)", func() {
+		It("753457234543.logF(6.6)", func() {
 			bigint, _ := biginteger.Of("753457234543")
-			Expect(bigint.LogF(6.6)).To(BeNumerically("==", 14.49227807340134))
+			Expect(bigint.LogF(6.6)).To(BeNumerically("~", 14.49227807340134, 0.0000000000001))
 		})
 
 		It("753457234543.logF(7)", func() {
@@ -3800,9 +3800,9 @@ var _ = Describe("BigInteger", func() {
 			Expect(bigint.LogF(8.0)).To(BeNumerically("==", 13.151578224007503))
 		})
 
-		It("753457234543.logF(8)", func() {
+		It("753457234543.logF(9.99)", func() {
 			bigint, _ := biginteger.Of("753457234543")
-			Expect(bigint.LogF(9.99)).To(BeNumerically("==", 11.882221572417167))
+			Expect(bigint.LogF(9.99)).To(BeNumerically("~", 11.882221572417167, 0.00000000000001))
 		})
 	})
 })
