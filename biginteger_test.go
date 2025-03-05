@@ -3650,6 +3650,109 @@ var _ = Describe("BigInteger", func() {
 			Expect(bigint.Log(*base)).To(BeNumerically("==", 13.151578224007503))
 		})
 	})
+
+	Context("LogE", func() {
+		It("Should return logE 1", func() {
+			bigint, _ := biginteger.Of("1")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 0))
+		})
+
+		It("Should return logE 2", func() {
+			bigint, _ := biginteger.Of("2")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 0.6931471805599453))
+		})
+
+		It("Should return logE 3", func() {
+			bigint, _ := biginteger.Of("3")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 1.0986122886681098))
+		})
+
+		It("Should return logE 9", func() {
+			bigint, _ := biginteger.Of("9")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 2.1972245773362196))
+		})
+
+		It("Should return logE 10", func() {
+			bigint, _ := biginteger.Of("10")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 2.3025850929940455))
+		})
+
+		It("Should return logE 99", func() {
+			bigint, _ := biginteger.Of("99")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 4.59511985013459))
+		})
+
+		It("Should return logE 100", func() {
+			bigint, _ := biginteger.Of("100")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 4.605170185988091))
+		})
+
+		It("Should return logE 999", func() {
+			bigint, _ := biginteger.Of("999")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 6.906754778648553))
+		})
+
+		It("Should return logE 1000", func() {
+			bigint, _ := biginteger.Of("1000")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 6.907755278982137))
+		})
+
+		It("Should return logE 9999", func() {
+			bigint, _ := biginteger.Of("9999")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 9.21024036697585))
+		})
+
+		It("Should return logE 10000", func() {
+			bigint, _ := biginteger.Of("10000")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 9.210340371976182))
+		})
+
+		It("Should return logE 99999", func() {
+			bigint, _ := biginteger.Of("99999")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 11.512915464920228))
+		})
+
+		It("Should return logE 100000", func() {
+			bigint, _ := biginteger.Of("100000")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 11.512925464970229))
+		})
+
+		It("Should return logE 999999", func() {
+			bigint, _ := biginteger.Of("999999")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 13.815509557963775))
+		})
+
+		It("Should return logE 1000000", func() {
+			bigint, _ := biginteger.Of("1000000")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 13.815510557964274))
+		})
+
+		It("Should return logE 100000000000000000000", func() {
+			bigint, _ := biginteger.Of("100000000000000000000")
+
+			Expect(bigint.LogE()).To(BeNumerically("==", 46.051701859880914))
+		})
+
+		It("Should return logE 340282366920938463444927863358058659840", func() {
+			bigint, _ := biginteger.Of("340282366920938463444927863358058659840")
+			Expect(bigint.LogE()).To(Equal(88.722839111673))
+		})
+	})
 })
 
 func TestSuite(t *testing.T) {

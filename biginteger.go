@@ -125,6 +125,10 @@ func (i BigInteger) Log(base BigInteger) float64 {
 	return logarithm.Log(i.value, base.value)
 }
 
+func (i BigInteger) LogE() float64 {
+	return logarithm.LogE(i.value)
+}
+
 func (i BigInteger) Uint() uint {
 	if len(i.value) == 0 {
 		return 0
