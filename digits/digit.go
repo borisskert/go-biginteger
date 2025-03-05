@@ -15,6 +15,10 @@ func One() Digit {
 	return Digit(1)
 }
 
+func Ten() Digit {
+	return Digit(10)
+}
+
 func (a Digit) High() HalfDigit {
 	return HalfDigit(a >> 32)
 }

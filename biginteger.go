@@ -1,6 +1,9 @@
 package biginteger
 
-import "github.com/borisskert/go-biginteger/stringify"
+import (
+	"github.com/borisskert/go-biginteger/logarithm"
+	"github.com/borisskert/go-biginteger/stringify"
+)
 
 type BigInteger struct {
 	sign  bool
@@ -87,7 +90,11 @@ func (i BigInteger) BitLength() uint64 {
 }
 
 func (i BigInteger) Digits() uint64 {
-	return digitsAbs(i)
+	if i.IsEqualTo(zero) {
+		return 1
+	}
+
+	return uint64(i.Abs().Log10()) + 1
 }
 
 func (i BigInteger) CompareTo(other BigInteger) int {
@@ -104,6 +111,26 @@ func (i BigInteger) IsGreaterThan(other BigInteger) bool {
 
 func (i BigInteger) IsEqualTo(other BigInteger) bool {
 	return compareTo(i, other) == 0
+}
+
+func (i BigInteger) Log2() float64 {
+	return logarithm.Log2(i.value)
+}
+
+func (i BigInteger) Log10() float64 {
+	return logarithm.Log10(i.value)
+}
+
+func (i BigInteger) Log(base BigInteger) float64 {
+	return logarithm.Log(i.value, base.value)
+}
+
+func (i BigInteger) LogE() float64 {
+	return logarithm.LogE(i.value)
+}
+
+func (i BigInteger) LogF(base float64) float64 {
+	return logarithm.LogF(i.value, base)
 }
 
 func (i BigInteger) Uint() uint {
