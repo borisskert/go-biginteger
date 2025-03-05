@@ -118,7 +118,7 @@ func (i BigInteger) Log2() float64 {
 }
 
 func (i BigInteger) Log10() float64 {
-	return i.Log(ten)
+	return logarithm.Log10(i.value)
 }
 
 func (i BigInteger) Log(base BigInteger) float64 {

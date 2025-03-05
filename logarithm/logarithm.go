@@ -35,6 +35,10 @@ func log2(x digits.Digits) float64 {
 	return float64(msbPos) + math.Log2(normValue)
 }
 
+func Log10(i []uint64) float64 {
+	return log(digits.Wrap(i), digits.Ten().AsDigits())
+}
+
 func Log(i []uint64, base []uint64) float64 {
 	return log(digits.Wrap(i), digits.Wrap(base))
 }
