@@ -55,14 +55,18 @@ func log(i digits.Digits, base digits.Digits) float64 {
 }
 
 func LogE(i []uint64) float64 {
-	return logE(digits.Wrap(i))
+	return logF(digits.Wrap(i), e)
 }
 
 const e = 2.71828182845904523536028747135266249775724709369995957496696763
 
-func logE(i digits.Digits) float64 {
-	log2i := log2(i)
-	log2e := math.Log2(e)
+func LogF(i []uint64, base float64) float64 {
+	return logF(digits.Wrap(i), base)
+}
 
-	return log2i / log2e
+func logF(i digits.Digits, base float64) float64 {
+	log2i := log2(i)
+	log2base := math.Log2(base)
+
+	return log2i / log2base
 }

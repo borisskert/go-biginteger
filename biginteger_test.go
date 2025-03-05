@@ -3753,6 +3753,58 @@ var _ = Describe("BigInteger", func() {
 			Expect(bigint.LogE()).To(Equal(88.722839111673))
 		})
 	})
+
+	Context("LogF", func() {
+		It("753457234543.logF(2)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(2.0)).To(BeNumerically("==", 39.45473467202251))
+		})
+
+		It("753457234543.logF(2.5)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(2.5)).To(BeNumerically("==", 29.84635459721002))
+		})
+
+		It("753457234543.logF(3)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(3.0)).To(BeNumerically("==", 24.893166023846398))
+		})
+
+		It("753457234543.logF(4)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(4.0)).To(BeNumerically("==", 19.727367336011255))
+		})
+
+		It("753457234543.logF(5)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(5.0)).To(BeNumerically("==", 16.992229328245617))
+		})
+
+		It("753457234543.logF(6)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(6.0)).To(BeNumerically("==", 15.26317486656591))
+		})
+
+		It("753457234543.logF(6)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(6.6)).To(BeNumerically("==", 14.49227807340134))
+		})
+
+		It("753457234543.logF(7)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(7.0)).To(BeNumerically("==", 14.054060055614492))
+		})
+
+		It("753457234543.logF(8)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(8.0)).To(BeNumerically("==", 13.151578224007503))
+		})
+
+		It("753457234543.logF(8)", func() {
+			bigint, _ := biginteger.Of("753457234543")
+			Expect(bigint.LogF(9.99)).To(BeNumerically("==", 11.882221572417167))
+		})
+	})
 })
 
 func TestSuite(t *testing.T) {
